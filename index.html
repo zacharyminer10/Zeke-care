@@ -154,6 +154,11 @@ b,strong,.ch b,.panel .ch b,.sh .shn,.tpv,.emal,.emr b{font-weight:500}
 nav button,nav button.on,.pill,.tag,.sec,.who button.on,.rs button.on,.tchip,.upd,.toast{font-weight:500}
 .tpok,.toast button,.vb button,.upd button,.cfok,.pad button{font-weight:600}
 .task .box{font-weight:600}
+/* 1.8 recovery + first task */
+.hintbox{display:flex;flex-direction:column;gap:2px;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin:0 0 12px}.hintbox b{font-size:18px}.hintbox[hidden]{display:none}
+.rkv{font:600 26px/1.2 ui-monospace,"SF Mono",Menlo,monospace;letter-spacing:.06em;text-align:center;background:var(--bg);border:1px dashed var(--acc);border-radius:12px;padding:16px 8px;margin:0 0 6px;-webkit-user-select:all;user-select:all}
+#rc1f[hidden],#rcnone[hidden],#rc1[hidden],#rc2[hidden],#ftt[hidden],#toastu[hidden]{display:none}
+.flashtile{outline:3px solid var(--acc);outline-offset:2px}
 /* 1.7.1 first run */
 .pinin{-webkit-text-security:disc;letter-spacing:.4em;font-size:22px;text-align:center}
 #fr .note{margin:12px 0 6px}
@@ -167,6 +172,13 @@ nav button,nav button.on,.pill,.tag,.sec,.who button.on,.rs button.on,.tchip,.up
 .scnt button{min-width:44px;min-height:40px;padding:4px 10px;font-size:20px}
 .scnt .sq{min-width:60px;font-size:18px;font-variant-numeric:tabular-nums;background:var(--bg)}
 .sadm{display:flex;flex-wrap:wrap;gap:6px;align-items:center;width:100%;padding-top:4px;border-top:1px dashed var(--line)}
+/* 1.8 inventory sort + low highlight */
+.sortbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 8px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg button{border:0;border-radius:0;min-height:34px;padding:4px 14px;font-size:14px;background:var(--panel2)}
+.seg button+button{border-left:1px solid var(--line)}.seg button.on{background:var(--tx);color:var(--bg);font-weight:500}
+.srow.low{box-shadow:inset 0 0 0 2px var(--bad);background:color-mix(in srgb,var(--bad) 9%,var(--panel2))}
+.elist .srow.low:first-child{border-top-left-radius:11px;border-top-right-radius:11px}
 /* 1.6 edit tasks */
 input[type=search]{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:8px 12px;min-height:40px;font:inherit;color:inherit;-webkit-appearance:none;appearance:none}
 .addrow{display:flex;flex-wrap:wrap;gap:8px}.addrow input{flex:1;min-width:200px}
@@ -213,7 +225,7 @@ nav{flex-wrap:wrap}nav button{white-space:nowrap}
 <div class="rs"><button id="tourre">Show the tour</button></div><div><button id="stx">Done</button></div><div class="row" style="border:0;padding:14px 0 0;justify-content:flex-end"><span class="note" style="margin:0" id="stver"></span><button id="chkup">Check for updates</button></div></div></div>
 <div class="modal" id="wp"><div class="card"><h2>Who’s here?</h2><p class="note">Pick your name, then enter your code.</p><p class="note" id="wpm" style="color:var(--ok)" aria-live="polite"></p><div class="pmb" id="wpl"></div><button id="wpx">Cancel</button></div></div>
 <div class="modal" id="nu"><div class="card"><h2>New user</h2><p class="note">Enter your name. You’ll choose your own 4-digit code next.</p><input type="text" id="nun" placeholder="Your name" maxlength="24" aria-label="Your name" style="width:100%;margin-bottom:8px"><p class="note" id="nue" style="color:var(--bad)" aria-live="polite"></p><div style="display:flex;gap:8px"><button id="nuok">Next</button><button id="nux">Cancel</button></div></div></div>
-<div class="modal" id="pin"><div class="card"><h2 id="pint"></h2><p class="dots" id="pind"></p><p class="note" id="pinm" aria-live="polite"></p><div class="pad" id="pad"></div><button id="pinx">Cancel</button></div></div>
+<div class="modal" id="pin"><div class="card"><h2 id="pint"></h2><p class="dots" id="pind"></p><p class="note" id="pinm" aria-live="polite"></p><div class="pad" id="pad"></div><button id="pinx">Cancel</button><button id="pinforgot" hidden style="width:100%;margin-top:8px;background:transparent;border-color:transparent;color:var(--acc)">Forgot the admin code?</button></div></div>
 <div class="modal" id="pm"><div class="card"><h2 id="pmt"></h2><div id="pmrw"><p class="note">Reason (optional)</p><div class="rs" id="pmr"></div><p class="note">Where should this go?</p></div><div class="pmb" id="pmb"></div><p class="note" id="pmerr" style="color:var(--bad)" aria-live="polite"></p><button id="pmx">Cancel</button></div></div>
 <div class="modal" id="modal"><div class="card" style="max-width:580px">
   <h2>Emergency</h2>
@@ -229,9 +241,20 @@ nav{flex-wrap:wrap}nav button{white-space:nowrap}
 <p class="note">Your name</p><input type="text" id="frn" maxlength="24" placeholder="Your first name" autocomplete="off" aria-label="Your name" style="width:100%">
 <p class="note">Your 4-digit sign-in code</p><input type="text" id="frp" class="pinin" inputmode="numeric" maxlength="4" autocomplete="off" aria-label="Your sign-in code" style="width:100%">
 <p class="note">Admin code (4 digits)</p><input type="text" id="fra" class="pinin" inputmode="numeric" maxlength="4" autocomplete="off" aria-label="Admin code" style="width:100%"><p class="note" style="margin-top:6px">The admin code unlocks the Menu, where schedules, people, and emergency info are changed. Use a different code from your sign-in code.</p>
+<p class="note">Hint for the admin code (optional)</p><input type="text" id="frh" maxlength="60" autocomplete="off" placeholder="Something only you’d recognize" aria-label="Admin code hint" style="width:100%"><p class="note" style="margin-top:6px">A word or phrase that reminds you of the code, like “our street number.” Don’t type the code itself.</p>
 <p class="note" id="fre" style="color:var(--bad)" aria-live="polite"></p>
 <button id="frok" class="tpok" style="width:100%;font-size:17px">Set up the board</button>
 <button id="frrs" style="width:100%;margin-top:8px;background:transparent">Restore from a backup instead</button></div></div>
+<div class="modal" id="rk"><div class="card" style="max-width:460px"><h2>Save your recovery key</h2><p style="margin:0 0 12px;line-height:1.45">If the admin code is ever forgotten, this key resets it. Write it down, take a screenshot, or copy it somewhere safe. It won’t be shown again.</p><p id="rkv" class="rkv"></p><p class="note" id="rkm" aria-live="polite"></p><div style="display:flex;gap:8px"><button id="rkcopy">Copy key</button><button id="rkok" class="tpok" style="font-size:17px">I’ve saved it</button></div></div></div>
+<div class="modal" id="rc"><div class="card" style="max-width:440px"><h2>Forgot the admin code?</h2><div id="rchint" class="hintbox" hidden></div>
+<div id="rcnone"><p style="line-height:1.45">No recovery key was set up on this device, so the admin code can’t be reset here. Ask whoever set up the board if they know the code.</p><button id="rctry2" style="margin-right:8px">Try the code again</button><p style="display:none"></p><button data-cl="rc">Close</button></div>
+<div id="rc1f"><div id="rc1"><button id="rctry" style="width:100%;margin-bottom:4px">I remember it now</button><p class="note">Still stuck? Enter the recovery key you saved when the board was set up to choose a new code.</p><input type="text" id="rck" autocomplete="off" autocapitalize="characters" placeholder="XXXX-XXXX-XXXX" aria-label="Recovery key" style="width:100%;font-size:20px;letter-spacing:.08em;text-align:center"><div style="display:flex;gap:8px;margin-top:12px"><button data-cl="rc">Cancel</button><button id="rcgo" class="tpok" style="font-size:17px">Next</button></div></div>
+<div id="rc2" hidden><p class="note" style="margin-top:0">Key accepted. Choose a new admin code.</p><input type="text" id="rcn" class="pinin" inputmode="numeric" maxlength="4" autocomplete="off" aria-label="New admin code" placeholder="New code" style="width:100%"><input type="text" id="rcn2" class="pinin" inputmode="numeric" maxlength="4" autocomplete="off" aria-label="New admin code again" placeholder="Again" style="width:100%;margin-top:8px"><p class="note">New hint (optional)</p><input type="text" id="rch" maxlength="60" autocomplete="off" placeholder="Something only you’d recognize" aria-label="New hint" style="width:100%"><div style="display:flex;gap:8px;margin-top:12px"><button data-cl="rc">Cancel</button><button id="rcok" class="tpok" style="font-size:17px">Save new code</button></div></div>
+<p class="note" id="rce" style="color:var(--bad)" aria-live="polite"></p></div></div></div>
+<div class="modal" id="ft"><div class="card" style="max-width:480px"><p class="note" style="margin:0 0 4px">Last step</p><h2>Try it: add your first task</h2><p style="margin:0 0 12px;line-height:1.45">Something you do every day works best. You can change or remove it later.</p>
+<input type="text" id="ftn" maxlength="80" placeholder="Task name" aria-label="Task name" style="width:100%"><div class="rs" id="ftex" style="margin:8px 0 0"><button data-ftex="Morning medication">Morning medication</button><button data-ftex="Check dressing">Check dressing</button><button data-ftex="Drink water">Drink water</button></div>
+<p class="note">How often</p><div class="rs" id="ftk"></div><div class="rs" id="ftt"></div><p class="note" id="fte" style="color:var(--bad)" aria-live="polite"></p>
+<div style="display:flex;gap:8px;align-items:center"><button id="ftskip" style="background:transparent;border-color:transparent;color:var(--mut)">Skip for now</button><span style="flex:1"></span><button id="ftok" class="tpok" style="flex:none;font-size:16px;padding:8px 20px">Add task</button></div></div></div>
 <div class="toast" id="toast" hidden role="status"><span id="toastt"></span><button id="toastu">Undo</button></div>
 <div class="modal" id="cf"><div class="card" style="max-width:420px"><h2 id="cft"></h2><p id="cfm" style="margin:0 0 16px"></p><div style="display:flex;gap:8px"><button id="cfx">Cancel</button><button id="cfok" class="cfok"></button></div></div></div>
 <div class="modal" id="ti"><div class="card" style="max-width:600px"><h2 id="tit"></h2><div id="tib"></div><div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap" id="tif"></div></div></div>
@@ -241,7 +264,7 @@ nav{flex-wrap:wrap}nav button{white-space:nowrap}
 <div class="modal" id="ot"><div class="card" style="max-width:480px"><h2>Add a one-time task</h2><p class="note" style="margin-top:0">For things that only need doing once. It shows on Today and drops off after it’s checked off.</p><input type="text" id="otn" placeholder="What needs doing?" maxlength="80" aria-label="What needs doing" style="width:100%"><p class="note">When</p><div class="rs" id="otd"></div><input type="date" id="otdt" aria-label="Date" style="margin:-4px 0 12px" hidden><p class="note">Time (optional)</p><div class="rs" id="ottw"></div><p class="note" id="ote" style="color:var(--bad)" aria-live="polite"></p><div style="display:flex;gap:8px"><button data-cl="ot">Cancel</button><button id="otok" class="tpok" style="font-size:18px">Add task</button></div></div></div>
 <div class="modal" id="tp"><div class="card" style="max-width:380px"><h2 id="tpt">Pick a time</h2><p class="note" id="tps" style="margin:0 0 4px"></p><p class="tpv" id="tpv" aria-live="polite"></p><div class="tpw"><div class="tpc" id="tph" aria-label="Hour"></div><div class="tpc" id="tpm" aria-label="Minute"></div><div class="tpc" id="tpa" aria-label="AM or PM"></div></div><p class="note" style="text-align:center;margin:4px 0 10px">Scroll to the time, then tap ✓ to save it.</p><p class="note" id="tpe" style="color:var(--bad);text-align:center" aria-live="polite"></p><div style="display:flex;gap:8px"><button id="tpx">Cancel</button><button id="tpok" class="tpok" aria-label="Save this time">✓</button></div></div></div>
 <script>
-var VER='1.7.1';
+var VER='1.8';
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
 var S={
   tab:'today',who:'',people:[{name:'Zach',pin:'1111'},{name:'Wife',pin:'2222'},{name:'Nurse',pin:'3333'}],pend:null,pin:{for:'',buf:''},reason:'',
@@ -435,16 +458,18 @@ function drawTE(){var t=T(S.teId);if(!t){$('te').classList.remove('show');return
   var nd=needsOf(t),g=guideOf(t);
   h+='<p class="note">Supplies and how-to</p><p class="note" style="margin-top:-4px;color:var(--tx)">'+(nd.length?nd.map(function(x){return esc(x.i.name)+(x.n.use?' ('+x.n.use+')':'')}).join(', '):'No supplies')+' · '+(g?'Guide: '+esc(g.title):'No guide')+'</p><p class="note" style="margin-top:-8px">Change supplies in Inventory and guides in the How-to tab.</p>';
   $('tet').textContent=t.name;$('teb').innerHTML=h;$('tedel').dataset.del=t.id}
-function stock(){var ad=S.adminOk,items=S.stock.slice().sort(function(a,b){var la=a.qty<=a.low,lb=b.qty<=b.low;return la!==lb?(la?-1:1):a.name.localeCompare(b.name)});
+function stock(){var ad=S.adminOk,srt=S.ssort==='qty'?'qty':'az',items=S.stock.slice().sort(function(a,b){var la=a.qty<=a.low,lb=b.qty<=b.low;if(la!==lb)return la?-1:1;if(srt==='qty'&&a.qty!==b.qty)return a.qty-b.qty;return a.name.localeCompare(b.name)});
   var nlow=S.stock.filter(function(i){return i.qty<=i.low}).length;
-  var h='<div class="col"><div class="ch"><b>Inventory</b><small>'+S.stock.length+' supplies'+(nlow?' · '+nlow+' low':'')+'</small></div>';
-  if(!S.stock.length)h+='<p class="note">No supplies yet.'+(ad?' Add the first one below.':' An admin can add supplies.')+'</p>';
+  var h='<div class="col"><div class="ch"><b>Inventory</b><small>'+S.stock.length+' supplies'+(nlow?' · <span style="color:var(--bad)">'+nlow+' low</span>':'')+'</small></div>';
+  var sortbar='<div class="sortbar"><span class="note" style="margin:0">Sort</span><div class="seg" role="group" aria-label="Sort supplies">'+[['az','A–Z'],['qty','Count']].map(function(o){return'<button data-ssort="'+o[0]+'" class="'+(srt===o[0]?'on':'')+'" aria-pressed="'+(srt===o[0])+'">'+o[1]+'</button>'}).join('')+'</div><span class="note" style="margin:0">'+(srt==='qty'?'Fewest on hand first':'')+(nlow?(srt==='qty'?' · ':'')+'Low supplies stay on top':'')+'</span></div>';
+  if(ad)h+='<div class="addrow" style="margin-bottom:12px"><input type="text" id="newi" placeholder="New supply" aria-label="New supply"><input type="number" id="newq" min="0" value="10" aria-label="Starting count" style="width:80px;flex:none;min-width:0"><button id="addi" class="tpok" style="flex:none;font-size:16px;min-height:44px;padding:8px 18px">Add supply</button></div>';
+  if(!S.stock.length)h+='<p class="note">No supplies yet.'+(ad?' Add the first one above.':' An admin can add supplies.')+'</p>';
+  if(S.stock.length>1)h+=sortbar;
   h+='<div class="elist">'+items.map(function(i){var low=i.qty<=i.low,lt=S.tasks.filter(function(t){return(t.needs||[]).some(function(n){return n.sid===i.id})});
-    var h2='<div class="srow"><span class="sname">'+esc(i.name)+'<span class="meta">'+(low?'<span style="color:var(--due)">Low · reorder at '+i.low+'</span>':'Reorder at '+i.low)+(lt.length?' · Used by: '+lt.map(function(t){return esc(t.name)}).join(', '):'')+'</span></span>';
+    var h2='<div class="srow'+(low?' low':'')+'"><span class="sname">'+esc(i.name)+'<span class="meta">'+(low?'<span style="color:var(--bad)">Low · reorder at '+i.low+'</span>':'Reorder at '+i.low)+(lt.length?' · Used by: '+lt.map(function(t){return esc(t.name)}).join(', '):'')+'</span></span>';
     h2+='<span class="scnt"><button data-sq="'+i.id+'|-1" aria-label="One less '+esc(i.name)+'">−</button><button class="sq" data-qc="'+i.id+'" aria-label="Set count for '+esc(i.name)+'">'+i.qty+'</button><button data-sq="'+i.id+'|1" aria-label="One more '+esc(i.name)+'">+</button></span>';
     if(ad)h2+='<span class="sadm"><label class="c">Reorder at <input type="number" min="0" value="'+i.low+'" data-sl="'+i.id+'" style="width:64px"></label><button data-il="'+i.id+'">Tasks ('+lt.length+')</button><button data-sd="'+i.id+'" style="color:var(--bad)">Remove</button></span>';
     return h2+'</div>'}).join('')+'</div>';
-  if(ad)h+='<div class="addrow" style="margin-top:12px"><input type="text" id="newi" placeholder="New supply" aria-label="New supply"><input type="number" id="newq" min="0" value="10" aria-label="Starting count" style="width:80px;flex:none;min-width:0"><button id="addi">Add supply</button></div>';
   h+='<p class="note">Tap − or + to adjust, or tap the number to enter an exact count. '+(ad?'Supplies linked to tasks go down on their own when those tasks are checked off.':'Adding, removing, or linking supplies needs the admin code.')+'</p>';
   if(!ad)h+='<button data-unlock="stock">Unlock to manage supplies</button>';
   return h+'</div>'}
@@ -467,7 +492,7 @@ function logv(){
 }
 function menu(){
   var items=[['edit','Edit tasks','Add, rename, or remove tasks and choose when they happen'],['periods','Times of day','Rename Day and Night, change hours, or add more'],['people','People','Names and 4-digit codes'],['admin','Admin settings','Emergency info and Start fresh']];
-  var h=(S.setup?setupCard(true):'')+'<div class="row" style="border:0;padding:0 0 12px;justify-content:space-between"><span class="note" style="margin:0">Admin unlocked until you lock it, sign out, or someone else signs in.</span><button data-lock="1">Lock admin</button></div><div class="grid">';
+  var h=(S.setup?setupCard(true):'')+(!S.rkey?'<div class="vb"><span>Create a recovery key so a forgotten admin code can be reset.</span><button id="rknew">Create recovery key</button></div>':'')+'<div class="row" style="border:0;padding:0 0 12px;justify-content:space-between"><span class="note" style="margin:0">Admin unlocked until you lock it, sign out, or someone else signs in.</span><button data-lock="1">Lock admin</button></div><div class="grid">';
   items.forEach(function(i){h+='<button class="task" data-t="'+i[0]+'" style="display:block;min-height:96px"><span class="nm" style="display:block;font-size:20px;font-weight:600">'+i[1]+'</span><span class="meta">'+i[2]+'</span></button>'});
   return h+'</div>';
 }
@@ -520,7 +545,7 @@ function openPin(name){
   if(name===S.who&&name!=='__admin')return;
   S.pin={for:name,buf:''};
   var k='';['1','2','3','4','5','6','7','8','9','','0','del'].forEach(function(n){k+=n===''?'<span></span>':'<button data-pk="'+n+'" aria-label="'+(n==='del'?'Delete':n)+'">'+(n==='del'?'⌫':n)+'</button>'});
-  $('pad').innerHTML=k;$('pint').textContent=name==='__admin'?'Admin code':'Code for '+name;drawPin('');$('pin').classList.add('show');
+  $('pad').innerHTML=k;$('pinforgot').hidden=name!=='__admin';$('pint').textContent=name==='__admin'?'Admin code':'Code for '+name;drawPin('');$('pin').classList.add('show');
 }
 function drawPin(msg){var d='';for(var i=0;i<4;i++)d+=i<S.pin.buf.length?'●':'○';$('pind').textContent=d;$('pinm').textContent=msg||''}
 function pinKey(k){
@@ -540,6 +565,8 @@ function pinKey(k){
 function lockAdmin(){S.adminOk=false;if(['edit','periods','people','admin','menu'].indexOf(S.tab)>-1)S.tab='today'}
 function admin(){fresh=false;
   var h='<div class="col"><div class="ch"><b>Admin settings</b><small>Only people with the admin code can open this</small></div>';
+  h+='<div class="row"><span style="flex:1;min-width:200px"><b>Admin recovery key</b><span class="meta">'+(S.rkey?'Set. Making a new key replaces the old one.':'Not set. Without it, a forgotten admin code can’t be reset.')+'</span></span><button id="rknew">'+(S.rkey?'Make a new key':'Create recovery key')+'</button></div>';
+  h+='<div class="row"><span style="flex:1;min-width:200px"><b>Admin code hint</b><span class="meta">Shown when someone taps “Forgot the admin code?” Don’t type the code itself.</span></span><input type="text" data-ahint="1" maxlength="60" value="'+esc(S.ahint||'')+'" placeholder="No hint" aria-label="Admin code hint" style="flex:1;min-width:200px"></div>';
   h+='<div class="row"><span style="flex:1;min-width:200px"><b>Emergency info</b><span class="meta">Numbers, what to tell 911, and the plan shown on the Emergency button</span></span><button id="emedit">Edit emergency info</button></div>';
   h+='<div class="row"><span style="flex:1;min-width:200px"><b>Setup checklist</b><span class="meta">Show the step-by-step setup list in the Menu again</span></span><button id="setupre">Show checklist</button></div>';
   h+='<div class="row"><span style="flex:1;min-width:200px"><b>Start fresh</b><span class="meta">Erases all tasks, supplies, people, and the log on this iPad. Download a backup first.</span></span><button id="fresh" style="color:var(--bad)">Start fresh</button></div>';
@@ -589,6 +616,19 @@ document.addEventListener('click',function(e){
   if(b.dataset.lock){lockAdmin();render();return}
   if(b.dataset.te){openTE(+b.dataset.te);return}
   if(b.id==='frok'){saveFR();return}
+  if(b.id==='pinforgot'){openRC();return}
+  if(b.id==='rcgo'){checkRC();return}
+  if(b.id==='rctry2'){$('rc').classList.remove('show');openPin('__admin');return}
+  if(b.id==='rctry'){$('rc').classList.remove('show');openPin('__admin');return}
+  if(b.id==='rcok'){saveRC();return}
+  if(b.id==='rkcopy'){copyKey();return}
+  if(b.id==='rkok'){doneKey();return}
+  if(b.id==='rknew'){if(!S.adminOk)return;showKey();return}
+  if(b.dataset.ftex){$('ftn').value=b.dataset.ftex;$('fte').textContent='';return}
+  if(b.dataset.ftk){FT.k=b.dataset.ftk;drawFT();return}
+  if(b.id==='fttime'){openTP({title:'Time for this task',sub:$('ftn').value.trim(),val:FT.time||null,ok:function(v){FT.time=v;drawFT()}});return}
+  if(b.id==='ftok'){saveFT();return}
+  if(b.id==='ftskip'){S.firstRun=false;$('ft').classList.remove('show');S.tab='menu';render();return}
   if(b.id==='frrs'){$('rsf').value='';$('rsf').click();return}
   if(b.id==='tournext'){if(TOUR.i<TOUR.c.length-1){TOUR.i++;drawTour()}else endTour();return}
   if(b.id==='tourback'){if(TOUR.i>0){TOUR.i--;drawTour()}return}
@@ -633,6 +673,7 @@ document.addEventListener('click',function(e){
   if(b.dataset.sq){if(needWho())return;var a=b.dataset.sq.split('|'),it=S.stock.filter(function(x){return x.id==a[0]})[0];if(it)setQty(it.id,it.qty+ +a[1]);render();return}
   if(b.dataset.qc){if(needWho())return;openQC(+b.dataset.qc);return}
   if(b.id==='qcok'){saveQC();return}
+  if(b.dataset.ssort){S.ssort=b.dataset.ssort;render();return}
   if(b.dataset.sd){if(!S.adminOk)return;var _b=b;askConfirm('Remove this supply?','“'+((S.stock.filter(function(x){return x.id==b.dataset.sd})[0])||{}).name+'” and its count will be removed.','Remove supply',function(){var b=_b;S.stock=S.stock.filter(function(x){return x.id!=b.dataset.sd});S.tasks.forEach(function(t){t.needs=(t.needs||[]).filter(function(n){return n.sid!=b.dataset.sd})});render();});return}
   if(b.id==='addi'){if(!S.adminOk)return;var nm2=$('newi').value.trim();if(!nm2)return;S.stock.push({id:S.nid++,name:nm2,qty:Math.max(0,+$('newq').value||0),low:2});render();return}
   if(b.dataset.pk){pinKey(b.dataset.pk);return}
@@ -659,7 +700,7 @@ document.addEventListener('click',function(e){
     blankState();save();render();openFR();return}
 });
 document.addEventListener('input',function(e){if(e.target.id==='tfind')applyFind()});
-document.addEventListener('keydown',function(e){if(e.key==='Enter'&&e.target.id==='qcv'){e.preventDefault();saveQC()}});
+document.addEventListener('keydown',function(e){if(e.key!=='Enter')return;var id=e.target.id;if(id==='qcv'){e.preventDefault();saveQC()}else if(id==='rck'){e.preventDefault();checkRC()}else if(id==='rcn2'){e.preventDefault();saveRC()}});
 document.addEventListener('change',function(e){
   if(e.target.id==='rsf'){var f=e.target.files&&e.target.files[0];if(!f)return;var fr=new FileReader();fr.onload=function(){var ok=false;try{ok=applySnap(JSON.parse(fr.result))}catch(x){}
     if(ok){S.last=Date.now();maybeReset();save();fillSt();$('stmsg').textContent='Restored. Sign in again from the Who’s here menu.';$('fr').classList.remove('show');render();if(S.people.length)needWho();else openFR()}else $('stmsg').textContent='That file is not a Care Board backup. Nothing was changed.'};fr.readAsText(f);return}
@@ -671,6 +712,7 @@ document.addEventListener('change',function(e){
   if(d.adm){if(/^\d{4}$/.test(e.target.value)){S.adminPin=e.target.value}else e.target.value=S.adminPin;return}
   if(d.od!==undefined){S.tasks.filter(function(t){return t.id==d.od})[0].date=e.target.value||bizDay();return}
   if(d.ot!==undefined){S.tasks.filter(function(t){return t.id==d.ot})[0].time=e.target.value||'';return}
+  if(d.ahint){var hv=e.target.value.trim();if(hintBad(hv,S.adminPin)){e.target.value=S.ahint||'';if($('admmsg'))$('admmsg').textContent='The hint can’t include the admin code itself.';return}S.ahint=hv;if($('admmsg'))$('admmsg').textContent=hv?'Hint saved.':'Hint removed.';return}
   if(d.gap){var gt=T(d.gap);gt.gap=Math.max(0,+e.target.value||0);lgc(gt.name+': minimum gap '+gt.gap+'h');return}
   if(d.gr){S.tasks.filter(function(t){return t.id==d.gr})[0].grace=Math.max(5,+e.target.value||60);return}
   if(d.f){var fid=+d.f,fv=e.target.value;if(fv==='clock'){var ft=S.tasks.filter(function(t){return t.id===fid})[0];openTP({title:'First time for this task',sub:ft.name,ok:function(v){setFreq(fid,'clock');ft.at=[v];lgc(ft.name+': now at set times ('+fmtT(v)+')');flashAt(fid,v)},cancel:render});return}setFreq(fid,fv);lgc(T(fid).name+': now '+(FQ.filter(function(o){return o[0]===fq(T(fid))})[0]||['',''])[1].toLowerCase());render();return}
@@ -706,15 +748,46 @@ document.addEventListener('pointermove',function(e){if(lp.t&&(Math.abs(e.clientX
 document.addEventListener('contextmenu',function(e){if(e.target.closest('.task'))e.preventDefault()});
 document.addEventListener('click',function(e){if(lp.fired){lp.fired=false;e.stopImmediatePropagation();e.preventDefault()}},true);
 ['pointerdown','keydown','input'].forEach(function(n){document.addEventListener(n,function(){S.last=Date.now()},true)});
+/* ---- 1.8: admin recovery key + first task ---- */
+var RKA='ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+function newKey(){var a=new Uint32Array(12),k='';try{crypto.getRandomValues(a)}catch(e){for(var i=0;i<12;i++)a[i]=Math.floor(Math.random()*1e9)}for(var j=0;j<12;j++){k+=RKA[a[j]%RKA.length];if(j===3||j===7)k+='-'}return k}
+function hintBad(h,code){return !!code&&String(h||'').replace(/\D/g,'').indexOf(code)>-1}
+function normKey(v){return String(v||'').toUpperCase().replace(/[^A-Z0-9]/g,'')}
+var RKNEXT=null;
+function showKey(after){S.rkey=newKey();save();RKNEXT=after||null;$('rkv').textContent=S.rkey;$('rkm').textContent='';$('rk').classList.add('show')}
+function copyKey(){var k=S.rkey;try{navigator.clipboard.writeText(k).then(function(){$('rkm').textContent='Copied. Paste it somewhere safe, like Notes or an email to yourself.'},function(){selKey()})}catch(e){selKey()}}
+function selKey(){try{var r=document.createRange();r.selectNodeContents($('rkv'));var s=window.getSelection();s.removeAllRanges();s.addRange(r);$('rkm').textContent='Select and copy the key above, or write it down.'}catch(e){}}
+function doneKey(){$('rk').classList.remove('show');lg('Changed','New admin recovery key created');var f=RKNEXT;RKNEXT=null;render();if(f)f()}
+function openRC(){$('pin').classList.remove('show');$('rc1').hidden=false;$('rc2').hidden=true;$('rck').value='';$('rcn').value='';$('rcn2').value='';$('rce').textContent='';
+  $('rch').value='';$('rchint').hidden=!S.ahint;$('rchint').innerHTML=S.ahint?'<span class="note" style="margin:0">Your hint</span><b>'+esc(S.ahint)+'</b>':'';$('rcnone').hidden=!!S.rkey;$('rc1f').hidden=!S.rkey;$('rc').classList.add('show');if(S.rkey)setTimeout(function(){try{$('rck').focus()}catch(x){}},60)}
+function checkRC(){if(normKey($('rck').value)!==normKey(S.rkey)){$('rce').textContent='That recovery key doesn’t match. Check for typos and try again.';return}$('rce').textContent='';$('rc1').hidden=true;$('rc2').hidden=false;setTimeout(function(){try{$('rcn').focus()}catch(x){}},60)}
+function saveRC(){var a=$('rcn').value.trim(),b=$('rcn2').value.trim();if(!/^\d{4}$/.test(a)){$('rce').textContent='The new admin code needs to be 4 digits.';return}if(a!==b){$('rce').textContent='The two codes don’t match.';return}
+  if(S.people.some(function(p){return p.pin===a})){$('rce').textContent='Pick a code that isn’t also someone’s sign-in code.';return}
+  if(hintBad($('rch').value,a)){$('rce').textContent='The hint can’t include the admin code itself.';return}S.ahint=$('rch').value.trim();
+  S.adminPin=a;S.adminSet=true;lg('Changed','Admin code reset with the recovery key');$('rc').classList.remove('show');S.adminOk=true;S.tab='menu';render();showKey()}
+var FT=null;
+function openFT(){FT={k:'clock',time:''};$('ftn').value='';$('fte').textContent='';drawFT();$('ft').classList.add('show')}
+function drawFT(){$('ftk').innerHTML=[['clock','At a set time'],['period','Each time of day'],['prn','As needed'],['once','Just once today']].map(function(o){return'<button data-ftk="'+o[0]+'" class="'+(FT.k===o[0]?'on':'')+'">'+o[1]+'</button>'}).join('');
+  $('ftt').hidden=FT.k!=='clock';$('ftt').innerHTML='<button id="fttime" class="tchip">'+(FT.time?fmtT(FT.time):'Pick a time')+'</button>'}
+function saveFT(){var n=$('ftn').value.trim();if(!n){$('fte').textContent='Type a task name, or tap one of the examples.';$('ftn').focus();return}
+  if(FT.k==='clock'&&!FT.time){$('fte').textContent='Pick a time for this task.';return}
+  var t={id:S.nid++,name:n,periods:[],every:0,n:3,times:0,prn:false,last:0,needs:[]};S.tasks.push(t);
+  if(FT.k==='once'){t.once=true;t.date=bizDay();t.time=''}else setFreq(t.id,FT.k);if(FT.k==='clock')t.at=[FT.time];
+  lg('Added task',n+' (first task)');S.firstRun=false;$('ft').classList.remove('show');S.tab='today';S.viewP=null;
+  if(FT.k==='clock'){var mm=mins(FT.time),own=S.periods.filter(function(q){return inP(q,mm)})[0];if(own&&own.id!==nowP().id){S.viewP=own.id;S.viewFrom=nowP().id}}
+  render();var el=document.querySelector('[data-k^="'+t.id+'|"],[data-ct^="'+t.id+'@"],[data-pr="'+t.id+'"],[data-o="'+t.id+'"]');
+  if(el){el.classList.add('flashtile');try{el.scrollIntoView({block:'center',behavior:'smooth'})}catch(x){}}
+  showHint('That’s your task. Tap it when it’s done; hold it for more options.')}
+function showHint(msg){clearTimeout(UNDO.t);UNDO.fn=null;$('toastt').textContent=msg;$('toastu').hidden=true;$('toast').hidden=false;UNDO.t=setTimeout(function(){hideUndo();$('toastu').hidden=false},7000)}
 /* ---- 1.7.1: empty first run ---- */
 function blankState(){S.tasks=[];S.stock=[];S.guides=[];S.people=[];S.log=[];S.moves=[];S.done={};S.cdone={};S.cnt={};
   S.emer={alert:'Call 911 first if he is in distress.',contacts:[{n:'Emergency',p:'911'}],tell:'',plan:''};
-  S.who='';S.adminOk=false;S.adminPin='1234';S.adminSet=false;S.setup=true;S.setupHours=false;S.lastBackup=0;S.bkSnooze=0;S.since=Date.now();S.nid=20;S.dayKey=bizDay();S.tab='today';S.viewP=null}
-function openFR(){['frn','frp','fra'].forEach(function(id){$(id).value=''});$('fre').textContent='';$('fr').classList.add('show');setTimeout(function(){try{$('frn').focus()}catch(x){}},80)}
+  S.who='';S.adminOk=false;S.adminPin='1234';S.adminSet=false;S.rkey='';S.ahint='';S.firstRun=false;S.setup=true;S.setupHours=false;S.lastBackup=0;S.bkSnooze=0;S.since=Date.now();S.nid=20;S.dayKey=bizDay();S.tab='today';S.viewP=null}
+function openFR(){['frn','frp','fra','frh'].forEach(function(id){$(id).value=''});$('fre').textContent='';$('fr').classList.add('show');setTimeout(function(){try{$('frn').focus()}catch(x){}},80)}
 function saveFR(){var n=$('frn').value.trim(),pc=$('frp').value.trim(),ac=$('fra').value.trim(),er='';
-  if(!n)er='Enter your name.';else if(!/^\d{4}$/.test(pc))er='Your sign-in code needs to be 4 digits.';else if(!/^\d{4}$/.test(ac))er='The admin code needs to be 4 digits.';else if(pc===ac)er='Use a different admin code from your sign-in code.';
+  if(!n)er='Enter your name.';else if(!/^\d{4}$/.test(pc))er='Your sign-in code needs to be 4 digits.';else if(!/^\d{4}$/.test(ac))er='The admin code needs to be 4 digits.';else if(pc===ac)er='Use a different admin code from your sign-in code.';else if(hintBad($('frh').value,ac))er='The hint can’t include the admin code itself.';
   if(er){$('fre').textContent=er;return}
-  S.people=[{name:n,pin:pc}];S.adminPin=ac;S.adminSet=true;S.who=n;S.adminOk=true;S.last=Date.now();S.tab='menu';$('fr').classList.remove('show');save();render();maybeTour()}
+  S.people=[{name:n,pin:pc}];S.adminPin=ac;S.adminSet=true;S.ahint=$('frh').value.trim();S.who=n;S.adminOk=true;S.last=Date.now();S.tab='menu';S.firstRun=true;$('fr').classList.remove('show');save();render();showKey(maybeTour)}
 /* ---- 1.7: welcome tour + setup checklist ---- */
 var TOUR=null;
 function tourCards(n){var tile=function(name,meta,tag,done,extra){return'<div class="trow" style="margin:0"><div class="task'+(done?' done':'')+'" style="cursor:default"><span class="box">'+(done?'✓':'')+'</span><span class="nm">'+name+'<span class="meta">'+meta+'</span></span>'+(tag||'')+'</div>'+(extra||'')+'</div>'};
@@ -731,7 +804,7 @@ function drawTour(){var c=TOUR.c[TOUR.i],n=TOUR.c.length,last=TOUR.i===n-1;
   $('tourb').innerHTML='<p class="note" style="margin:0 0 4px">'+(TOUR.i+1)+' of '+n+'</p><h2>'+c.t+'</h2><p style="margin:0 0 14px;line-height:1.45">'+c.b+'</p><div class="tourv">'+c.v+'</div>';
   $('tourd').innerHTML=TOUR.c.map(function(_,j){return'<span class="tdot'+(j===TOUR.i?' on':'')+'"></span>'}).join('');
   $('tourback').hidden=TOUR.i===0;$('tourskip').hidden=last;$('tournext').textContent=last?'Got it':'Next'}
-function endTour(){var p=S.people.filter(function(x){return x.name===S.who})[0];if(p)p.toured=true;$('tour').classList.remove('show');TOUR=null}
+function endTour(){var p=S.people.filter(function(x){return x.name===S.who})[0];if(p)p.toured=true;$('tour').classList.remove('show');TOUR=null;if(S.firstRun&&S.adminOk&&!S.tasks.length)openFT()}
 function setupItems(){var e=S.emer||{contacts:[]};return[
   ['code','Set the admin code','So only you can change schedules',!!S.adminSet||S.adminPin!=='1234','people'],
   ['people','Add everyone else who’ll use this','Family and each nurse, or let them add themselves from Who’s here',S.people.length>1,'people'],
@@ -744,7 +817,7 @@ function setupCard(full){var it=setupItems(),done=it.filter(function(x){return x
   if(!full)return'<div class="vb" style="background:var(--panel2);color:var(--tx);border:1px solid var(--acc)"><span>Finish setting up the board · <b>'+done+' of '+it.length+'</b> done</span><button data-t="menu" style="background:var(--acc);color:#0c1420">Open checklist</button></div>';
   return'<div class="col" style="margin-bottom:12px;border-color:var(--acc)"><div class="ch"><b>Set up the board</b><small>'+done+' of '+it.length+' done</small></div><div class="elist">'+it.map(function(x){return'<div class="srow"><span class="box" style="width:26px;height:26px;border-radius:8px;'+(x[3]?'background:var(--ok);border-color:var(--ok);color:#06231c':'')+'">'+(x[3]?'✓':'')+'</span><span class="sname"'+(x[3]?' style="color:var(--mut);text-decoration:line-through"':'')+'>'+x[1]+'<span class="meta" style="text-decoration:none">'+x[2]+'</span></span>'+(x[3]?'':(x[0]==='hours'?'<button data-sgo="periods">Check hours</button><button data-sok="hours">They’re right</button>':'<button data-sgo="'+x[4]+'">'+(x[0]==='bkp'?'Save backup':'Go')+'</button>'))+'</div>'}).join('')+'</div><button data-shide="1" style="margin-top:10px;background:transparent;border-color:transparent;color:var(--mut);padding-left:0">Hide this checklist</button></div>'}
 /* ---- 1.6: tap outside a pop-up to close it ---- */
-var MDOWN=null,KEEP=['emed','ge','tour','fr'];
+var MDOWN=null,KEEP=['emed','ge','tour','fr','rk','ft'];
 document.addEventListener('pointerdown',function(e){MDOWN=e.target},true);
 document.addEventListener('click',function(e){var m=e.target;if(!m.classList||!m.classList.contains('modal')||!m.classList.contains('show')||MDOWN!==m)return;
   if(KEEP.indexOf(m.id)>-1)return;
@@ -820,7 +893,7 @@ function saveIL(){[].forEach.call($('ilb').querySelectorAll('[data-ilt]'),functi
   var q=$('ilb').querySelector('[data-ilq="'+t.id+'"]'),u=Math.max(0,+(q&&q.value)||0);if(x.checked){if(has)t.needs.forEach(function(n){if(n.sid===IL)n.use=u});else t.needs.push({sid:IL,use:u})}if(!x.checked&&has)t.needs=t.needs.filter(function(n){return n.sid!==IL})});$('il').classList.remove('show');render()}
 /* ---- 1.4: check-off toggles with undo ---- */
 var UNDO={fn:null,t:null};
-function showUndo(msg,fn){clearTimeout(UNDO.t);UNDO.fn=fn;$('toastt').textContent=msg;$('toast').hidden=false;UNDO.t=setTimeout(hideUndo,5000)}
+function showUndo(msg,fn){clearTimeout(UNDO.t);UNDO.fn=fn;$('toastu').hidden=false;$('toastt').textContent=msg;$('toast').hidden=false;UNDO.t=setTimeout(hideUndo,5000)}
 function hideUndo(){clearTimeout(UNDO.t);UNDO.fn=null;$('toast').hidden=true}
 function T(id){return S.tasks.filter(function(x){return x.id==id})[0]}
 function togK(k,ui){var tid=+k.split('|')[0],lbl=tn(tid)+' ('+pn(k.split('|')[1])+')';
