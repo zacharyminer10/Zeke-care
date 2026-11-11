@@ -154,6 +154,10 @@ b,strong,.ch b,.panel .ch b,.sh .shn,.tpv,.emal,.emr b{font-weight:500}
 nav button,nav button.on,.pill,.tag,.sec,.who button.on,.rs button.on,.tchip,.upd,.toast{font-weight:500}
 .tpok,.toast button,.vb button,.upd button,.cfok,.pad button{font-weight:600}
 .task .box{font-weight:600}
+/* 1.7 tour */
+.tourv{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.tdots{display:flex;gap:6px;justify-content:center;margin:4px 0 12px}.tdot{width:7px;height:7px;border-radius:50%;background:var(--line)}.tdot.on{background:var(--acc)}
+#tourback[hidden],#tourskip[hidden]{display:none}
 /* 1.6 inventory */
 .srow{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;padding:10px 14px;background:var(--panel2);border-bottom:1px solid var(--line)}.srow:last-child{border-bottom:0}
 .sname{flex:1;min-width:180px;font-size:16px}.scnt{display:flex;gap:4px;align-items:center}
@@ -187,7 +191,7 @@ input[type=search]{background:var(--panel2);border:1px solid var(--line);border-
 <div class="rs" id="stdt"><button id="bkp">Save a backup</button><button id="rst">Restore from backup</button></div>
 <input type="file" id="rsf" accept=".json,application/json" style="display:none">
 <p class="note" id="stmsg" aria-live="polite"></p>
-<div><button id="stx">Done</button></div><div class="row" style="border:0;padding:14px 0 0;justify-content:flex-end"><span class="note" style="margin:0" id="stver"></span><button id="chkup">Check for updates</button></div></div></div>
+<div class="rs"><button id="tourre">Show the tour</button></div><div><button id="stx">Done</button></div><div class="row" style="border:0;padding:14px 0 0;justify-content:flex-end"><span class="note" style="margin:0" id="stver"></span><button id="chkup">Check for updates</button></div></div></div>
 <div class="modal" id="wp"><div class="card"><h2>Who’s here?</h2><p class="note">Pick your name, then enter your code.</p><p class="note" id="wpm" style="color:var(--ok)" aria-live="polite"></p><div class="pmb" id="wpl"></div><button id="wpx">Cancel</button></div></div>
 <div class="modal" id="nu"><div class="card"><h2>New user</h2><p class="note">Enter your name. You’ll choose your own 4-digit code next.</p><input type="text" id="nun" placeholder="Your name" maxlength="24" aria-label="Your name" style="width:100%;margin-bottom:8px"><p class="note" id="nue" style="color:var(--bad)" aria-live="polite"></p><div style="display:flex;gap:8px"><button id="nuok">Next</button><button id="nux">Cancel</button></div></div></div>
 <div class="modal" id="pin"><div class="card"><h2 id="pint"></h2><p class="dots" id="pind"></p><p class="note" id="pinm" aria-live="polite"></p><div class="pad" id="pad"></div><button id="pinx">Cancel</button></div></div>
@@ -201,6 +205,7 @@ input[type=search]{background:var(--panel2);border:1px solid var(--line);border-
 <div class="modal" id="emed"><div class="card" style="max-width:580px"><h2>Edit emergency info</h2><div id="emf"></div><p class="note" id="eme" style="color:var(--bad)" aria-live="polite"></p><div style="display:flex;gap:8px"><button id="emx">Cancel</button><button id="emok" class="tpok" style="font-size:18px">Save</button></div></div></div>
 <div class="modal" id="te"><div class="card" style="max-width:560px"><h2 id="tet"></h2><div id="teb"></div><div style="display:flex;gap:8px;margin-top:18px;align-items:center"><button id="tedel" data-del="" style="color:var(--bad)">Remove task</button><span style="flex:1"></span><button data-cl="te" class="tpok" style="flex:none;font-size:16px;padding:8px 26px">Done</button></div></div></div>
 <div class="modal" id="qc"><div class="card" style="max-width:360px"><h2 id="qct"></h2><p class="note" style="margin-top:0">How many are on hand right now?</p><input type="number" id="qcv" inputmode="numeric" min="0" aria-label="Count on hand" style="width:100%;font-size:28px;text-align:center"><p class="note" id="qce" style="color:var(--bad)" aria-live="polite"></p><div style="display:flex;gap:8px"><button data-cl="qc">Cancel</button><button id="qcok" class="tpok" style="font-size:18px">Save count</button></div></div></div>
+<div class="modal" id="tour"><div class="card" style="max-width:460px"><div id="tourb"></div><div id="tourd" class="tdots"></div><div style="display:flex;gap:8px;align-items:center"><button id="tourskip" style="background:transparent;border-color:transparent;color:var(--mut)">Skip</button><span style="flex:1"></span><button id="tourback">Back</button><button id="tournext" class="tpok" style="flex:none;font-size:16px;padding:8px 22px">Next</button></div></div></div>
 <div class="toast" id="toast" hidden role="status"><span id="toastt"></span><button id="toastu">Undo</button></div>
 <div class="modal" id="cf"><div class="card" style="max-width:420px"><h2 id="cft"></h2><p id="cfm" style="margin:0 0 16px"></p><div style="display:flex;gap:8px"><button id="cfx">Cancel</button><button id="cfok" class="cfok"></button></div></div></div>
 <div class="modal" id="ti"><div class="card" style="max-width:600px"><h2 id="tit"></h2><div id="tib"></div><div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap" id="tif"></div></div></div>
@@ -210,7 +215,7 @@ input[type=search]{background:var(--panel2);border:1px solid var(--line);border-
 <div class="modal" id="ot"><div class="card" style="max-width:480px"><h2>Add a one-time task</h2><p class="note" style="margin-top:0">For things that only need doing once. It shows on Today and drops off after it’s checked off.</p><input type="text" id="otn" placeholder="What needs doing?" maxlength="80" aria-label="What needs doing" style="width:100%"><p class="note">When</p><div class="rs" id="otd"></div><input type="date" id="otdt" aria-label="Date" style="margin:-4px 0 12px" hidden><p class="note">Time (optional)</p><div class="rs" id="ottw"></div><p class="note" id="ote" style="color:var(--bad)" aria-live="polite"></p><div style="display:flex;gap:8px"><button data-cl="ot">Cancel</button><button id="otok" class="tpok" style="font-size:18px">Add task</button></div></div></div>
 <div class="modal" id="tp"><div class="card" style="max-width:380px"><h2 id="tpt">Pick a time</h2><p class="note" id="tps" style="margin:0 0 4px"></p><p class="tpv" id="tpv" aria-live="polite"></p><div class="tpw"><div class="tpc" id="tph" aria-label="Hour"></div><div class="tpc" id="tpm" aria-label="Minute"></div><div class="tpc" id="tpa" aria-label="AM or PM"></div></div><p class="note" style="text-align:center;margin:4px 0 10px">Scroll to the time, then tap ✓ to save it.</p><p class="note" id="tpe" style="color:var(--bad);text-align:center" aria-live="polite"></p><div style="display:flex;gap:8px"><button id="tpx">Cancel</button><button id="tpok" class="tpok" aria-label="Save this time">✓</button></div></div></div>
 <script>
-var VER='1.6';
+var VER='1.7';
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
 var S={
   tab:'today',who:'Zach',people:[{name:'Zach',pin:'1111'},{name:'Wife',pin:'2222'},{name:'Nurse',pin:'3333'}],pend:null,pin:{for:'',buf:''},reason:'',
@@ -293,7 +298,7 @@ function stats(m){var open=0,over=0,p=m.p;
   return{open:open,over:over}}
 function grp(title,tiles){return tiles?'<p class="sec">'+title+'</p><div class="tiles">'+tiles+'</div>':''}
 function today(){
-  var cur=nowP(),h=bkBanner();var lowi=S.stock.filter(function(i){return i.qty<=i.low});h+='<div class="topbar"><span class="note" style="margin:0;flex:1;min-width:200px;color:var(--due)">'+(lowi.length?'Low on supplies: '+lowi.map(function(i){return esc(i.name)}).join(', '):'')+'</span><button id="otadd">+ Add a one-time task</button></div>';
+  var cur=nowP(),h=(S.setup&&S.adminOk?setupCard(false):'')+bkBanner();var lowi=S.stock.filter(function(i){return i.qty<=i.low});h+='<div class="topbar"><span class="note" style="margin:0;flex:1;min-width:200px;color:var(--due)">'+(lowi.length?'Low on supplies: '+lowi.map(function(i){return esc(i.name)}).join(', '):'')+'</span><button id="otadd">+ Add a one-time task</button></div>';
   if(S.viewP&&(S.viewFrom!==cur.id||!S.periods.some(function(q){return q.id===S.viewP})))S.viewP=null;
   var models=S.periods.map(function(q){return periodModel(q,cur)}),view=models.filter(function(m){return m.p.id===(S.viewP||cur.id)})[0]||models[0];
   h+='<div class="shifts" role="group" aria-label="Shift">'+models.map(function(m){var st=stats(m),on=m===view;
@@ -436,7 +441,7 @@ function logv(){
 }
 function menu(){
   var items=[['edit','Edit tasks','Add, rename, or remove tasks and choose when they happen'],['periods','Times of day','Rename Day and Night, change hours, or add more'],['people','People','Names and 4-digit codes'],['admin','Admin settings','Emergency info and Start fresh']];
-  var h='<div class="row" style="border:0;padding:0 0 12px;justify-content:space-between"><span class="note" style="margin:0">Admin unlocked until you lock it, sign out, or someone else signs in.</span><button data-lock="1">Lock admin</button></div><div class="grid">';
+  var h=(S.setup?setupCard(true):'')+'<div class="row" style="border:0;padding:0 0 12px;justify-content:space-between"><span class="note" style="margin:0">Admin unlocked until you lock it, sign out, or someone else signs in.</span><button data-lock="1">Lock admin</button></div><div class="grid">';
   items.forEach(function(i){h+='<button class="task" data-t="'+i[0]+'" style="display:block;min-height:96px"><span class="nm" style="display:block;font-size:20px;font-weight:600">'+i[1]+'</span><span class="meta">'+i[2]+'</span></button>'});
   return h+'</div>';
 }
@@ -497,11 +502,11 @@ function pinKey(k){
   if(S.pin.buf.length===4){
     if(S.pin.for==='__new'){var pp=S.pin;
       if(pp.stage===1){pp.first=pp.buf;pp.buf='';pp.stage=2;$('pint').textContent='Enter it again to confirm';drawPin('');return}
-      if(pp.buf===pp.first){S.people.push({name:pp.name,pin:pp.first});S.who=pp.name;lockAdmin();$('pin').classList.remove('show');render();return}
+      if(pp.buf===pp.first){S.people.push({name:pp.name,pin:pp.first});S.who=pp.name;lockAdmin();$('pin').classList.remove('show');render();maybeTour();return}
       pp.buf='';pp.first='';pp.stage=1;$('pint').textContent='Choose your code, '+pp.name;drawPin('Those didn’t match. Start again.');return}
     if(S.pin.for==='__admin'){if(S.pin.buf===S.adminPin){S.adminOk=true;S.tab=S.pin.back||'menu';$('pin').classList.remove('show');render();return}S.pin.buf='';drawPin('That code doesn’t match. Try again.');return}
     var p=S.people.filter(function(x){return x.name===S.pin.for})[0];
-    if(p&&p.pin===S.pin.buf){S.who=p.name;lockAdmin();$('pin').classList.remove('show');render();return}
+    if(p&&p.pin===S.pin.buf){S.who=p.name;lockAdmin();$('pin').classList.remove('show');render();maybeTour();return}
     S.pin.buf='';drawPin('That code doesn’t match. Try again.');return;
   }
   drawPin('');
@@ -510,6 +515,7 @@ function lockAdmin(){S.adminOk=false;if(['edit','periods','people','admin','menu
 function admin(){fresh=false;
   var h='<div class="col"><div class="ch"><b>Admin settings</b><small>Only people with the admin code can open this</small></div>';
   h+='<div class="row"><span style="flex:1;min-width:200px"><b>Emergency info</b><span class="meta">Numbers, what to tell 911, and the plan shown on the Emergency button</span></span><button id="emedit">Edit emergency info</button></div>';
+  h+='<div class="row"><span style="flex:1;min-width:200px"><b>Setup checklist</b><span class="meta">Show the step-by-step setup list in the Menu again</span></span><button id="setupre">Show checklist</button></div>';
   h+='<div class="row"><span style="flex:1;min-width:200px"><b>Start fresh</b><span class="meta">Erases all tasks, supplies, people, and the log on this iPad. Download a backup first.</span></span><button id="fresh" style="color:var(--bad)">Start fresh</button></div>';
   return h+'<p class="note" id="admmsg" aria-live="polite"></p></div>'}
 function people(){
@@ -556,8 +562,16 @@ document.addEventListener('click',function(e){
   if(b.id==='emok'){emRead();EM.contacts=EM.contacts.filter(function(c){return c.n.trim()||c.p.trim()});S.emer=EM;$('emed').classList.remove('show');if($('admmsg'))$('admmsg').textContent='Emergency info saved.';return}
   if(b.dataset.lock){lockAdmin();render();return}
   if(b.dataset.te){openTE(+b.dataset.te);return}
+  if(b.id==='tournext'){if(TOUR.i<TOUR.c.length-1){TOUR.i++;drawTour()}else endTour();return}
+  if(b.id==='tourback'){if(TOUR.i>0){TOUR.i--;drawTour()}return}
+  if(b.id==='tourskip'){endTour();return}
+  if(b.id==='tourre'){$('st').classList.remove('show');openTour();return}
+  if(b.dataset.sgo){var g=b.dataset.sgo;if(g==='emer'){openEmEd();return}if(g==='bkp'){saveBackup();return}S.tab=g;render();return}
+  if(b.dataset.sok){S.setupHours=true;render();return}
+  if(b.dataset.shide){S.setup=false;render();return}
+  if(b.id==='setupre'){S.setup=true;S.tab='menu';render();return}
   if(b.dataset.ti){openInfo(b.dataset.ti);return}
-  if(b.dataset.pst){var ps=b.dataset.pst.split('|'),pq=S.periods.filter(function(x){return x.id===ps[0]})[0];if(!pq)return;openTP({title:(ps[1]==='start'?'Starts at':'Ends at'),sub:pq.name,val:pq[ps[1]],ok:function(v){var ov=pq[ps[1]];pq[ps[1]]=v;if(ov!==v)lgc(pq.name+' '+(ps[1]==='start'?'starts':'ends')+' at '+fmtT(v)+' (was '+fmtT(ov)+')');render()}});return}
+  if(b.dataset.pst){var ps=b.dataset.pst.split('|'),pq=S.periods.filter(function(x){return x.id===ps[0]})[0];if(!pq)return;openTP({title:(ps[1]==='start'?'Starts at':'Ends at'),sub:pq.name,val:pq[ps[1]],ok:function(v){var ov=pq[ps[1]];pq[ps[1]]=v;S.setupHours=true;if(ov!==v)lgc(pq.name+' '+(ps[1]==='start'?'starts':'ends')+' at '+fmtT(v)+' (was '+fmtT(ov)+')');render()}});return}
   if(b.id==='strt'){openTP({title:'New day starts at',sub:'Check-offs and counters reset then',val:S.resetAt,ok:function(v){S.resetAt=v;S.dayKey=bizDay();fillSt()}});return}
   if(b.id==='otadd'){if(needWho())return;OT={day:'today',time:''};$('otn').value='';$('otdt').value=addDays(bizDay(),2);$('ote').textContent='';drawOT();$('ot').classList.add('show');setTimeout(function(){try{$('otn').focus()}catch(x){}},60);return}
   if(b.dataset.otday){OT.day=b.dataset.otday;drawOT();return}
@@ -614,7 +628,7 @@ document.addEventListener('click',function(e){
   if(b.id==='updgo'){applyUpdate();return}
   if(b.id==='rst'){$('rsf').value='';$('rsf').click();return}
   if(b.id==='fresh'){if(!S.adminOk)return;if(!fresh){fresh=true;b.textContent='Tap again to erase everything';return}
-    S.tasks=[];S.stock=[];S.moves=[];S.log=[];S.done={};S.cdone={};S.cnt={};S.people=[{name:'Admin',pin:'1111'}];S.adminPin='1234';S.who='';S.adminOk=false;S.dayKey='';S.nid=20;S.tab='today';maybeReset();save();render();needWho();$('wpm').textContent='Everything was erased. Sign in as Admin (code 1111), then add your own people. The admin code is still 1234; change it in Menu → People.';return}
+    S.tasks=[];S.stock=[];S.moves=[];S.log=[];S.done={};S.cdone={};S.cnt={};S.people=[{name:'Admin',pin:'1111'}];S.adminPin='1234';S.setup=true;S.setupHours=false;S.lastBackup=0;S.emer={alert:'Call 911 first if he is in distress.',contacts:[{n:'Emergency',p:'911'}],tell:'',plan:''};S.who='';S.adminOk=false;S.dayKey='';S.nid=20;S.tab='today';maybeReset();save();render();needWho();$('wpm').textContent='Everything was erased. Sign in as Admin (code 1111), then add your own people. The admin code is still 1234; change it in Menu → People.';return}
 });
 document.addEventListener('input',function(e){if(e.target.id==='tfind')applyFind()});
 document.addEventListener('keydown',function(e){if(e.key==='Enter'&&e.target.id==='qcv'){e.preventDefault();saveQC()}});
@@ -664,8 +678,36 @@ document.addEventListener('pointermove',function(e){if(lp.t&&(Math.abs(e.clientX
 document.addEventListener('contextmenu',function(e){if(e.target.closest('.task'))e.preventDefault()});
 document.addEventListener('click',function(e){if(lp.fired){lp.fired=false;e.stopImmediatePropagation();e.preventDefault()}},true);
 ['pointerdown','keydown','input'].forEach(function(n){document.addEventListener(n,function(){S.last=Date.now()},true)});
+/* ---- 1.7: welcome tour + setup checklist ---- */
+var TOUR=null;
+function tourCards(n){var tile=function(name,meta,tag,done,extra){return'<div class="trow" style="margin:0"><div class="task'+(done?' done':'')+'" style="cursor:default"><span class="box">'+(done?'✓':'')+'</span><span class="nm">'+name+'<span class="meta">'+meta+'</span></span>'+(tag||'')+'</div>'+(extra||'')+'</div>'};
+  return[
+  {t:'Welcome, '+esc(n),b:'This board keeps everyone on the same page with his care. Here’s a one-minute look at how it works.',v:'<div class="shifts" style="position:static;padding:0;margin:0"><div class="sh on" style="min-height:0"><span class="shn">Day<span class="pill">Now</span></span><span class="shh">7 AM to 9 PM</span><span class="shb"><span class="tag">6 left</span></span></div><div class="sh" style="min-height:0"><span class="shn">Night</span><span class="shh">9 PM to 7 AM</span><span class="shb"><span class="tag">4 left</span></span></div></div><p class="note" style="margin:8px 0 0">The shift happening now is highlighted. Tap the other one to look ahead.</p>'},
+  {t:'Tap to check things off',b:'Tap a task when it’s done. Your name and the time are saved with it. Tapped the wrong one? Tap <b>Undo</b> at the bottom of the screen, or tap the task again.',v:tile('Clean G-tube site','You at 9:12 AM','<span class="tag ok">Done</span>',true)},
+  {t:'Hold if it has to wait',b:'Press and hold a task to move it later today, to the other shift, or to tomorrow. You can add a reason, like “He’s sleeping.”',v:tile('Humidification check','Tap to finish, hold for options','')},
+  {t:'Watch the tags',b:'Feeds and meds show their time until it comes up, then <b>Due now</b>, then <b>Overdue</b> if they’re missed.',v:'<div class="rs" style="margin:0"><span class="tag ok">2 PM</span><span class="tag" style="font-weight:600">Due now</span><span class="tag" style="background:#4a1f1b;color:#ffd9d4">Overdue</span></div>'},
+  {t:'How-to and supplies',b:'A <b>How-to</b> or <b>Supplies</b> button next to a task shows the steps and what you’ll need. Count supplies in the <b>Inventory</b> tab with − and +, or tap the number to type a count.',v:tile('Change trach ties','Every 3 days','<span class="tag">Due today</span>',false,'<span class="push infob" style="display:grid;place-items:center">How-to</span>')},
+  {t:'In an emergency',b:'The red <b>Emergency</b> button at the top is always there, with phone numbers, what to tell 911, and the plan. You can replay this tour any time from ⚙ Settings.',v:'<div style="display:flex;justify-content:center"><span class="sos" style="display:inline-block;padding:8px 16px;border-radius:10px;border:1px solid #7a3028">Emergency</span></div>'}]}
+function maybeTour(){var p=S.people.filter(function(x){return x.name===S.who})[0];if(p&&!p.toured)openTour()}
+function openTour(){TOUR={i:0,c:tourCards(S.who||'there')};drawTour();$('tour').classList.add('show')}
+function drawTour(){var c=TOUR.c[TOUR.i],n=TOUR.c.length,last=TOUR.i===n-1;
+  $('tourb').innerHTML='<p class="note" style="margin:0 0 4px">'+(TOUR.i+1)+' of '+n+'</p><h2>'+c.t+'</h2><p style="margin:0 0 14px;line-height:1.45">'+c.b+'</p><div class="tourv">'+c.v+'</div>';
+  $('tourd').innerHTML=TOUR.c.map(function(_,j){return'<span class="tdot'+(j===TOUR.i?' on':'')+'"></span>'}).join('');
+  $('tourback').hidden=TOUR.i===0;$('tourskip').hidden=last;$('tournext').textContent=last?'Got it':'Next'}
+function endTour(){var p=S.people.filter(function(x){return x.name===S.who})[0];if(p)p.toured=true;$('tour').classList.remove('show');TOUR=null}
+function setupItems(){var e=S.emer||{contacts:[]};return[
+  ['code','Change the admin code','So only you can change schedules',S.adminPin!=='1234','people'],
+  ['people','Add the people who’ll use this','You, family, and each nurse',S.people.some(function(p){return p.name!=='Admin'})&&S.people.length>1,'people'],
+  ['hours','Check Day and Night hours','When each shift starts and ends',!!S.setupHours,'periods'],
+  ['tasks','Add tasks, feeds, and meds','Set times for anything on a schedule',S.tasks.length>0,'edit'],
+  ['emer','Fill in emergency info','Numbers, what to tell 911, and the plan',e.contacts.some(function(c){return c.p&&c.p!=='911'}),'emer'],
+  ['stock','Add supplies','So the board can flag what’s running low',S.stock.length>0,'stock'],
+  ['bkp','Save your first backup','The iPad holds the only copy of your data',!!S.lastBackup,'bkp']]}
+function setupCard(full){var it=setupItems(),done=it.filter(function(x){return x[3]}).length;if(done===it.length){S.setup=false;return''}
+  if(!full)return'<div class="vb" style="background:var(--panel2);color:var(--tx);border:1px solid var(--acc)"><span>Finish setting up the board · <b>'+done+' of '+it.length+'</b> done</span><button data-t="menu" style="background:var(--acc);color:#0c1420">Open checklist</button></div>';
+  return'<div class="col" style="margin-bottom:12px;border-color:var(--acc)"><div class="ch"><b>Set up the board</b><small>'+done+' of '+it.length+' done</small></div><div class="elist">'+it.map(function(x){return'<div class="srow"><span class="box" style="width:26px;height:26px;border-radius:8px;'+(x[3]?'background:var(--ok);border-color:var(--ok);color:#06231c':'')+'">'+(x[3]?'✓':'')+'</span><span class="sname"'+(x[3]?' style="color:var(--mut);text-decoration:line-through"':'')+'>'+x[1]+'<span class="meta" style="text-decoration:none">'+x[2]+'</span></span>'+(x[3]?'':(x[0]==='hours'?'<button data-sgo="periods">Check hours</button><button data-sok="hours">They’re right</button>':'<button data-sgo="'+x[4]+'">'+(x[0]==='bkp'?'Save backup':'Go')+'</button>'))+'</div>'}).join('')+'</div><button data-shide="1" style="margin-top:10px;background:transparent;border-color:transparent;color:var(--mut);padding-left:0">Hide this checklist</button></div>'}
 /* ---- 1.6: tap outside a pop-up to close it ---- */
-var MDOWN=null,KEEP=['emed','ge'];
+var MDOWN=null,KEEP=['emed','ge','tour'];
 document.addEventListener('pointerdown',function(e){MDOWN=e.target},true);
 document.addEventListener('click',function(e){var m=e.target;if(!m.classList||!m.classList.contains('modal')||!m.classList.contains('show')||MDOWN!==m)return;
   if(KEEP.indexOf(m.id)>-1)return;
@@ -819,7 +861,7 @@ function applySnap(d){if(!d||d.app!=='zeke-care-board'||!d.state||!Array.isArray
 function save(){try{localStorage.setItem(KEY,JSON.stringify(snap()));lastSave=new Date();saved=true}catch(e){saved=false}}
 function load(){try{var r=localStorage.getItem(KEY);if(!r)return false;return applySnap(JSON.parse(r))}catch(e){return false}}
 var loaded=load();if(!S.since)S.since=Date.now();
-if(!loaded){S.guides=[{id:'g1',title:'Trach tie change (sample)',steps:'Sample guide. Replace these lines with the steps from his care team, one per line.\nWash hands and gather everything under What you’ll need.\nHave a second person help if your care team recommends it.\nCheck the skin under the ties and note anything new.'}];S.dayKey=bizDay();S.tasks.forEach(function(t){if(t.once&&(!t.date||t.date.charAt(0)==='+'))t.date=addDays(S.dayKey,t.date?+t.date:0)})}
+if(!loaded){S.setup=true;S.guides=[{id:'g1',title:'Trach tie change (sample)',steps:'Sample guide. Replace these lines with the steps from his care team, one per line.\nWash hands and gather everything under What you’ll need.\nHave a second person help if your care team recommends it.\nCheck the skin under the ties and note anything new.'}];S.dayKey=bizDay();S.tasks.forEach(function(t){if(t.once&&(!t.date||t.date.charAt(0)==='+'))t.date=addDays(S.dayKey,t.date?+t.date:0)})}
 else{S.who='';S.last=Date.now();maybeReset()}
 migrate15();
 ['click','change','pointerup','keyup'].forEach(function(n){document.addEventListener(n,function(){setTimeout(save,0)})});
