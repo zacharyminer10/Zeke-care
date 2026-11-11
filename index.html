@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>Zeke Care Board</title>
+<title>EZAide</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Zeke Care">
+<meta name="apple-mobile-web-app-title" content="EZAide">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="theme-color" content="#10151c">
 <style>
@@ -244,24 +244,10 @@ nav{flex-wrap:wrap}nav button{white-space:nowrap}
 var VER='1.7.1';
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
 var S={
-  tab:'today',who:'',people:[{name:'Zach',pin:'1111'},{name:'Wife',pin:'2222'},{name:'Nurse',pin:'3333'}],pend:null,pin:{for:'',buf:''},reason:'',
+  tab:'today',who:'',people:[],pend:null,pin:{for:'',buf:''},reason:'',
   periods:[{id:'day',name:'Day',start:'07:00',end:'21:00'},{id:'night',name:'Night',start:'21:00',end:'07:00'}],
-  tasks:[
-    {id:1,name:'Check and clean trach stoma',periods:['day','night'],every:0},
-    {id:2,name:'Humidification check',periods:['day','night'],every:0},
-    {id:3,name:'Clean G-tube site',periods:['day'],every:0},
-    {id:4,name:'Wash feeding syringes',periods:['day','night'],every:0},
-    {id:5,name:'Suction supplies stocked',periods:['night'],every:0},
-    {id:6,name:'Change trach ties',periods:[],every:3,last:3,guide:'g1'},
-    {id:7,name:'Change feeding extension set',periods:[],every:7,last:5},
-    {id:8,name:'Emergency kit check',periods:[],every:7,last:2},
-    {id:9,name:'Feeding',periods:[],every:0,at:['08:00','11:00','14:00','17:00','20:00','23:00']},
-    {id:11,name:'Replace trach tube',periods:[],every:30,n:1,unit:'months',last:12},
-    {id:14,name:'Call equipment company about tubing (sample)',periods:[],every:0,once:true,date:'',time:''},
-    {id:15,name:'Pick up supplies from pharmacy (sample)',periods:[],every:0,once:true,date:'+3',time:''},
-    {id:12,name:'Medication (sample)',periods:[],every:0,at:['08:00','20:00'],grace:30}
-  ],
-  done:{},cdone:{},cnt:{},adminPin:'1234',adminOk:false,stock:[{id:1,name:'Suction catheters',qty:12,low:5,link:null},{id:2,name:'Trach ties',qty:3,low:2,link:6},{id:3,name:'Feeding syringes',qty:9,low:4,link:4},{id:4,name:'Split gauze',qty:20,low:6,link:1}],moves:[],log:[],logf:'',logt:'',emer:{alert:'Call 911 first if he is in distress.',contacts:[{n:'Emergency',p:'911'},{n:'Hospital (sample)',p:''},{n:'Specialty clinic (sample)',p:''},{n:'Home nursing agency (sample)',p:''},{n:'Equipment company (sample)',p:''}],tell:'Sample. Replace with your own: home address, his name and age, his main diagnoses, trach and G-tube details, and any allergies.',plan:'Sample. Replace with the emergency steps from his care team, one per line.'},last:Date.now(),idle:120,resetAt:'07:00',dayKey:'',nid:20
+  tasks:[],
+  done:{},cdone:{},cnt:{},adminPin:'1234',adminOk:false,stock:[],moves:[],log:[],logf:'',logt:'',emer:{alert:'Call 911 first in any emergency.',contacts:[{n:'Emergency',p:'911'}],tell:'',plan:''},last:Date.now(),idle:120,resetAt:'07:00',dayKey:'',nid:20
 };
 var $=function(id){return document.getElementById(id)};
 function mins(t){var p=t.split(':');return +p[0]*60+ +p[1]}
@@ -371,7 +357,7 @@ function periods(){
 }
 function openOnce(id){var t=S.tasks.filter(function(x){return x.id==id})[0];if(!t)return;S.pend=null;$('pmrw').style.display='none';$('pmerr').textContent='';$('pmt').textContent=t.name;$('pmb').innerHTML='<button data-po="'+id+'">Push to tomorrow</button>';$('pm').classList.add('show')}
 function openIv(id){var t=S.tasks.filter(function(x){return x.id==id})[0];if(!t)return;S.pend=null;$('pmrw').style.display='none';$('pmt').textContent=t.name;$('pmb').innerHTML='<button data-pi="'+id+'">Push a day</button>';$('pm').classList.add('show')}
-var RS=['He’s sleeping','Waiting on supplies','Needs a second person','Other'];
+var RS=['Sleeping','Waiting on supplies','Needs a second person','Other'];
 function hhmm(ts){var d=new Date(ts);return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
 function openPush(tid,from){
   var t=S.tasks.filter(function(x){return x.id===tid})[0];if(!t)return;
@@ -708,7 +694,7 @@ document.addEventListener('click',function(e){if(lp.fired){lp.fired=false;e.stop
 ['pointerdown','keydown','input'].forEach(function(n){document.addEventListener(n,function(){S.last=Date.now()},true)});
 /* ---- 1.7.1: empty first run ---- */
 function blankState(){S.tasks=[];S.stock=[];S.guides=[];S.people=[];S.log=[];S.moves=[];S.done={};S.cdone={};S.cnt={};
-  S.emer={alert:'Call 911 first if he is in distress.',contacts:[{n:'Emergency',p:'911'}],tell:'',plan:''};
+  S.emer={alert:'Call 911 first in any emergency.',contacts:[{n:'Emergency',p:'911'}],tell:'',plan:''};
   S.who='';S.adminOk=false;S.adminPin='1234';S.adminSet=false;S.setup=true;S.setupHours=false;S.lastBackup=0;S.bkSnooze=0;S.since=Date.now();S.nid=20;S.dayKey=bizDay();S.tab='today';S.viewP=null}
 function openFR(){['frn','frp','fra'].forEach(function(id){$(id).value=''});$('fre').textContent='';$('fr').classList.add('show');setTimeout(function(){try{$('frn').focus()}catch(x){}},80)}
 function saveFR(){var n=$('frn').value.trim(),pc=$('frp').value.trim(),ac=$('fra').value.trim(),er='';
@@ -719,11 +705,11 @@ function saveFR(){var n=$('frn').value.trim(),pc=$('frp').value.trim(),ac=$('fra
 var TOUR=null;
 function tourCards(n){var tile=function(name,meta,tag,done,extra){return'<div class="trow" style="margin:0"><div class="task'+(done?' done':'')+'" style="cursor:default"><span class="box">'+(done?'✓':'')+'</span><span class="nm">'+name+'<span class="meta">'+meta+'</span></span>'+(tag||'')+'</div>'+(extra||'')+'</div>'};
   return[
-  {t:'Welcome, '+esc(n),b:'This board keeps everyone on the same page with his care. Here’s a one-minute look at how it works.',v:'<div class="shifts" style="position:static;padding:0;margin:0"><div class="sh on" style="min-height:0"><span class="shn">Day<span class="pill">Now</span></span><span class="shh">7 AM to 9 PM</span><span class="shb"><span class="tag">6 left</span></span></div><div class="sh" style="min-height:0"><span class="shn">Night</span><span class="shh">9 PM to 7 AM</span><span class="shb"><span class="tag">4 left</span></span></div></div><p class="note" style="margin:8px 0 0">The shift happening now is highlighted. Tap the other one to look ahead.</p>'},
-  {t:'Tap to check things off',b:'Tap a task when it’s done. Your name and the time are saved with it. Tapped the wrong one? Tap <b>Undo</b> at the bottom of the screen, or tap the task again.',v:tile('Clean G-tube site','You at 9:12 AM','<span class="tag ok">Done</span>',true)},
-  {t:'Hold if it has to wait',b:'Press and hold a task to move it later today, to the other shift, or to tomorrow. You can add a reason, like “He’s sleeping.”',v:tile('Humidification check','Tap to finish, hold for options','')},
+  {t:'Welcome, '+esc(n),b:'This board keeps everyone on the same page with the care routine. Here’s a one-minute look at how it works.',v:'<div class="shifts" style="position:static;padding:0;margin:0"><div class="sh on" style="min-height:0"><span class="shn">Day<span class="pill">Now</span></span><span class="shh">7 AM to 9 PM</span><span class="shb"><span class="tag">6 left</span></span></div><div class="sh" style="min-height:0"><span class="shn">Night</span><span class="shh">9 PM to 7 AM</span><span class="shb"><span class="tag">4 left</span></span></div></div><p class="note" style="margin:8px 0 0">The shift happening now is highlighted. Tap the other one to look ahead.</p>'},
+  {t:'Tap to check things off',b:'Tap a task when it’s done. Your name and the time are saved with it. Tapped the wrong one? Tap <b>Undo</b> at the bottom of the screen, or tap the task again.',v:tile('Wipe down equipment','You at 9:12 AM','<span class="tag ok">Done</span>',true)},
+  {t:'Hold if it has to wait',b:'Press and hold a task to move it later today, to the other shift, or to tomorrow. You can add a reason, like “Sleeping.”',v:tile('Check supply cart','Tap to finish, hold for options','')},
   {t:'Watch the tags',b:'Feeds and meds show their time until it comes up, then <b>Due now</b>, then <b>Overdue</b> if they’re missed.',v:'<div class="rs" style="margin:0"><span class="tag ok">2 PM</span><span class="tag" style="font-weight:600">Due now</span><span class="tag" style="background:#4a1f1b;color:#ffd9d4">Overdue</span></div>'},
-  {t:'How-to and supplies',b:'A <b>How-to</b> or <b>Supplies</b> button next to a task shows the steps and what you’ll need. Count supplies in the <b>Inventory</b> tab with − and +, or tap the number to type a count.',v:tile('Change trach ties','Every 3 days','<span class="tag">Due today</span>',false,'<span class="push infob" style="display:grid;place-items:center">How-to</span>')},
+  {t:'How-to and supplies',b:'A <b>How-to</b> or <b>Supplies</b> button next to a task shows the steps and what you’ll need. Count supplies in the <b>Inventory</b> tab with − and +, or tap the number to type a count.',v:tile('Change dressing','Every 3 days','<span class="tag">Due today</span>',false,'<span class="push infob" style="display:grid;place-items:center">How-to</span>')},
   {t:'In an emergency',b:'The red <b>Emergency</b> button at the top is always there, with phone numbers, what to tell 911, and the plan. You can replay this tour any time from ⚙ Settings.',v:'<div style="display:flex;justify-content:center"><span class="sos" style="display:inline-block;padding:8px 16px;border-radius:10px;border:1px solid #7a3028">Emergency</span></div>'}]}
 function maybeTour(){var p=S.people.filter(function(x){return x.name===S.who})[0];if(p&&!p.toured)openTour()}
 function openTour(){TOUR={i:0,c:tourCards(S.who||'there')};drawTour();$('tour').classList.add('show')}
@@ -794,7 +780,7 @@ function library(){var gs=S.guides.slice().sort(function(a,b){return a.title.loc
 var GE=null;
 function openGE(gid){var g=gid?S.guides.filter(function(x){return x.id===gid})[0]:null;$('ti').classList.remove('show');
   GE={id:g?g.id:null,title:g?g.title:'',steps:g?g.steps:'',tasks:S.tasks.filter(function(t){return g&&t.guide===g.id}).map(function(t){return t.id})};
-  var h='<p class="note" style="margin-top:0">Title</p><input type="text" id="gtt" value="'+esc(GE.title)+'" placeholder="e.g. Trach tie change" style="width:100%;margin-bottom:10px">';
+  var h='<p class="note" style="margin-top:0">Title</p><input type="text" id="gtt" value="'+esc(GE.title)+'" placeholder="e.g. Dressing change" style="width:100%;margin-bottom:10px">';
   h+='<p class="note">Steps (one per line)</p><textarea id="gst" style="min-height:180px" placeholder="Wash hands&#10;Gather supplies&#10;…">'+esc(GE.steps)+'</textarea>';
   h+='<p class="note">Show this guide on these tasks</p><div style="display:flex;flex-wrap:wrap;gap:6px 14px;margin-bottom:10px">'+S.tasks.map(function(t){var og=guideOf(t);return'<label class="c"><input type="checkbox" data-gtk="'+t.id+'"'+(GE.tasks.indexOf(t.id)>-1?' checked':'')+'>'+esc(t.name)+(og&&og.id!==GE.id?' <span style="font-size:13px">(now: '+esc(og.title)+')</span>':'')+'</label>'}).join('')+'</div>';
   $('get').textContent=g?'Edit guide':'New guide';$('geb').innerHTML=h;$('gee').textContent='';
@@ -888,9 +874,9 @@ function drawEmEd(){var h='<p class="note" style="margin-top:0">Top message (sho
   $('emf').innerHTML=h}
 function emRead(){EM.alert=$('ema').value.trim();EM.tell=$('emt').value;EM.plan=$('empl').value;EM.contacts=EM.contacts.map(function(c,i){var a=$('emf').querySelector('[data-emn="'+i+'"]'),b=$('emf').querySelector('[data-emp="'+i+'"]');return{n:a?a.value.trim():c.n,p:b?b.value.trim():c.p}})}
 /* ---- local persistence (this device only) ---- */
-var KEY='zeke-care-board.v1',TRANSIENT=['tab','who','pend','pin','reason','adminOk','viewP','viewFrom','logf','logt','flash'],saved=false,lastSave=null;
-function snap(){var o={};Object.keys(S).forEach(function(k){if(TRANSIENT.indexOf(k)<0)o[k]=S[k]});return{app:'zeke-care-board',v:1,at:new Date().toISOString(),theme:document.documentElement.dataset.theme||'dark',state:o}}
-function applySnap(d){if(!d||d.app!=='zeke-care-board'||!d.state||!Array.isArray(d.state.tasks)||!Array.isArray(d.state.periods)||!d.state.periods.length||!Array.isArray(d.state.people)||!d.state.people.length)return false;
+var KEY='ezaide.v1',TRANSIENT=['tab','who','pend','pin','reason','adminOk','viewP','viewFrom','logf','logt','flash'],saved=false,lastSave=null;
+function snap(){var o={};Object.keys(S).forEach(function(k){if(TRANSIENT.indexOf(k)<0)o[k]=S[k]});return{app:'ezaide',v:1,at:new Date().toISOString(),theme:document.documentElement.dataset.theme||'dark',state:o}}
+function applySnap(d){if(!d||(d.app!=='ezaide'&&d.app!=='zeke-care-board')||!d.state||!Array.isArray(d.state.tasks)||!Array.isArray(d.state.periods)||!d.state.periods.length||!Array.isArray(d.state.people)||!d.state.people.length)return false;
   Object.keys(d.state).forEach(function(k){S[k]=d.state[k]});
   (S.log||[]).forEach(function(r){r.ts=new Date(r.ts)});
   if(d.theme)document.documentElement.dataset.theme=d.theme;
@@ -918,7 +904,7 @@ try{if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)&&!/clau
     setInterval(function(){checkUpdate(false)},30*60000)}).catch(function(){});
   navigator.serviceWorker.addEventListener('controllerchange',function(){if(RELOADING)return;RELOADING=true;save();location.reload()});
   document.addEventListener('visibilitychange',function(){if(!document.hidden)checkUpdate(false)})}}catch(e){}
-function saveBackup(){save();var dn=new Date(),name='zeke-care-backup-'+dn.getFullYear()+'-'+String(dn.getMonth()+1).padStart(2,'0')+'-'+String(dn.getDate()).padStart(2,'0')+'.json',txt=JSON.stringify(snap(),null,1),f=null;
+function saveBackup(){save();var dn=new Date(),name='ezaide-backup-'+dn.getFullYear()+'-'+String(dn.getMonth()+1).padStart(2,'0')+'-'+String(dn.getDate()).padStart(2,'0')+'.json',txt=JSON.stringify(snap(),null,1),f=null;
   var done=function(){S.lastBackup=Date.now();S.bkSnooze=0;save();if(S.tab==='today')render();$('stmsg').textContent='Backup ready. Choose Save to Files and keep it somewhere other than this iPad too (iCloud Drive or email it to yourself).'};
   var dl=function(){var bl=new Blob([txt],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(bl);a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},4000);done()};
   try{f=new File([txt],name,{type:'application/json'})}catch(x){}

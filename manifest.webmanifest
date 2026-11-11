@@ -1,6 +1,6 @@
 {
-  "name": "Zeke Care Board",
-  "short_name": "Zeke Care",
+  "name": "EZAide",
+  "short_name": "EZAide",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
