@@ -154,6 +154,9 @@ b,strong,.ch b,.panel .ch b,.sh .shn,.tpv,.emal,.emr b{font-weight:500}
 nav button,nav button.on,.pill,.tag,.sec,.who button.on,.rs button.on,.tchip,.upd,.toast{font-weight:500}
 .tpok,.toast button,.vb button,.upd button,.cfok,.pad button{font-weight:600}
 .task .box{font-weight:600}
+/* 1.7.1 first run */
+.pinin{-webkit-text-security:disc;letter-spacing:.4em;font-size:22px;text-align:center}
+#fr .note{margin:12px 0 6px}
 /* 1.7 tour */
 .tourv{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
 .tdots{display:flex;gap:6px;justify-content:center;margin:4px 0 12px}.tdot{width:7px;height:7px;border-radius:50%;background:var(--line)}.tdot.on{background:var(--acc)}
@@ -174,6 +177,22 @@ input[type=search]{background:var(--panel2);border:1px solid var(--line);border-
 .tpair{display:inline-flex;gap:2px}.tx{min-width:40px;padding:6px 8px;color:var(--mut)}
 .chk{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:8px 12px;color:var(--tx)}
 #te .note{margin:12px 0 6px}
+/* 1.7.1 phone fit */
+nav{flex-wrap:wrap}nav button{white-space:nowrap}
+.tiles{grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr))}
+.shifts{grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr))}
+.grid{grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr))}
+.trow .task,.nm,.sname,.en,.es{min-width:0;overflow-wrap:anywhere}
+@media (max-width:520px){
+ header{gap:6px}.clock{flex-basis:100%;order:2;margin-top:-4px}
+ .who label{font-size:0;gap:0}.who label select{font-size:15px}
+ nav button{padding:6px 11px}
+ .sh{min-height:0}
+ .tiles{grid-template-columns:1fr}
+ .infob{width:52px}
+ .addrow input{min-width:0;flex-basis:100%}
+ .scnt button{min-width:40px}
+}
 </style>
 </head>
 <body>
@@ -206,6 +225,13 @@ input[type=search]{background:var(--panel2);border:1px solid var(--line);border-
 <div class="modal" id="te"><div class="card" style="max-width:560px"><h2 id="tet"></h2><div id="teb"></div><div style="display:flex;gap:8px;margin-top:18px;align-items:center"><button id="tedel" data-del="" style="color:var(--bad)">Remove task</button><span style="flex:1"></span><button data-cl="te" class="tpok" style="flex:none;font-size:16px;padding:8px 26px">Done</button></div></div></div>
 <div class="modal" id="qc"><div class="card" style="max-width:360px"><h2 id="qct"></h2><p class="note" style="margin-top:0">How many are on hand right now?</p><input type="number" id="qcv" inputmode="numeric" min="0" aria-label="Count on hand" style="width:100%;font-size:28px;text-align:center"><p class="note" id="qce" style="color:var(--bad)" aria-live="polite"></p><div style="display:flex;gap:8px"><button data-cl="qc">Cancel</button><button id="qcok" class="tpok" style="font-size:18px">Save count</button></div></div></div>
 <div class="modal" id="tour"><div class="card" style="max-width:460px"><div id="tourb"></div><div id="tourd" class="tdots"></div><div style="display:flex;gap:8px;align-items:center"><button id="tourskip" style="background:transparent;border-color:transparent;color:var(--mut)">Skip</button><span style="flex:1"></span><button id="tourback">Back</button><button id="tournext" class="tpok" style="flex:none;font-size:16px;padding:8px 22px">Next</button></div></div></div>
+<div class="modal" id="fr"><div class="card" style="max-width:460px"><h2>Welcome to Care Board</h2><p style="margin:0 0 14px;line-height:1.45">Let’s set up this device. You’ll be the first person on the board and its admin.</p>
+<p class="note">Your name</p><input type="text" id="frn" maxlength="24" placeholder="Your first name" autocomplete="off" aria-label="Your name" style="width:100%">
+<p class="note">Your 4-digit sign-in code</p><input type="text" id="frp" class="pinin" inputmode="numeric" maxlength="4" autocomplete="off" aria-label="Your sign-in code" style="width:100%">
+<p class="note">Admin code (4 digits)</p><input type="text" id="fra" class="pinin" inputmode="numeric" maxlength="4" autocomplete="off" aria-label="Admin code" style="width:100%"><p class="note" style="margin-top:6px">The admin code unlocks the Menu, where schedules, people, and emergency info are changed. Use a different code from your sign-in code.</p>
+<p class="note" id="fre" style="color:var(--bad)" aria-live="polite"></p>
+<button id="frok" class="tpok" style="width:100%;font-size:17px">Set up the board</button>
+<button id="frrs" style="width:100%;margin-top:8px;background:transparent">Restore from a backup instead</button></div></div>
 <div class="toast" id="toast" hidden role="status"><span id="toastt"></span><button id="toastu">Undo</button></div>
 <div class="modal" id="cf"><div class="card" style="max-width:420px"><h2 id="cft"></h2><p id="cfm" style="margin:0 0 16px"></p><div style="display:flex;gap:8px"><button id="cfx">Cancel</button><button id="cfok" class="cfok"></button></div></div></div>
 <div class="modal" id="ti"><div class="card" style="max-width:600px"><h2 id="tit"></h2><div id="tib"></div><div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap" id="tif"></div></div></div>
@@ -215,10 +241,10 @@ input[type=search]{background:var(--panel2);border:1px solid var(--line);border-
 <div class="modal" id="ot"><div class="card" style="max-width:480px"><h2>Add a one-time task</h2><p class="note" style="margin-top:0">For things that only need doing once. It shows on Today and drops off after it’s checked off.</p><input type="text" id="otn" placeholder="What needs doing?" maxlength="80" aria-label="What needs doing" style="width:100%"><p class="note">When</p><div class="rs" id="otd"></div><input type="date" id="otdt" aria-label="Date" style="margin:-4px 0 12px" hidden><p class="note">Time (optional)</p><div class="rs" id="ottw"></div><p class="note" id="ote" style="color:var(--bad)" aria-live="polite"></p><div style="display:flex;gap:8px"><button data-cl="ot">Cancel</button><button id="otok" class="tpok" style="font-size:18px">Add task</button></div></div></div>
 <div class="modal" id="tp"><div class="card" style="max-width:380px"><h2 id="tpt">Pick a time</h2><p class="note" id="tps" style="margin:0 0 4px"></p><p class="tpv" id="tpv" aria-live="polite"></p><div class="tpw"><div class="tpc" id="tph" aria-label="Hour"></div><div class="tpc" id="tpm" aria-label="Minute"></div><div class="tpc" id="tpa" aria-label="AM or PM"></div></div><p class="note" style="text-align:center;margin:4px 0 10px">Scroll to the time, then tap ✓ to save it.</p><p class="note" id="tpe" style="color:var(--bad);text-align:center" aria-live="polite"></p><div style="display:flex;gap:8px"><button id="tpx">Cancel</button><button id="tpok" class="tpok" aria-label="Save this time">✓</button></div></div></div>
 <script>
-var VER='1.7';
+var VER='1.7.1';
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
 var S={
-  tab:'today',who:'Zach',people:[{name:'Zach',pin:'1111'},{name:'Wife',pin:'2222'},{name:'Nurse',pin:'3333'}],pend:null,pin:{for:'',buf:''},reason:'',
+  tab:'today',who:'',people:[{name:'Zach',pin:'1111'},{name:'Wife',pin:'2222'},{name:'Nurse',pin:'3333'}],pend:null,pin:{for:'',buf:''},reason:'',
   periods:[{id:'day',name:'Day',start:'07:00',end:'21:00'},{id:'night',name:'Night',start:'21:00',end:'07:00'}],
   tasks:[
     {id:1,name:'Check and clean trach stoma',periods:['day','night'],every:0},
@@ -487,7 +513,7 @@ function maybeReset(d){var k=bizDay(d);if(!S.dayKey){S.dayKey=k;return false}if(
   return true}
 function signOut(){S.viewP=null;S.who='';S.adminOk=false;S.pend=null;S.pin={for:'',buf:''};hideUndo();['pin','pm','nu','st','wp','tp','emed','cf','ti','ge','ts','il','ot','te','qc'].forEach(function(id){$(id).classList.remove('show')});if(['edit','periods','people','admin','menu'].indexOf(S.tab)>-1)S.tab='today';render()}
 function idleCheck(){if(S.who&&S.idle>0&&Date.now()-S.last>S.idle*60000)signOut()}
-function needWho(){if(S.who)return false;$('wpm').textContent='';$('wpl').innerHTML=S.people.map(function(p){return'<button data-wp="'+esc(p.name)+'">'+esc(p.name)+'</button>'}).join('')+'<button data-wpn="1">+ Add new user…</button>';$('wp').classList.add('show');return true}
+function needWho(){if(S.who)return false;if(!S.people.length){openFR();return true}$('wpm').textContent='';$('wpl').innerHTML=S.people.map(function(p){return'<button data-wp="'+esc(p.name)+'">'+esc(p.name)+'</button>'}).join('')+'<button data-wpn="1">+ Add new user…</button>';$('wp').classList.add('show');return true}
 function openNew(){$('nun').value='';$('nue').textContent='';$('nu').classList.add('show');setTimeout(function(){try{$('nun').focus()}catch(x){}},50)}
 function newPad(nn){S.pin={for:'__new',buf:'',name:nn,stage:1,first:''};var k='';['1','2','3','4','5','6','7','8','9','','0','del'].forEach(function(n){k+=n===''?'<span></span>':'<button data-pk="'+n+'" aria-label="'+(n==='del'?'Delete':n)+'">'+(n==='del'?'⌫':n)+'</button>'});$('pad').innerHTML=k;$('pint').textContent='Choose your code, '+nn;drawPin('Pick 4 digits you will remember.');$('pin').classList.add('show')}
 function openPin(name){
@@ -524,7 +550,7 @@ function people(){
     h+='<div class="row"><input type="text" value="'+esc(p.name)+'" data-ppn="'+i+'" aria-label="Name"><label class="c">Code <input type="text" inputmode="numeric" maxlength="4" value="'+esc(p.pin)+'" data-ppp="'+i+'" style="width:90px;flex:none;min-width:0"></label>'+(S.people.length>1?'<button data-ppd="'+i+'">Remove</button>':'')+'</div>';
   });
   h+='<div class="row"><label class="c">Admin code <input type="text" inputmode="numeric" maxlength="4" value="'+esc(S.adminPin)+'" data-adm="1" style="width:90px;flex:none;min-width:0"></label></div>';
-  h+='<div class="row"><input type="text" id="newpn" placeholder="Name"><input type="text" id="newpp" inputmode="numeric" maxlength="4" placeholder="4-digit code" style="width:130px;flex:none;min-width:0"><button id="addpp">Add person</button></div><p class="note">The admin code opens the Menu. Change it from the demo code (1234) before real use.</p></div>';
+  h+='<div class="row"><input type="text" id="newpn" placeholder="Name"><input type="text" id="newpp" inputmode="numeric" maxlength="4" placeholder="4-digit code" style="width:130px;flex:none;min-width:0"><button id="addpp">Add person</button></div><p class="note">The admin code opens the Menu, Admin settings, and supply management.</p></div>';
   return h;
 }
 function render(keep){head();if(keep)return;setTimeout(function(){if($('te').classList.contains('show'))drawTE();if(S.tab==='edit')applyFind()},0);var back=['edit','periods','people','admin'].indexOf(S.tab)>-1?'<button data-t="menu" style="margin-bottom:12px">← Menu</button>':'';$('main').innerHTML=back+(S.tab==='today'?today():S.tab==='week'?week():S.tab==='menu'?menu():S.tab==='edit'?edit2():S.tab==='stock'?stock():S.tab==='log'?logv():S.tab==='library'?library():S.tab==='periods'?periods():S.tab==='admin'?admin():people())}
@@ -562,6 +588,8 @@ document.addEventListener('click',function(e){
   if(b.id==='emok'){emRead();EM.contacts=EM.contacts.filter(function(c){return c.n.trim()||c.p.trim()});S.emer=EM;$('emed').classList.remove('show');if($('admmsg'))$('admmsg').textContent='Emergency info saved.';return}
   if(b.dataset.lock){lockAdmin();render();return}
   if(b.dataset.te){openTE(+b.dataset.te);return}
+  if(b.id==='frok'){saveFR();return}
+  if(b.id==='frrs'){$('rsf').value='';$('rsf').click();return}
   if(b.id==='tournext'){if(TOUR.i<TOUR.c.length-1){TOUR.i++;drawTour()}else endTour();return}
   if(b.id==='tourback'){if(TOUR.i>0){TOUR.i--;drawTour()}return}
   if(b.id==='tourskip'){endTour();return}
@@ -628,13 +656,13 @@ document.addEventListener('click',function(e){
   if(b.id==='updgo'){applyUpdate();return}
   if(b.id==='rst'){$('rsf').value='';$('rsf').click();return}
   if(b.id==='fresh'){if(!S.adminOk)return;if(!fresh){fresh=true;b.textContent='Tap again to erase everything';return}
-    S.tasks=[];S.stock=[];S.moves=[];S.log=[];S.done={};S.cdone={};S.cnt={};S.people=[{name:'Admin',pin:'1111'}];S.adminPin='1234';S.setup=true;S.setupHours=false;S.lastBackup=0;S.emer={alert:'Call 911 first if he is in distress.',contacts:[{n:'Emergency',p:'911'}],tell:'',plan:''};S.who='';S.adminOk=false;S.dayKey='';S.nid=20;S.tab='today';maybeReset();save();render();needWho();$('wpm').textContent='Everything was erased. Sign in as Admin (code 1111), then add your own people. The admin code is still 1234; change it in Menu → People.';return}
+    blankState();save();render();openFR();return}
 });
 document.addEventListener('input',function(e){if(e.target.id==='tfind')applyFind()});
 document.addEventListener('keydown',function(e){if(e.key==='Enter'&&e.target.id==='qcv'){e.preventDefault();saveQC()}});
 document.addEventListener('change',function(e){
   if(e.target.id==='rsf'){var f=e.target.files&&e.target.files[0];if(!f)return;var fr=new FileReader();fr.onload=function(){var ok=false;try{ok=applySnap(JSON.parse(fr.result))}catch(x){}
-    if(ok){S.last=Date.now();maybeReset();save();fillSt();$('stmsg').textContent='Restored. Sign in again from the Who’s here menu.';render()}else $('stmsg').textContent='That file is not a Care Board backup. Nothing was changed.'};fr.readAsText(f);return}
+    if(ok){S.last=Date.now();maybeReset();save();fillSt();$('stmsg').textContent='Restored. Sign in again from the Who’s here menu.';$('fr').classList.remove('show');render();if(S.people.length)needWho();else openFR()}else $('stmsg').textContent='That file is not a Care Board backup. Nothing was changed.'};fr.readAsText(f);return}
   if(e.target.id==='whosel'){var wv=e.target.value;e.target.value=S.who;if(!wv)return;if(wv==='__new')openNew();else openPin(wv);return}
   var d=e.target.dataset;
   if(d.lf!==undefined){S.logf=e.target.value;render();return}
@@ -678,6 +706,15 @@ document.addEventListener('pointermove',function(e){if(lp.t&&(Math.abs(e.clientX
 document.addEventListener('contextmenu',function(e){if(e.target.closest('.task'))e.preventDefault()});
 document.addEventListener('click',function(e){if(lp.fired){lp.fired=false;e.stopImmediatePropagation();e.preventDefault()}},true);
 ['pointerdown','keydown','input'].forEach(function(n){document.addEventListener(n,function(){S.last=Date.now()},true)});
+/* ---- 1.7.1: empty first run ---- */
+function blankState(){S.tasks=[];S.stock=[];S.guides=[];S.people=[];S.log=[];S.moves=[];S.done={};S.cdone={};S.cnt={};
+  S.emer={alert:'Call 911 first if he is in distress.',contacts:[{n:'Emergency',p:'911'}],tell:'',plan:''};
+  S.who='';S.adminOk=false;S.adminPin='1234';S.adminSet=false;S.setup=true;S.setupHours=false;S.lastBackup=0;S.bkSnooze=0;S.since=Date.now();S.nid=20;S.dayKey=bizDay();S.tab='today';S.viewP=null}
+function openFR(){['frn','frp','fra'].forEach(function(id){$(id).value=''});$('fre').textContent='';$('fr').classList.add('show');setTimeout(function(){try{$('frn').focus()}catch(x){}},80)}
+function saveFR(){var n=$('frn').value.trim(),pc=$('frp').value.trim(),ac=$('fra').value.trim(),er='';
+  if(!n)er='Enter your name.';else if(!/^\d{4}$/.test(pc))er='Your sign-in code needs to be 4 digits.';else if(!/^\d{4}$/.test(ac))er='The admin code needs to be 4 digits.';else if(pc===ac)er='Use a different admin code from your sign-in code.';
+  if(er){$('fre').textContent=er;return}
+  S.people=[{name:n,pin:pc}];S.adminPin=ac;S.adminSet=true;S.who=n;S.adminOk=true;S.last=Date.now();S.tab='menu';$('fr').classList.remove('show');save();render();maybeTour()}
 /* ---- 1.7: welcome tour + setup checklist ---- */
 var TOUR=null;
 function tourCards(n){var tile=function(name,meta,tag,done,extra){return'<div class="trow" style="margin:0"><div class="task'+(done?' done':'')+'" style="cursor:default"><span class="box">'+(done?'✓':'')+'</span><span class="nm">'+name+'<span class="meta">'+meta+'</span></span>'+(tag||'')+'</div>'+(extra||'')+'</div>'};
@@ -696,8 +733,8 @@ function drawTour(){var c=TOUR.c[TOUR.i],n=TOUR.c.length,last=TOUR.i===n-1;
   $('tourback').hidden=TOUR.i===0;$('tourskip').hidden=last;$('tournext').textContent=last?'Got it':'Next'}
 function endTour(){var p=S.people.filter(function(x){return x.name===S.who})[0];if(p)p.toured=true;$('tour').classList.remove('show');TOUR=null}
 function setupItems(){var e=S.emer||{contacts:[]};return[
-  ['code','Change the admin code','So only you can change schedules',S.adminPin!=='1234','people'],
-  ['people','Add the people who’ll use this','You, family, and each nurse',S.people.some(function(p){return p.name!=='Admin'})&&S.people.length>1,'people'],
+  ['code','Set the admin code','So only you can change schedules',!!S.adminSet||S.adminPin!=='1234','people'],
+  ['people','Add everyone else who’ll use this','Family and each nurse, or let them add themselves from Who’s here',S.people.length>1,'people'],
   ['hours','Check Day and Night hours','When each shift starts and ends',!!S.setupHours,'periods'],
   ['tasks','Add tasks, feeds, and meds','Set times for anything on a schedule',S.tasks.length>0,'edit'],
   ['emer','Fill in emergency info','Numbers, what to tell 911, and the plan',e.contacts.some(function(c){return c.p&&c.p!=='911'}),'emer'],
@@ -707,7 +744,7 @@ function setupCard(full){var it=setupItems(),done=it.filter(function(x){return x
   if(!full)return'<div class="vb" style="background:var(--panel2);color:var(--tx);border:1px solid var(--acc)"><span>Finish setting up the board · <b>'+done+' of '+it.length+'</b> done</span><button data-t="menu" style="background:var(--acc);color:#0c1420">Open checklist</button></div>';
   return'<div class="col" style="margin-bottom:12px;border-color:var(--acc)"><div class="ch"><b>Set up the board</b><small>'+done+' of '+it.length+' done</small></div><div class="elist">'+it.map(function(x){return'<div class="srow"><span class="box" style="width:26px;height:26px;border-radius:8px;'+(x[3]?'background:var(--ok);border-color:var(--ok);color:#06231c':'')+'">'+(x[3]?'✓':'')+'</span><span class="sname"'+(x[3]?' style="color:var(--mut);text-decoration:line-through"':'')+'>'+x[1]+'<span class="meta" style="text-decoration:none">'+x[2]+'</span></span>'+(x[3]?'':(x[0]==='hours'?'<button data-sgo="periods">Check hours</button><button data-sok="hours">They’re right</button>':'<button data-sgo="'+x[4]+'">'+(x[0]==='bkp'?'Save backup':'Go')+'</button>'))+'</div>'}).join('')+'</div><button data-shide="1" style="margin-top:10px;background:transparent;border-color:transparent;color:var(--mut);padding-left:0">Hide this checklist</button></div>'}
 /* ---- 1.6: tap outside a pop-up to close it ---- */
-var MDOWN=null,KEEP=['emed','ge','tour'];
+var MDOWN=null,KEEP=['emed','ge','tour','fr'];
 document.addEventListener('pointerdown',function(e){MDOWN=e.target},true);
 document.addEventListener('click',function(e){var m=e.target;if(!m.classList||!m.classList.contains('modal')||!m.classList.contains('show')||MDOWN!==m)return;
   if(KEEP.indexOf(m.id)>-1)return;
@@ -861,7 +898,7 @@ function applySnap(d){if(!d||d.app!=='zeke-care-board'||!d.state||!Array.isArray
 function save(){try{localStorage.setItem(KEY,JSON.stringify(snap()));lastSave=new Date();saved=true}catch(e){saved=false}}
 function load(){try{var r=localStorage.getItem(KEY);if(!r)return false;return applySnap(JSON.parse(r))}catch(e){return false}}
 var loaded=load();if(!S.since)S.since=Date.now();
-if(!loaded){S.setup=true;S.guides=[{id:'g1',title:'Trach tie change (sample)',steps:'Sample guide. Replace these lines with the steps from his care team, one per line.\nWash hands and gather everything under What you’ll need.\nHave a second person help if your care team recommends it.\nCheck the skin under the ties and note anything new.'}];S.dayKey=bizDay();S.tasks.forEach(function(t){if(t.once&&(!t.date||t.date.charAt(0)==='+'))t.date=addDays(S.dayKey,t.date?+t.date:0)})}
+if(!loaded){blankState()}
 else{S.who='';S.last=Date.now();maybeReset()}
 migrate15();
 ['click','change','pointerup','keyup'].forEach(function(n){document.addEventListener(n,function(){setTimeout(save,0)})});
@@ -888,6 +925,7 @@ function saveBackup(){save();var dn=new Date(),name='zeke-care-backup-'+dn.getFu
   if(f&&navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f],title:'Care Board backup'}).then(done).catch(function(e){if(!e||e.name!=='AbortError')dl()});return}
   dl()}
 
+if(!S.people.length)setTimeout(openFR,0);
 wakeApply();tick();setInterval(function(){var rs=maybeReset();tick();if(rs||S.tab==='today')render()},60000);setInterval(idleCheck,10000);render();
 </script>
 </body>
