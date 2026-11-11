@@ -158,7 +158,7 @@ button{-webkit-tap-highlight-color:transparent}
 <div class="modal" id="ot"><div class="card" style="max-width:480px"><h2>Add a one-time task</h2><p class="note" style="margin-top:0">For things that only need doing once. It shows on Today and drops off after it’s checked off.</p><input type="text" id="otn" placeholder="What needs doing?" maxlength="80" aria-label="What needs doing" style="width:100%"><p class="note">When</p><div class="rs" id="otd"></div><input type="date" id="otdt" aria-label="Date" style="margin:-4px 0 12px" hidden><p class="note">Time (optional)</p><div class="rs" id="ottw"></div><p class="note" id="ote" style="color:var(--bad)" aria-live="polite"></p><div style="display:flex;gap:8px"><button data-cl="ot">Cancel</button><button id="otok" class="tpok" style="font-size:18px">Add task</button></div></div></div>
 <div class="modal" id="tp"><div class="card" style="max-width:380px"><h2 id="tpt">Pick a time</h2><p class="note" id="tps" style="margin:0 0 4px"></p><p class="tpv" id="tpv" aria-live="polite"></p><div class="tpw"><div class="tpc" id="tph" aria-label="Hour"></div><div class="tpc" id="tpm" aria-label="Minute"></div><div class="tpc" id="tpa" aria-label="AM or PM"></div></div><p class="note" style="text-align:center;margin:4px 0 10px">Scroll to the time, then tap ✓ to save it.</p><p class="note" id="tpe" style="color:var(--bad);text-align:center" aria-live="polite"></p><div style="display:flex;gap:8px"><button id="tpx">Cancel</button><button id="tpok" class="tpok" aria-label="Save this time">✓</button></div></div></div>
 <script>
-var VER='1.5';
+var VER='1.5.1';
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
 var S={
   tab:'today',who:'Zach',people:[{name:'Zach',pin:'1111'},{name:'Wife',pin:'2222'},{name:'Nurse',pin:'3333'}],pend:null,pin:{for:'',buf:''},reason:'',
@@ -328,7 +328,7 @@ function edit2(){
     else if(f==='prn')h+='<label class="c">Wait at least <input type="number" min="0" step="0.5" value="'+(t.gap||0)+'" data-gap="'+t.id+'" aria-label="Hours between" style="width:80px"> hours between (0 = no limit)</label>';
     else if(f==='once')h+='<label class="c">On <input type="date" value="'+t.date+'" data-od="'+t.id+'" aria-label="Date"></label><label class="c">At <button class="tchip'+(S.flash===t.id+'@'+t.time?' new':'')+'" data-otp="'+t.id+'">'+(t.time?fmtT(t.time):'Pick a time')+'</button></label><button data-otc="'+t.id+'">Any time</button>';
     else if(f==='period')S.periods.forEach(function(p){h+='<label class="c"><input type="checkbox" data-p="'+t.id+'|'+p.id+'" '+(t.periods.indexOf(p.id)>-1?'checked':'')+'>'+esc(p.name)+'</label>'});
-    h+='<button data-del=""'+t.id+'">Remove</button></div>';
+    h+='<button data-del="'+t.id+'">Remove</button></div>';
   });
   h+='<div class="row"><input type="text" id="newn" placeholder="New task name"><select id="newk" aria-label="How often">'+FQ.map(function(o){return'<option value="'+o[0]+'">'+o[1]+'</option>'}).join('')+'</select><button id="add">Add task</button></div><p class="note">New tasks start with a sensible default. Adjust the number or periods after adding.</p></div>';
   return h;
