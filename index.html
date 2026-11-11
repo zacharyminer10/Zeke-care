@@ -2,7 +2,7 @@
 <html lang="en" data-theme="dark">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Zeke Care Board</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
@@ -96,6 +96,12 @@ textarea{font:inherit;color:inherit;background:var(--panel2);border:1px solid va
 .emr{display:flex;flex-wrap:wrap;gap:4px 12px;justify-content:space-between;align-items:baseline;padding:10px 0;border-bottom:1px solid var(--line)}
 .emr b{font-size:24px;font-variant-numeric:tabular-nums;-webkit-user-select:text;user-select:text}
 .emtx{white-space:pre-wrap;margin:0 0 6px;-webkit-user-select:text;user-select:text}
+html,body,button,a,input,select,textarea,label{touch-action:manipulation}
+button{-webkit-tap-highlight-color:transparent}
+.pad button{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:30;display:flex;gap:14px;align-items:center;background:var(--tx);color:var(--bg);border-radius:16px;padding:8px 8px 8px 18px;box-shadow:0 8px 28px rgba(0,0,0,.4);max-width:calc(100% - 32px);font-weight:600}
+.toast[hidden]{display:none}.toast button{background:var(--acc);color:#0c1420;border-color:var(--acc);font-weight:700;min-width:96px}
+.cfok{flex:1;font-weight:700;background:#4a1f1b;color:#ffd9d4;border-color:#7a3028}.cfok.go{background:var(--acc);color:#0c1420;border-color:var(--acc)}
 .emol{margin:0 0 6px;padding-left:24px}.emol li{margin-bottom:6px}
 .upd{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;background:var(--okbg);color:var(--ok);border:1px solid var(--ok);border-radius:14px;padding:10px 14px;margin-bottom:12px;font-weight:600}
 .upd[hidden]{display:none}.upd button{background:var(--ok);color:#06231c;border-color:var(--ok);font-weight:700}
@@ -111,7 +117,7 @@ textarea{font:inherit;color:inherit;background:var(--panel2);border:1px solid va
 <div class="upd" id="upd" hidden><span id="updt">A new version is ready.</span><button id="updgo">Update now</button></div>
 <nav id="nav"></nav>
 <main id="main"></main>
-<div class="modal" id="st"><div class="card"><h2>Settings</h2><p class="note">Appearance</p><div class="rs" id="stth"></div><p class="note">Sign out automatically after no activity for</p><div class="rs" id="stid"></div><p class="note">New day starts at (check-offs and counters reset then)</p><input type="time" id="strt" data-rt="1" aria-label="New day starts at" style="margin-bottom:14px">
+<div class="modal" id="st"><div class="card"><h2>Settings</h2><p class="note">Appearance</p><div class="rs" id="stth"></div><p class="note">Sign out automatically after no activity for</p><div class="rs" id="stid"></div><p class="note">Keep the screen on while the app is open</p><div class="rs" id="stwk"></div><p class="note" id="stwkm" style="margin-top:-6px"></p><p class="note">New day starts at (check-offs and counters reset then)</p><input type="time" id="strt" data-rt="1" aria-label="New day starts at" style="margin-bottom:14px">
 <p class="note">Your data (saved on this device)</p><p class="note" id="stsv" style="margin-top:-4px"></p>
 <div class="rs" id="stdt"><button id="bkp">Save a backup</button><button id="rst">Restore from backup</button></div>
 <input type="file" id="rsf" accept=".json,application/json" style="display:none">
@@ -128,9 +134,11 @@ textarea{font:inherit;color:inherit;background:var(--panel2);border:1px solid va
   <button id="close">Close</button>
 </div></div>
 <div class="modal" id="emed"><div class="card" style="max-width:580px"><h2>Edit emergency info</h2><div id="emf"></div><p class="note" id="eme" style="color:var(--bad)" aria-live="polite"></p><div style="display:flex;gap:8px"><button id="emx">Cancel</button><button id="emok" class="tpok" style="font-size:18px">Save</button></div></div></div>
+<div class="toast" id="toast" hidden role="status"><span id="toastt"></span><button id="toastu">Undo</button></div>
+<div class="modal" id="cf"><div class="card" style="max-width:420px"><h2 id="cft"></h2><p id="cfm" style="margin:0 0 16px"></p><div style="display:flex;gap:8px"><button id="cfx">Cancel</button><button id="cfok" class="cfok"></button></div></div></div>
 <div class="modal" id="tp"><div class="card" style="max-width:380px"><h2 id="tpt">Pick a time</h2><p class="note" id="tps" style="margin:0 0 4px"></p><p class="tpv" id="tpv" aria-live="polite"></p><div class="tpw"><div class="tpc" id="tph" aria-label="Hour"></div><div class="tpc" id="tpm" aria-label="Minute"></div><div class="tpc" id="tpa" aria-label="AM or PM"></div></div><p class="note" style="text-align:center;margin:4px 0 10px">Scroll to the time, then tap ✓ to save it.</p><p class="note" id="tpe" style="color:var(--bad);text-align:center" aria-live="polite"></p><div style="display:flex;gap:8px"><button id="tpx">Cancel</button><button id="tpok" class="tpok" aria-label="Save this time">✓</button></div></div></div>
 <script>
-var VER='1.3';
+var VER='1.4';
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
 var S={
   tab:'today',who:'Zach',people:[{name:'Zach',pin:'1111'},{name:'Wife',pin:'2222'},{name:'Nurse',pin:'3333'}],pend:null,pin:{for:'',buf:''},reason:'',
@@ -213,7 +221,7 @@ function stats(m){var open=0,over=0,p=m.p;
   return{open:open,over:over}}
 function grp(title,tiles){return tiles?'<p class="sec">'+title+'</p><div class="tiles">'+tiles+'</div>':''}
 function today(){
-  var cur=nowP(),h='';var lowi=S.stock.filter(function(i){return i.qty<=i.low});if(lowi.length)h+='<p class="note" style="color:var(--due)">Low on supplies: '+lowi.map(function(i){return esc(i.name)}).join(', ')+'</p>';
+  var cur=nowP(),h=bkBanner();var lowi=S.stock.filter(function(i){return i.qty<=i.low});if(lowi.length)h+='<p class="note" style="color:var(--due)">Low on supplies: '+lowi.map(function(i){return esc(i.name)}).join(', ')+'</p>';
   if(S.viewP&&(S.viewFrom!==cur.id||!S.periods.some(function(q){return q.id===S.viewP})))S.viewP=null;
   var models=S.periods.map(function(q){return periodModel(q,cur)}),view=models.filter(function(m){return m.p.id===(S.viewP||cur.id)})[0]||models[0];
   h+='<div class="shifts" role="group" aria-label="Shift">'+models.map(function(m){var st=stats(m),on=m===view;
@@ -224,8 +232,9 @@ function today(){
   var clock=view.sls.map(function(x){return slotTile(x,view.p)}).join('');
   var rout=view.cnts.map(cntTile).join('')+view.list.map(function(t){return rtTile(t,view.p)}).join('');
   h+='<div class="col panel'+(view.isNow?' now':'')+'"><div class="ch"><span><b>'+esc(view.p.name)+'</b>'+(view.isNow?'<span class="pill">Now</span>':'')+'</span><small>'+fmtT(view.p.start)+' to '+fmtT(view.p.end)+'</small></div>';
-  if(!due&&!clock&&!rout)h+='<p class="note">No tasks yet. Add one under Edit tasks.</p>';
-  h+=grp('Due today',due)+grp('On the clock',clock)+grp(due||clock?'Routine':'This shift',rout)+'</div>';
+  var prn=view.isNow?S.tasks.filter(function(t){return t.prn}).map(prnTile).join(''):'';
+  if(!due&&!clock&&!rout&&!prn)h+='<p class="note">No tasks yet. Add one under Edit tasks.</p>';
+  h+=grp('Due today',due)+grp('On the clock',clock)+grp(due||clock?'Routine':'This shift',rout)+grp('As needed',prn)+'</div>';
   var tm=S.moves.filter(function(m){return m.to==='tomorrow'});
   if(tm.length){h+='<div class="col" style="margin-top:14px"><div class="ch"><b>Pushed to tomorrow</b><small>Shows up first thing tomorrow</small></div>'+tm.map(function(m){var t=S.tasks.filter(function(x){return x.id===m.tid})[0],fp=S.periods.filter(function(x){return x.id===m.from})[0];return t?'<div class="trow"><div class="task" style="cursor:default"><span class="nm">'+esc(t.name)+'<span class="meta">'+(fp?esc(fp.name)+' task, p':'P')+'ushed by '+esc(m.who)+' at '+m.time+(m.reason?', '+esc(m.reason.toLowerCase()):'')+'</span></span></div><button class="push" data-undo="'+m.tid+'|'+m.from+'">Bring back</button></div>':''}).join('')+'</div>'}
   var td0=bizDay(),iv=S.tasks.filter(function(t){return t.every>0&&(t.done||t.every-t.last<=7)}),up=S.tasks.filter(function(t){return t.once&&!t.done&&t.date>td0&&t.date<=addDays(td0,7)}).sort(function(a,b){return a.date<b.date?-1:1});
@@ -235,7 +244,6 @@ function today(){
     up.forEach(function(t){var dd=Math.round((Date.parse(t.date)-Date.parse(td0))/864e5);h+='<div class="trow"><div class="task" style="cursor:default"><span class="nm">'+esc(t.name)+'<span class="meta">One-time task, '+dlabel(t.date)+(t.time?' at '+fmtT(t.time):'')+'</span></span><span class="tag ok">In '+dd+' day'+(dd>1?'s':'')+'</span></div></div>'});
     h+='</div>';
   }
-  h+='<p class="note">Prototype: check-offs and pushes reset when you reload. The real app would save them on the iPad.</p>';
   return h;
 }
 function edit(){
@@ -288,7 +296,7 @@ function setFreq(id,k){var t=S.tasks.filter(function(x){return x.id===id})[0];if
   if(k==='clock')t.at=[];else if(k==='times')t.times=3;else if(k==='prn')t.prn=true;else if(k==='once'){t.once=true;t.date=t.date||bizDay();t.time=t.time||''}
   else if(k==='period')t.periods=S.periods.map(function(p){return p.id});
   else{t.unit=k;t.every=t.n*(k==='weeks'?7:k==='months'?30:1);t.last=t.last||0}}
-var FQ=[['period','Each time of day'],['clock','At set times'],['times','Times per day'],['days','Every X days'],['weeks','Every X weeks'],['months','Every X months'],['once','One time']];
+var FQ=[['period','Each time of day'],['clock','At set times'],['times','Times per day'],['days','Every X days'],['weeks','Every X weeks'],['months','Every X months'],['prn','As needed'],['once','One time']];
 function edit2(){
   var h='<div class="col"><div class="ch"><b>Tasks</b><small>Pick how often each one happens</small></div>';
   S.tasks.forEach(function(t){
@@ -297,6 +305,7 @@ function edit2(){
     if(f==='clock')h+=t.at.map(function(x,i){return'<button class="tchip'+(S.flash===t.id+'@'+x?' new':'')+'" data-atp="'+t.id+'|'+i+'" aria-label="Change '+fmtT(x)+'">'+fmtT(x)+'</button>'+(t.at.length>1?'<button data-atd="'+t.id+'|'+i+'" aria-label="Remove '+fmtT(x)+'">×</button>':'')}).join('')+'<button data-ata="'+t.id+'">+ Time</button><label class="c">Overdue after <input type="number" min="5" step="5" value="'+(t.grace||60)+'" data-gr="'+t.id+'" aria-label="Overdue after minutes"> min</label>';
     else if(f==='times')h+='<input type="number" min="1" value="'+t.times+'" data-tm="'+t.id+'" aria-label="Times per day"><span>per day</span>';
     else if(f==='days'||f==='weeks'||f==='months')h+='<label class="c">Every <input type="number" min="1" value="'+(t.n||t.every)+'" data-e="'+t.id+'"> '+f+'</label>';
+    else if(f==='prn')h+='<label class="c">Wait at least <input type="number" min="0" step="0.5" value="'+(t.gap||0)+'" data-gap="'+t.id+'" aria-label="Hours between" style="width:80px"> hours between (0 = no limit)</label>';
     else if(f==='once')h+='<label class="c">On <input type="date" value="'+t.date+'" data-od="'+t.id+'" aria-label="Date"></label><label class="c">At <button class="tchip'+(S.flash===t.id+'@'+t.time?' new':'')+'" data-otp="'+t.id+'">'+(t.time?fmtT(t.time):'Pick a time')+'</button></label><button data-otc="'+t.id+'">Any time</button>';
     else if(f==='period')S.periods.forEach(function(p){h+='<label class="c"><input type="checkbox" data-p="'+t.id+'|'+p.id+'" '+(t.periods.indexOf(p.id)>-1?'checked':'')+'>'+esc(p.name)+'</label>'});
     h+='<button data-del="'+t.id+'">Remove</button></div>';
@@ -349,7 +358,8 @@ function fillSt(){var cur=document.documentElement.dataset.theme||'dark';
   $('stth').innerHTML=[['dark','Dark'],['light','Light']].map(function(o){return'<button data-th="'+o[0]+'" class="'+(cur===o[0]?'on':'')+'">'+o[1]+'</button>'}).join('');
   $('stid').innerHTML=[[0,'Off'],[5,'5 min'],[15,'15 min'],[30,'30 min'],[60,'1 hour'],[120,'2 hours'],[240,'4 hours'],[480,'8 hours']].map(function(o){return'<button data-idl="'+o[0]+'" class="'+(S.idle===o[0]?'on':'')+'">'+o[1]+'</button>'}).join('');
   $('strt').value=S.resetAt;$('stmsg').textContent='';$('stver').textContent='Care Board · Version '+VER;
-  $('stsv').textContent=saved?'Saved on this device'+(lastSave?' at '+fmt(lastSave):'')+'. Download a backup now and then.':'Not saving on this device (private browsing or storage blocked). Download a backup to keep your data.'}
+  $('stwk').innerHTML=[[false,'Off'],[true,'On']].map(function(o){return'<button data-wk="'+(o[0]?1:0)+'" class="'+(!!S.wake===o[0]?'on':'')+'">'+o[1]+'</button>'}).join('');$('stwkm').textContent=('wakeLock' in navigator)?(S.wake?'The iPad screen stays on while Care Board is open. It still sleeps if you leave the app.':''):'This iPad can’t keep the screen on from the app. Instead, set iPad Settings → Display & Brightness → Auto-Lock to Never.';
+  $('stsv').textContent=saved?'Saved on this device'+(lastSave?' at '+fmt(lastSave):'')+'. Last backup: '+(S.lastBackup?new Date(S.lastBackup).toLocaleDateString([],{month:'short',day:'numeric'}):'never')+'.':'Not saving on this device (private browsing or storage blocked). Download a backup to keep your data.'}
 var fresh=false;
 function bizDay(d){var x=new Date((d||new Date()).getTime()-mins(S.resetAt)*60000);return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0')}
 function missedList(){var out=[];
@@ -368,7 +378,7 @@ function maybeReset(d){var k=bizDay(d);if(!S.dayKey){S.dayKey=k;return false}if(
   S.done={};S.cdone={};S.cnt={};S.moves=[];S.tasks=S.tasks.filter(function(t){return !(t.once&&t.done)});
   S.tasks.forEach(function(t){if(t.every>0){t.last=t.done?n:t.last+n;t.done=null}});
   return true}
-function signOut(){S.viewP=null;S.who='';S.adminOk=false;S.pend=null;S.pin={for:'',buf:''};['pin','pm','nu','st','wp','tp','emed'].forEach(function(id){$(id).classList.remove('show')});if(['edit','periods','people','stock','log','admin','menu'].indexOf(S.tab)>-1)S.tab='today';render()}
+function signOut(){S.viewP=null;S.who='';S.adminOk=false;S.pend=null;S.pin={for:'',buf:''};hideUndo();['pin','pm','nu','st','wp','tp','emed','cf'].forEach(function(id){$(id).classList.remove('show')});if(['edit','periods','people','stock','log','admin','menu'].indexOf(S.tab)>-1)S.tab='today';render()}
 function idleCheck(){if(S.who&&S.idle>0&&Date.now()-S.last>S.idle*60000)signOut()}
 function needWho(){if(S.who)return false;$('wpm').textContent='';$('wpl').innerHTML=S.people.map(function(p){return'<button data-wp="'+esc(p.name)+'">'+esc(p.name)+'</button>'}).join('')+'<button data-wpn="1">+ Add new user…</button>';$('wp').classList.add('show');return true}
 function openNew(){$('nun').value='';$('nue').textContent='';$('nu').classList.add('show');setTimeout(function(){try{$('nun').focus()}catch(x){}},50)}
@@ -406,13 +416,13 @@ function people(){
     h+='<div class="row"><input type="text" value="'+esc(p.name)+'" data-ppn="'+i+'" aria-label="Name"><label class="c">Code <input type="text" inputmode="numeric" maxlength="4" value="'+esc(p.pin)+'" data-ppp="'+i+'" style="width:90px;flex:none;min-width:0"></label>'+(S.people.length>1?'<button data-ppd="'+i+'">Remove</button>':'')+'</div>';
   });
   h+='<div class="row"><label class="c">Admin code <input type="text" inputmode="numeric" maxlength="4" value="'+esc(S.adminPin)+'" data-adm="1" style="width:90px;flex:none;min-width:0"></label></div>';
-  h+='<div class="row"><input type="text" id="newpn" placeholder="Name"><input type="text" id="newpp" inputmode="numeric" maxlength="4" placeholder="4-digit code" style="width:130px;flex:none;min-width:0"><button id="addpp">Add person</button></div><p class="note">Prototype demo codes: Zach 1111, Wife 2222, Nurse 3333. Admin code: 1234 (needed to open the Menu).</p></div>';
+  h+='<div class="row"><input type="text" id="newpn" placeholder="Name"><input type="text" id="newpp" inputmode="numeric" maxlength="4" placeholder="4-digit code" style="width:130px;flex:none;min-width:0"><button id="addpp">Add person</button></div><p class="note">The admin code opens the Menu. Change it from the demo code (1234) before real use.</p></div>';
   return h;
 }
 function render(keep){head();if(keep)return;var back=['edit','periods','people','stock','log','admin'].indexOf(S.tab)>-1?'<button data-t="menu" style="margin-bottom:12px">← Menu</button>':'';$('main').innerHTML=back+(S.tab==='today'?today():S.tab==='week'?week():S.tab==='menu'?menu():S.tab==='edit'?edit2():S.tab==='stock'?stock():S.tab==='log'?logv():S.tab==='periods'?periods():S.tab==='admin'?admin():people())}
 document.addEventListener('click',function(e){
   var b=e.target.closest('button');if(!b)return;
-  if(!S.who&&(b.dataset.k||b.dataset.i||b.dataset.o||b.dataset.po||b.dataset.ct||b.dataset.c||b.dataset.mv||b.dataset.pi||b.dataset.undo||b.dataset.undomv)){needWho();return}
+  if(!S.who&&(b.dataset.pr||b.dataset.k||b.dataset.i||b.dataset.o||b.dataset.po||b.dataset.ct||b.dataset.c||b.dataset.mv||b.dataset.pi||b.dataset.undo||b.dataset.undomv)){needWho();return}
   if(b.dataset.sh){var cn=nowP().id;S.viewP=b.dataset.sh===cn?null:b.dataset.sh;S.viewFrom=cn;render();return}
   if(b.dataset.wp){$('wp').classList.remove('show');openPin(b.dataset.wp);return}
   if(b.dataset.wpn){$('wp').classList.remove('show');openNew();return}
@@ -421,21 +431,17 @@ document.addEventListener('click',function(e){
   if(b.id==='nux'){$('nu').classList.remove('show');return}
   if(b.id==='nuok'){var nn=$('nun').value.trim();if(!nn){$('nue').textContent='Please enter a name.';return}if(S.people.some(function(x){return x.name.toLowerCase()===nn.toLowerCase()})){$('nue').textContent='That name is already in use.';return}$('nu').classList.remove('show');newPad(nn);return}
   if(b.dataset.t){var tt2=b.dataset.t;if(tt2==='menu'&&!S.adminOk){openPin('__admin');return}S.tab=tt2;render();return}
-  if(b.dataset.k){var k=b.dataset.k,tid=+k.split('|')[0];if(S.done[k]){delete S.done[k];use(tid,-1);lg('Undid',tn(tid)+' ('+pn(k.split('|')[1])+')')}else{S.done[k]={who:S.who,time:fmt(new Date())};use(tid);lg('Completed',tn(tid)+' ('+pn(k.split('|')[1])+')')}render();return}
-  if(b.dataset.i){var t=S.tasks.filter(function(x){return x.id==b.dataset.i})[0];t.done=t.done?null:{who:S.who,time:fmt(new Date()),pid:nowP().id};use(t.id,t.done?1:-1);lg(t.done?'Completed':'Undid',t.name);render();return}
   if(b.dataset.push){var a=b.dataset.push.split('|');S.reason='';openPush(+a[0],a[1]);return}
   if(b.dataset.md){var a=b.dataset.md.split('|');pushAt(+a[0],a[1],new Date().getTime()+ +a[2]*60000);return}
   if(b.dataset.mt){var a=b.dataset.mt.split('|'),v=$('pmtm').value;if(!v){$('pmerr').textContent='Pick a time first.';return}var d0=new Date();d0.setHours(+v.split(':')[0],+v.split(':')[1],0,0);if(d0.getTime()<=new Date().getTime()){$('pmerr').textContent='Pick a time later than now.';return}pushAt(+a[0],a[1],d0.getTime());return}
   if(b.dataset.undod){var a=b.dataset.undod.split('|');S.moves=S.moves.filter(function(m){return !(m.tid===+a[0]&&m.from===a[1])});$('pm').classList.remove('show');render();return}
   if(b.dataset.mv){var a=b.dataset.mv.split('|');S.moves=S.moves.filter(function(m){return !(m.tid===+a[0]&&m.from===a[1])});S.moves.push({tid:+a[0],from:a[1],to:a[2],who:S.who,reason:S.reason||'',time:fmt(new Date())});$('pm').classList.remove('show');render();return}
-  if(b.dataset.o){var t=S.tasks.filter(function(x){return x.id==b.dataset.o})[0];t.done=t.done?null:{who:S.who,time:fmt(new Date()),pid:nowP().id};use(t.id,t.done?1:-1);lg(t.done?'Completed':'Undid',t.name+' (one-time)');render();return}
   if(b.dataset.po){var t=S.tasks.filter(function(x){return x.id==b.dataset.po})[0];t.date=addDays(bizDay(),1);$('pm').classList.remove('show');render();return}
   if(b.dataset.otc){S.tasks.filter(function(x){return x.id==b.dataset.otc})[0].time='';render();return}
   if(b.dataset.pi){var t=S.tasks.filter(function(x){return x.id==b.dataset.pi})[0];t.last=Math.max(0,t.every-1);$('pm').classList.remove('show');render();return}
   if(b.dataset.undo){var a=b.dataset.undo.split('|');S.moves=S.moves.filter(function(m){return !(m.tid===+a[0]&&m.from===a[1]&&m.to==='tomorrow')});render();return}
   if(b.dataset.undomv){var a=b.dataset.undomv.split('|');S.moves=S.moves.filter(function(m){return !(m.tid===+a[0]&&m.to===a[1])});render();return}
   if(b.id==='pmx'){$('pm').classList.remove('show');return}
-  if(b.dataset.ct){var q=b.dataset.ct,qi=+q.split('@')[0];if(S.cdone[q]){delete S.cdone[q];use(qi,-1);lg('Undid',tn(qi)+' at '+fmtT(q.split('@')[1]))}else{S.cdone[q]={who:S.who,time:fmt(new Date())};use(qi);lg('Completed',tn(qi)+' at '+fmtT(q.split('@')[1]))}render();return}
   if(b.dataset.ata){var tk=S.tasks.filter(function(x){return x.id==b.dataset.ata})[0];openTP({title:'Add a time',sub:tk.name,taken:tk.at.slice(),ok:function(v){tk.at.push(v);tk.at.sort();flashAt(tk.id,v)}});return}
   if(b.dataset.atp){var z2=b.dataset.atp.split('|'),tq=S.tasks.filter(function(x){return x.id==z2[0]})[0],ix=+z2[1];openTP({title:'Change time',sub:tq.name,val:tq.at[ix],taken:tq.at.filter(function(_,j){return j!==ix}),ok:function(v){tq.at[ix]=v;tq.at.sort();flashAt(tq.id,v)}});return}
   if(b.dataset.otp){var to=S.tasks.filter(function(x){return x.id==b.dataset.otp})[0];openTP({title:'Time for this task',sub:to.name,val:to.time||null,ok:function(v){to.time=v;flashAt(to.id,v)}});return}
@@ -447,18 +453,29 @@ document.addEventListener('click',function(e){
   if(b.id==='emx'){$('emed').classList.remove('show');return}
   if(b.id==='emok'){emRead();EM.contacts=EM.contacts.filter(function(c){return c.n.trim()||c.p.trim()});S.emer=EM;$('emed').classList.remove('show');if($('admmsg'))$('admmsg').textContent='Emergency info saved.';return}
   if(b.dataset.lock){lockAdmin();render();return}
-  if(b.dataset.atd){var z=b.dataset.atd.split('|'),tz=S.tasks.filter(function(x){return x.id==z[0]})[0];tz.at.splice(+z[1],1);render();return}
-  if(b.dataset.c){var c=S.cnt[b.dataset.c]||(S.cnt[b.dataset.c]={n:0});c.n++;c.last=fmt(new Date());c.who=S.who;use(+b.dataset.c);lg('Logged',tn(b.dataset.c));render();return}
+  if(b.dataset.k){togK(b.dataset.k,true);return}
+  if(b.dataset.i){togI(b.dataset.i,true);return}
+  if(b.dataset.o){togO(b.dataset.o,true);return}
+  if(b.dataset.ct){togCt(b.dataset.ct,true);return}
+  if(b.dataset.c){addC(b.dataset.c);return}
+  if(b.dataset.pr){logPrn(b.dataset.pr,false);return}
+  if(b.id==='toastu'){var uf=UNDO.fn;hideUndo();if(uf)uf();return}
+  if(b.id==='cfx'){$('cf').classList.remove('show');CF=null;return}
+  if(b.id==='cfok'){var cfn=CF;$('cf').classList.remove('show');CF=null;if(cfn)cfn();return}
+  if(b.id==='bkp2'){saveBackup();return}
+  if(b.id==='bklater'){S.bkSnooze=Date.now()+864e5;render();return}
+  if(b.dataset.wk!==undefined){S.wake=b.dataset.wk==='1';wakeApply();fillSt();return}
+  if(b.dataset.atd){var _b=b;askConfirm('Remove this time?',fmtT(T(b.dataset.atd.split('|')[0]).at[+b.dataset.atd.split('|')[1]])+' will be removed from “'+tn(b.dataset.atd.split('|')[0])+'”.','Remove time',function(){var b=_b;var z=b.dataset.atd.split('|'),tz=S.tasks.filter(function(x){return x.id==z[0]})[0];tz.at.splice(+z[1],1);render();});return}
   if(b.dataset.sq){var a=b.dataset.sq.split('|'),it=S.stock.filter(function(x){return x.id==a[0]})[0];it.qty=Math.max(0,it.qty+ +a[1]);render();return}
-  if(b.dataset.sd){S.stock=S.stock.filter(function(x){return x.id!=b.dataset.sd});render();return}
+  if(b.dataset.sd){var _b=b;askConfirm('Remove this supply?','“'+((S.stock.filter(function(x){return x.id==b.dataset.sd})[0])||{}).name+'” and its count will be removed.','Remove supply',function(){var b=_b;S.stock=S.stock.filter(function(x){return x.id!=b.dataset.sd});render();});return}
   if(b.id==='addi'){var nm2=$('newi').value.trim();if(!nm2)return;S.stock.push({id:S.nid++,name:nm2,qty:Math.max(0,+$('newq').value||0),low:2,link:null});render();return}
   if(b.dataset.pk){pinKey(b.dataset.pk);return}
   if(b.id==='pinx'){$('pin').classList.remove('show');return}
   if(b.dataset.rs){S.reason=S.reason===b.dataset.rs?'':b.dataset.rs;if(S.pend)openPush(S.pend.tid,S.pend.from);return}
-  if(b.dataset.ppd){var x=S.people.splice(+b.dataset.ppd,1)[0];if(x&&x.name===S.who){S.who=S.people[0].name;lockAdmin()}render();return}
+  if(b.dataset.ppd){var _b=b;askConfirm('Remove this person?','“'+((S.people[+b.dataset.ppd]||{}).name||'')+'” won’t be able to sign in anymore. Their past check-offs stay in the log.','Remove person',function(){var b=_b;var x=S.people.splice(+b.dataset.ppd,1)[0];if(x&&x.name===S.who){S.who=S.people[0].name;lockAdmin()}render();});return}
   if(b.id==='addpp'){var nm=$('newpn').value.trim(),pp=$('newpp').value.trim();if(!nm||!/^\d{4}$/.test(pp)){$('newpp').style.borderColor='var(--bad)';return}S.people.push({name:nm,pin:pp});render();return}
-  if(b.dataset.del){S.tasks=S.tasks.filter(function(x){return x.id!=b.dataset.del});render();return}
-  if(b.dataset.pd){var id=b.dataset.pd;S.periods=S.periods.filter(function(p){return p.id!==id});S.tasks.forEach(function(t){t.periods=t.periods.filter(function(x){return x!==id})});render();return}
+  if(b.dataset.del){var _b=b;askConfirm('Remove this task?','“'+tn(b.dataset.del)+'” and its schedule will be removed. This can’t be undone.','Remove task',function(){var b=_b;S.tasks=S.tasks.filter(function(x){return x.id!=b.dataset.del});render();});return}
+  if(b.dataset.pd){var _b=b;askConfirm('Remove this time of day?','“'+((S.periods.filter(function(x){return x.id===b.dataset.pd})[0])||{}).name+'” will be removed, and its routine tasks will lose this time of day.','Remove',function(){var b=_b;var id=b.dataset.pd;S.periods=S.periods.filter(function(p){return p.id!==id});S.tasks.forEach(function(t){t.periods=t.periods.filter(function(x){return x!==id})});render();});return}
   if(b.id==='add'){var n=$('newn').value.trim();if(!n){$('newn').focus();return}var nk=$('newk').value,mk=function(){var nt={id:S.nid++,name:n,periods:[],every:0,n:3,times:0,prn:false,last:0};S.tasks.push(nt);setFreq(nt.id,nk);return nt};
     if(nk==='clock'){openTP({title:'First time for this task',sub:n,ok:function(v){var nt=mk();nt.at=[v];flashAt(nt.id,v)}});return}
     mk();render();return}
@@ -486,6 +503,7 @@ document.addEventListener('change',function(e){
   if(d.adm){if(/^\d{4}$/.test(e.target.value)){S.adminPin=e.target.value}else e.target.value=S.adminPin;return}
   if(d.od!==undefined){S.tasks.filter(function(t){return t.id==d.od})[0].date=e.target.value||bizDay();return}
   if(d.ot!==undefined){S.tasks.filter(function(t){return t.id==d.ot})[0].time=e.target.value||'';return}
+  if(d.gap){S.tasks.filter(function(t){return t.id==d.gap})[0].gap=Math.max(0,+e.target.value||0);return}
   if(d.gr){S.tasks.filter(function(t){return t.id==d.gr})[0].grace=Math.max(5,+e.target.value||60);return}
   if(d.rt!==undefined){S.resetAt=e.target.value||'07:00';S.dayKey=bizDay();return}
   if(d.f){var fid=+d.f,fv=e.target.value;if(fv==='clock'){var ft=S.tasks.filter(function(t){return t.id===fid})[0];openTP({title:'First time for this task',sub:ft.name,ok:function(v){setFreq(fid,'clock');ft.at=[v];flashAt(fid,v)},cancel:render});return}setFreq(fid,fv);render();return}
@@ -506,7 +524,7 @@ var lp={t:null,x:0,y:0,fired:false};
 function lpCancel(){clearTimeout(lp.t);lp.t=null}
 document.addEventListener('pointerdown',function(e){
   lp.fired=false;
-  var b=e.target.closest('.task');if(!b||!(b.dataset.lp||b.dataset.lpm||b.dataset.lpi||b.dataset.lpc||b.dataset.lpd||b.dataset.lpo))return;
+  var b=e.target.closest('.task');if(!b||!(b.dataset.lp||b.dataset.lpm||b.dataset.lpi||b.dataset.lpc||b.dataset.lpd||b.dataset.lpo||b.dataset.lpr))return;
   lp.x=e.clientX;lp.y=e.clientY;lpCancel();
   lp.t=setTimeout(function(){
     lp.fired=true;lp.t=null;if(!S.who){needWho();return}
@@ -514,7 +532,8 @@ document.addEventListener('pointerdown',function(e){
     else if(b.dataset.lpo){openOnce(b.dataset.lpo)}
     else if(b.dataset.lpd){var a2=b.dataset.lpd.split('|');S.reason='';openPush(+a2[0],a2[1])}
     else if(b.dataset.lpm){var c=b.dataset.lpm.split('|');S.moves=S.moves.filter(function(m){return !(m.tid===+c[0]&&m.to===c[1])});render()}
-    else if(b.dataset.lpc){var c2=S.cnt[b.dataset.lpc];if(c2&&c2.n>0){c2.n--;use(+b.dataset.lpc,-1);lg('Undid',tn(b.dataset.lpc));if(!c2.n)c2.last=''}render()}
+    else if(b.dataset.lpc){decC(b.dataset.lpc)}
+    else if(b.dataset.lpr){undoPrn(b.dataset.lpr)}
     else openIv(b.dataset.lpi);
   },500);
 });
@@ -523,6 +542,41 @@ document.addEventListener('pointermove',function(e){if(lp.t&&(Math.abs(e.clientX
 document.addEventListener('contextmenu',function(e){if(e.target.closest('.task'))e.preventDefault()});
 document.addEventListener('click',function(e){if(lp.fired){lp.fired=false;e.stopImmediatePropagation();e.preventDefault()}},true);
 ['pointerdown','keydown','input'].forEach(function(n){document.addEventListener(n,function(){S.last=Date.now()},true)});
+/* ---- 1.4: check-off toggles with undo ---- */
+var UNDO={fn:null,t:null};
+function showUndo(msg,fn){clearTimeout(UNDO.t);UNDO.fn=fn;$('toastt').textContent=msg;$('toast').hidden=false;UNDO.t=setTimeout(hideUndo,5000)}
+function hideUndo(){clearTimeout(UNDO.t);UNDO.fn=null;$('toast').hidden=true}
+function T(id){return S.tasks.filter(function(x){return x.id==id})[0]}
+function togK(k,ui){var tid=+k.split('|')[0],lbl=tn(tid)+' ('+pn(k.split('|')[1])+')';
+  if(S.done[k]){delete S.done[k];use(tid,-1);lg('Undid',lbl);if(ui)hideUndo()}else{S.done[k]={who:S.who,time:fmt(new Date())};use(tid);lg('Completed',lbl);if(ui)showUndo('Checked off: '+tn(tid),function(){togK(k,false)})}render()}
+function togI(id,ui){var t=T(id);if(!t)return;t.done=t.done?null:{who:S.who,time:fmt(new Date()),pid:nowP().id};use(t.id,t.done?1:-1);lg(t.done?'Completed':'Undid',t.name);if(ui){if(t.done)showUndo('Checked off: '+t.name,function(){togI(id,false)});else hideUndo()}render()}
+function togO(id,ui){var t=T(id);if(!t)return;t.done=t.done?null:{who:S.who,time:fmt(new Date()),pid:nowP().id};use(t.id,t.done?1:-1);lg(t.done?'Completed':'Undid',t.name+' (one-time)');if(ui){if(t.done)showUndo('Checked off: '+t.name,function(){togO(id,false)});else hideUndo()}render()}
+function togCt(q,ui){var qi=+q.split('@')[0],lbl=tn(qi)+' at '+fmtT(q.split('@')[1]);
+  if(S.cdone[q]){delete S.cdone[q];use(qi,-1);lg('Undid',lbl);if(ui)hideUndo()}else{S.cdone[q]={who:S.who,time:fmt(new Date())};use(qi);lg('Completed',lbl);if(ui)showUndo('Checked off: '+lbl,function(){togCt(q,false)})}render()}
+function addC(id){var c=S.cnt[id]||(S.cnt[id]={n:0});c.n++;c.last=fmt(new Date());c.who=S.who;use(+id);lg('Logged',tn(id));showUndo('Logged: '+tn(id)+' ('+c.n+')',function(){decC(id)});render()}
+function decC(id){var c2=S.cnt[id];if(c2&&c2.n>0){c2.n--;use(+id,-1);lg('Undid',tn(id));if(!c2.n)c2.last=''}render()}
+/* ---- as needed ---- */
+function dayStart(){var q=S.dayKey.split('-'),m=mins(S.resetAt);return new Date(+q[0],+q[1]-1,+q[2],Math.floor(m/60),m%60).getTime()}
+function ago(ms){var m=Math.max(0,Math.round(ms/60000));return m<1?'just now':m<60?m+' min ago':Math.floor(m/60)+'h '+(m%60?m%60+'m ':'')+'ago'}
+function dur(ms){var m=Math.ceil(ms/60000);return m<60?m+' min':Math.floor(m/60)+'h'+(m%60?' '+m%60+'m':'')}
+function prnTile(t){var hs=t.hist||[],last=hs[hs.length-1],ds=dayStart(),n=hs.filter(function(x){return x.ts>=ds}).length,now=Date.now(),wait=last&&t.gap?last.ts+t.gap*36e5-now:0;
+  var tg=wait>0?'<span class="tag">Wait '+dur(wait)+'</span>':'<span class="tag ok">'+(n?n+' today':'Ready')+'</span>';
+  var meta=last?'Last: '+esc(last.who)+' at '+fmt(new Date(last.ts))+' ('+ago(now-last.ts)+')'+(n?' · '+n+' today':'')+'. Hold to undo':'Not logged yet. Tap each time it’s done'+(t.gap?' (at least '+t.gap+'h apart)':'');
+  return'<div class="trow"><button class="task" data-pr="'+t.id+'"'+(last?' data-lpr="'+t.id+'"':'')+'><span class="box" style="font-size:22px">+</span><span class="nm">'+esc(t.name)+'<span class="meta">'+meta+'</span></span>'+tg+'</button></div>'}
+function logPrn(id,force){var t=T(id);if(!t)return;var hs=t.hist||(t.hist=[]),last=hs[hs.length-1],wait=last&&t.gap?last.ts+t.gap*36e5-Date.now():0;
+  if(wait>0&&!force){askConfirm('Too soon?','“'+t.name+'” was last logged '+ago(Date.now()-last.ts)+' by '+last.who+'. The minimum gap is '+t.gap+' hours ('+dur(wait)+' to go). Log it anyway?','Log anyway',function(){logPrn(id,true)},true);return}
+  hs.push({ts:Date.now(),who:S.who});if(hs.length>60)hs.splice(0,hs.length-60);use(t.id);lg('Logged',t.name+' (as needed)'+(wait>0?', early':''));showUndo('Logged: '+t.name,function(){undoPrn(id)});render()}
+function undoPrn(id){var t=T(id);if(!t||!t.hist||!t.hist.length)return;t.hist.pop();use(t.id,-1);lg('Undid',t.name+' (as needed)');render()}
+/* ---- confirm, backup reminder, keep awake ---- */
+var CF=null;
+function askConfirm(title,msg,ok,fn,safe){CF=fn;$('cft').textContent=title;$('cfm').textContent=msg;$('cfok').textContent=ok;$('cfok').className='cfok'+(safe?' go':'');$('cf').classList.add('show')}
+function bkBanner(){var now=Date.now(),wk=7*864e5;if(!S.tasks.length||(S.bkSnooze&&now<S.bkSnooze))return'';
+  if(S.lastBackup&&now-S.lastBackup<wk)return'';if(!S.lastBackup&&now-(S.since||now)<864e5)return'';
+  var d=S.lastBackup?Math.floor((now-S.lastBackup)/864e5):0;
+  return'<div class="vb"><span>'+(S.lastBackup?'No backup in '+d+' days.':'This iPad hasn’t been backed up yet.')+' The iPad holds the only copy of your data.</span><span style="display:flex;gap:8px;flex-wrap:wrap"><button id="bklater" style="background:transparent;color:var(--due);border-color:var(--due)">Remind me tomorrow</button><button id="bkp2">Save a backup</button></span></div>'}
+var WL=null;
+function wakeApply(){try{if(S.wake&&!document.hidden&&'wakeLock' in navigator){if(!WL)navigator.wakeLock.request('screen').then(function(l){WL=l;l.addEventListener('release',function(){WL=null})}).catch(function(){})}else if(WL){WL.release();WL=null}}catch(e){}}
+document.addEventListener('visibilitychange',wakeApply);document.addEventListener('pointerdown',function(){if(S.wake&&!WL)wakeApply()},true);
 /* ---- time picker: nothing is saved until ✓ ---- */
 var TP={o:null},TPH=48;
 function tpBuild(el,items,sel){el.innerHTML='<div class="pd"></div><div class="pd"></div>'+items.map(function(v,i){return'<div data-tpi="'+i+'">'+v+'</div>'}).join('')+'<div class="pd"></div><div class="pd"></div>';el.scrollTop=sel*TPH}
@@ -567,7 +621,7 @@ function applySnap(d){if(!d||d.app!=='zeke-care-board'||!d.state||!Array.isArray
   S.who='';S.adminOk=false;S.viewP=null;S.pend=null;return true}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(snap()));lastSave=new Date();saved=true}catch(e){saved=false}}
 function load(){try{var r=localStorage.getItem(KEY);if(!r)return false;return applySnap(JSON.parse(r))}catch(e){return false}}
-var loaded=load();
+var loaded=load();if(!S.since)S.since=Date.now();
 if(!loaded){S.dayKey=bizDay();S.tasks.forEach(function(t){if(t.once&&(!t.date||t.date.charAt(0)==='+'))t.date=addDays(S.dayKey,t.date?+t.date:0)})}
 else{S.who='';S.last=Date.now();maybeReset()}
 ['click','change','pointerup','keyup'].forEach(function(n){document.addEventListener(n,function(){setTimeout(save,0)})});
@@ -588,13 +642,13 @@ try{if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)&&!/clau
   navigator.serviceWorker.addEventListener('controllerchange',function(){if(RELOADING)return;RELOADING=true;save();location.reload()});
   document.addEventListener('visibilitychange',function(){if(!document.hidden)checkUpdate(false)})}}catch(e){}
 function saveBackup(){save();var dn=new Date(),name='zeke-care-backup-'+dn.getFullYear()+'-'+String(dn.getMonth()+1).padStart(2,'0')+'-'+String(dn.getDate()).padStart(2,'0')+'.json',txt=JSON.stringify(snap(),null,1),f=null;
-  var done=function(){$('stmsg').textContent='Backup ready. Choose Save to Files and keep it somewhere other than this iPad too (iCloud Drive or email it to yourself).'};
+  var done=function(){S.lastBackup=Date.now();S.bkSnooze=0;save();if(S.tab==='today')render();$('stmsg').textContent='Backup ready. Choose Save to Files and keep it somewhere other than this iPad too (iCloud Drive or email it to yourself).'};
   var dl=function(){var bl=new Blob([txt],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(bl);a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},4000);done()};
   try{f=new File([txt],name,{type:'application/json'})}catch(x){}
   if(f&&navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f],title:'Care Board backup'}).then(done).catch(function(e){if(!e||e.name!=='AbortError')dl()});return}
   dl()}
 
-tick();setInterval(function(){var rs=maybeReset();tick();if(rs||S.tab==='today')render()},60000);setInterval(idleCheck,10000);render();
+wakeApply();tick();setInterval(function(){var rs=maybeReset();tick();if(rs||S.tab==='today')render()},60000);setInterval(idleCheck,10000);render();
 </script>
 </body>
 </html>
