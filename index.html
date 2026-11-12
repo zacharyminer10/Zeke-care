@@ -158,7 +158,29 @@ nav button,nav button.on,.pill,.tag,.sec,.who button.on,.rs button.on,.tchip,.up
 .trl{font-size:13px;color:var(--mut);margin-left:10px;padding:2px 9px;border:1px solid var(--line);border-radius:999px;white-space:nowrap}.trl[hidden]{display:none}
 /* store: disclaimer */
 .tpok:disabled{opacity:.45;cursor:not-allowed}
+/* 1.12 slimmer tiles */
+.tiles>.trow,.trow{min-width:0}.trow .task{min-width:0;overflow:hidden}
+.trow .task .tag{flex:none}
+.trow .task{padding:7px 12px;min-height:50px}
+.trow .task .nm{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:8px;row-gap:1px;min-width:0}
+.trow .task .nm .tn{min-width:0}
+.trow .task .nm .ord{margin-top:0;font-size:14px}
+.trow .task .nm .ordn,.trow .task .nm .meta{flex-basis:100%;min-width:0}
+.trow .task .nm .ordn{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:0}
+.meta:empty{display:none}
+/* 1.12 orders */
+.xchip{display:inline-flex;align-items:center;gap:2px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:0 0 0 12px}.xchip .tx{border:0;background:transparent;min-height:36px}
+.ord{display:flex;flex-wrap:wrap;align-items:center;gap:2px 7px;margin-top:3px;font-size:15px;line-height:1.3;color:var(--tx)}
+.opill{display:inline-block;font-size:11.5px;font-weight:500;line-height:1.5;padding:0 7px;border-radius:999px;color:var(--acc);border:1px solid color-mix(in srgb,var(--acc) 45%,transparent);background:color-mix(in srgb,var(--acc) 12%,transparent)}
+.opill.sm{font-size:11px;padding:0 6px;margin-right:2px}
+.oamt{font-weight:500;color:var(--acc)}.orte{color:var(--mut)}
+.ordn{display:block;color:var(--mut);font-size:13px;margin-top:1px}
+.task.done .nm{text-decoration:none;opacity:1}.task.done .tn{text-decoration:line-through;opacity:.7}
+.task.done .ord,.task.done .ordn{opacity:.75}
 /* 1.11 */
+.bkline{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;font-size:13px;color:var(--mut);margin:0 0 8px}
+.bkline button{min-height:30px;padding:3px 10px;font-size:13px;border-radius:8px;background:transparent}
+.bkline #bkp2{color:var(--acc);border-color:var(--acc)}
 .pad button:disabled{opacity:.35}
 #due .srow{padding:10px 12px}
 /* 1.9 roles */
@@ -229,7 +251,7 @@ nav{flex-wrap:wrap}nav button{white-space:nowrap}
 <nav id="nav"></nav>
 <main id="main"></main>
 <div class="modal" id="st"><div class="card"><h2>Settings</h2><p class="note">Appearance</p><div class="rs" id="stth"></div><p class="note">Ask “Still here?” after no activity for (nobody gets signed out)</p><div class="rs" id="stid"></div><p class="note">Due alerts while the app is open</p><div class="rs" id="stdm"></div><p class="note" style="margin-top:-6px">Plays a chime and shows a banner when a timed task comes due. The chime won’t play if the iPad is muted or the app is closed.</p><p class="note">Keep the screen on while the app is open</p><div class="rs" id="stwk"></div><p class="note" id="stwkm" style="margin-top:-6px"></p><p class="note">New day starts at (check-offs and counters reset then)</p><div class="rs"><button class="tchip" id="strt"></button></div>
-<p class="note">Your data (saved on this device)</p><p class="note" id="stsv" style="margin-top:-4px"></p><p class="note" id="stsz" style="margin-top:-6px"></p>
+<p class="note">Your data (saved on this device)</p><div class="rs" id="stbk" style="margin:-2px 0 8px"></div><p class="note" id="stsv" style="margin-top:-4px"></p><p class="note" id="stsz" style="margin-top:-6px"></p>
 <div class="rs" id="stdt"><button id="bkp">Save a backup</button><button id="rst">Restore from backup</button></div>
 <input type="file" id="rsf" accept=".json,application/json" style="display:none">
 <p class="note" id="stmsg" aria-live="polite"></p>
@@ -280,7 +302,7 @@ nav{flex-wrap:wrap}nav button{white-space:nowrap}
 <div class="modal" id="due"><div class="card" style="max-width:520px;border-color:var(--due);box-shadow:0 0 0 2px var(--due)"><p class="note" style="margin:0 0 2px;color:var(--due)">Reminder</p><h2 id="dueh">Due now</h2><div class="elist" id="duel" style="margin:8px 0 14px"></div><button id="dueok" style="width:100%">OK, I’ve seen it</button></div></div>
 <div class="modal" id="tp"><div class="card" style="max-width:380px"><h2 id="tpt">Pick a time</h2><p class="note" id="tps" style="margin:0 0 4px"></p><p class="tpv" id="tpv" aria-live="polite"></p><div class="tpw"><div class="tpc" id="tph" aria-label="Hour"></div><div class="tpc" id="tpm" aria-label="Minute"></div><div class="tpc" id="tpa" aria-label="AM or PM"></div></div><p class="note" style="text-align:center;margin:4px 0 10px">Scroll to the time, then tap ✓ to save it.</p><p class="note" id="tpe" style="color:var(--bad);text-align:center" aria-live="polite"></p><div style="display:flex;gap:8px"><button id="tpx">Cancel</button><button id="tpok" class="tpok" aria-label="Save this time">✓</button></div></div></div>
 <script>
-var VER='1.11.1';
+var VER='1.12';
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
 var S={
   tab:'today',who:'',people:[],pend:null,pin:{for:'',buf:''},reason:'',
@@ -317,12 +339,12 @@ function onceTile(t){var td=bizDay(),d=t.done,od=t.date<td,now=new Date().getTim
   var meta=d?esc(d.who)+' at '+d.time:'One-time task'+(t.time?' at '+fmtT(t.time):'')+(od?', was due '+dlabel(t.date):'')+'. Hold to push';
   return'<div class="trow"><button class="task '+(d?'done':'')+'" data-o="'+t.id+'"'+(d?'':' data-lpo="'+t.id+'"')+(!d&&(od||diff>=0&&ts)?' style="border:2px solid var(--due)"':'')+'><span class="box">'+(d?'✓':'')+'</span><span class="nm">'+esc(t.name)+'<span class="meta">'+meta+'</span></span>'+tg+'</button></div>'}
 function slotTile(s,p){if(s.o)return onceTile(s.t);if(s.m)return deferTile(s,p);var nw=new Date(),nm=nw.getHours()*60+nw.getMinutes(),key=s.t.id+'@'+s.x,dn=S.cdone[key],diff=slotDiff(s.x,nm,p);
-  var tg=dn?'<span class="tag ok">Done</span>':diff>=(s.t.grace||60)?'<span class="tag" style="background:#4a1f1b;color:#ffd9d4">Overdue</span>':diff>=0?'<span class="tag" style="font-weight:700">Due now</span>':'<span class="tag ok">'+fmtT(s.x)+'</span>';
-  return'<div class="trow"><button class="task '+(dn?'done':'')+'" data-ct="'+key+'"'+(diff>=0&&!dn?' style="border:2px solid var(--due)"':'')+'><span class="box">'+(dn?'✓':'')+'</span><span class="nm">'+esc(s.t.name)+'<span class="meta">'+(dn?esc(dn.who)+' at '+dn.time:fmtT(s.x))+'</span></span>'+tg+'</button></div>'}
+  var tg=dn?'<span class="tag ok">Done</span>':diff>=(s.t.grace||60)?'<span class="tag" style="background:#4a1f1b;color:#ffd9d4">Overdue · '+fmtT(s.x)+'</span>':diff>=0?'<span class="tag" style="font-weight:700">Due now</span>':'<span class="tag ok">'+fmtT(s.x)+'</span>';
+  return'<div class="trow"><button class="task '+(dn?'done':'')+'" data-ct="'+key+'"'+(diff>=0&&!dn?' style="border:2px solid var(--due)"':'')+'><span class="box">'+(dn?'✓':'')+'</span><span class="nm">'+esc(s.t.name)+'<span class="meta">'+(dn?esc(dn.who)+' at '+dn.time:'')+'</span></span>'+tg+'</button></div>'}
 function rtTile(t,p){var h='';
       var d=S.done[t.id+'|'+p.id];
       var mi=S.moves.filter(function(m){return m.tid===t.id&&m.to===p.id&&t.periods.indexOf(p.id)<0})[0];
-      h+='<div class="trow"><button class="task '+(d?'done':'')+'" data-k="'+t.id+'|'+p.id+'"'+(d?'':mi?' data-lpm="'+t.id+'|'+p.id+'"':' data-lp="'+t.id+'|'+p.id+'"')+'><span class="box">'+(d?'✓':'')+'</span><span class="nm">'+esc(t.name)+'<span class="meta">'+(d?esc(d.who)+' at '+d.time:mi?'Pushed here by '+esc(mi.who)+(mi.reason?', '+esc(mi.reason.toLowerCase()):'')+'. Hold to move back':'Tap when done, hold for options')+'</span></span></button>'+'</div>';
+      h+='<div class="trow"><button class="task '+(d?'done':'')+'" data-k="'+t.id+'|'+p.id+'"'+(d?'':mi?' data-lpm="'+t.id+'|'+p.id+'"':' data-lp="'+t.id+'|'+p.id+'"')+'><span class="box">'+(d?'✓':'')+'</span><span class="nm">'+esc(t.name)+'<span class="meta">'+(d?esc(d.who)+' at '+d.time:mi?'Pushed here by '+esc(mi.who)+(mi.reason?', '+esc(mi.reason.toLowerCase()):'')+'. Hold to move back':'')+'</span></span></button>'+'</div>';
   return h}
 function periodModel(p,cur){
   var isNow=p.id===cur.id;
@@ -431,7 +453,7 @@ function edit2(){
   if(!S.tasks.length)h+='<p class="note">No tasks yet. Add the first one above.</p>';
   EGRP.forEach(function(g){var ts=S.tasks.filter(function(t){return g[0].indexOf(fq(t))>-1}).sort(function(a,b){return a.name.localeCompare(b.name)});if(!ts.length)return;
     h+='<div class="egrp"><p class="sec">'+g[1]+' <span style="color:var(--mut);font-weight:400">· '+ts.length+'</span></p><div class="elist">'+ts.map(function(t){var nn=(t.needs||[]).length,gg=guideOf(t);
-      return'<button class="erow" data-te="'+t.id+'" data-tn="'+esc(t.name.toLowerCase())+'"><span class="en">'+esc(t.name)+'</span><span class="es">'+esc(sumT(t))+(gg?' · How-to':'')+(nn?' · '+nn+' suppl'+(nn>1?'ies':'y'):'')+'</span><span class="ech" aria-hidden="true">›</span></button>'}).join('')+'</div></div>'});
+      return'<button class="erow" data-te="'+t.id+'" data-tn="'+esc(t.name.toLowerCase())+'"><span class="en">'+esc(t.name)+'</span><span class="es">'+(ordTag(t)?'<span class="opill sm">'+ordTag(t)+'</span> ':'')+(ordTxt(t)?esc(ordTxt(t))+' · ':'')+esc(sumT(t))+(gg?' · How-to':'')+(nn?' · '+nn+' suppl'+(nn>1?'ies':'y'):'')+'</span><span class="ech" aria-hidden="true">›</span></button>'}).join('')+'</div></div>'});
   return h+'<p class="note" id="tnone" hidden>No tasks match.</p></div>';
 }
 var EGRP=[[['clock'],'At set times'],[['period'],'Each time of day'],[['times'],'Times per day'],[['days','weeks','months'],'Repeats every few days, weeks, or months'],[['prn'],'As needed'],[['once'],'One time']];
@@ -456,12 +478,14 @@ function drawTE(){var t=T(S.teId);if(!t){$('te').classList.remove('show');return
   else if(f==='days'||f==='weeks'||f==='months')h+='<p class="note">Repeats</p><label class="c">Every <input type="number" min="1" value="'+(t.n||t.every)+'" data-e="'+t.id+'" aria-label="Every"> '+f+'</label>';
   else if(f==='prn')h+='<p class="note">Minimum time between</p><label class="c"><input type="number" min="0" step="0.5" value="'+(t.gap||0)+'" data-gap="'+t.id+'" aria-label="Hours between" style="width:80px"> hours (0 = no limit)</label>';
   else if(f==='once')h+='<p class="note">When</p><div class="rs" style="align-items:center"><input type="date" value="'+t.date+'" data-od="'+t.id+'" aria-label="Date"><button class="tchip'+(S.flash===t.id+'@'+t.time?' new':'')+'" data-otp="'+t.id+'">'+(t.time?fmtT(t.time):'Pick a time')+'</button>'+(t.time?'<button data-otc="'+t.id+'">Any time</button>':'')+'</div>';
+  h+=ordSection(t);
   var nd=needsOf(t),g=guideOf(t);
   var free=S.stock.filter(function(i){return !(t.needs||[]).some(function(n){return n.sid===i.id})}).sort(function(a,b){return a.name.localeCompare(b.name)});
   h+='<div class="tesec"><p class="note">Supplies this task uses <span style="color:var(--mut)">(optional)</span></p>';
   h+=nd.length?'<div class="elist" style="margin-bottom:8px">'+nd.map(function(x){return'<div class="srow" style="padding:6px 10px"><span class="sname">'+esc(x.i.name)+'<span class="meta">'+x.i.qty+' on hand</span></span><label class="c">Uses <input type="number" min="0" value="'+x.n.use+'" data-tnq="'+t.id+'|'+x.i.id+'" aria-label="How many '+esc(x.i.name)+' each time" style="width:64px"></label><button class="tx" data-tnx="'+t.id+'|'+x.i.id+'" aria-label="Unlink '+esc(x.i.name)+'">×</button></div>'}).join('')+'</div>':'';
   h+='<select data-tna="'+t.id+'" aria-label="Add a supply" style="width:100%"><option value="">+ Add a supply…</option>'+free.map(function(i){return'<option value="'+i.id+'">'+esc(i.name)+' ('+i.qty+' on hand)</option>'}).join('')+(can('stock')?'<option value="__new">New supply…</option>':'')+'</select>';
-  h+='<p class="note" style="margin-top:6px">“Uses” is how many come off the count each time this is checked off. Use 0 for things that aren’t used up.</p></div>';
+  h+='<p class="note" style="margin-top:6px">“Uses” is how many come off the count each time this is checked off. Use 0 for things that aren’t used up.</p>';
+  h+='<p class="note" style="margin-top:12px">Also have ready <span style="color:var(--mut)">(not counted, e.g. a wet washcloth)</span></p>'+((t.extras||[]).length?'<div class="rs" style="margin-bottom:6px">'+t.extras.map(function(x,i){return'<span class="xchip">'+esc(x)+'<button class="tx" data-exd="'+t.id+'|'+i+'" aria-label="Remove '+esc(x)+'">×</button></span>'}).join('')+'</div>':'')+'<div class="addrow"><input type="text" id="exn" maxlength="40" placeholder="e.g. Wet washcloth" aria-label="Something to have ready"><button data-exa="'+t.id+'" style="flex:none">Add</button></div></div>';
   h+='<div class="tesec"><p class="note">How-to guide <span style="color:var(--mut)">(optional)</span></p><select data-tg="'+t.id+'" aria-label="How-to guide" style="width:100%"><option value="">None</option>'+S.guides.map(function(x){return'<option value="'+x.id+'"'+(g&&g.id===x.id?' selected':'')+'>'+esc(x.title)+'</option>'}).join('')+(can('guides')?'<option value="__new">Write a new guide…</option>':'')+'</select></div>';
   $('tet').textContent=t.name;$('teb').innerHTML=h;$('tedel').dataset.del=t.id}
 function stock(){var ad=can('stock'),srt=S.ssort==='qty'?'qty':'az',items=S.stock.slice().sort(function(a,b){var la=a.qty<=a.low,lb=b.qty<=b.low;if(la!==lb)return la?-1:1;if(srt==='qty'&&a.qty!==b.qty)return a.qty-b.qty;return a.name.localeCompare(b.name)});
@@ -494,7 +518,7 @@ function menu(){var p=me(),items=[];
   if(can('guides'))items.push(['library','Write guides','Add and edit how-to guides']);
   if(can('owner'))items.push(['admin','Admin settings','Recovery key, your code hint, setup checklist, and Start fresh']);
   var h=(isOwner()&&S.setup?setupCard(true):'')+(isOwner()&&!S.rkey?'<div class="vb"><span>Create a recovery key so a forgotten owner code can be reset.</span><button id="rknew">Create recovery key</button></div>':'');
-  h+='<div class="row" style="border:0;padding:0 0 12px;justify-content:space-between"><span class="note" style="margin:0">Signed in as <b>'+esc(S.who)+'</b> · '+roleName(p&&p.role)+'. Locks after 10 minutes without activity, when you sign out, or when someone else signs in.</span><button data-lock="1">Lock</button></div>';
+  h+='<div class="row" style="border:0;padding:0 0 12px;justify-content:space-between"><span class="note" style="margin:0">Signed in as <b>'+esc(S.who)+'</b> · '+roleName(p&&p.role)+'. Admin tools stay open while you’re signed in. Tap Lock if you step away.</span><button data-lock="1">Lock</button></div>';
   if(!items.length)h+='<p class="note">Your role doesn’t include any admin tools yet. An owner can turn them on in People and roles.</p>';
   h+='<div class="grid">'+items.map(function(i){return'<button class="task" '+(i[0]==='emedit'?'id="emedit"':'data-t="'+i[0]+'"')+' style="display:block;min-height:88px"><span class="nm" style="display:block;font-size:19px;font-weight:500">'+i[1]+'</span><span class="meta">'+i[2]+'</span></button>'}).join('')+'</div>';
   return h;
@@ -515,7 +539,7 @@ function week(){
   }
   return h+'</div><p class="note">Shows today plus the next six days. Repeating changes are projected from when they were last done.</p>';
 }
-function fillSt(){storageLine();$('stdm').innerHTML=[['sound','Chime and banner'],['banner','Banner only'],['off','Off']].map(function(o){return'<button data-duem="'+o[0]+'" class="'+((S.dueMode||'sound')===o[0]?'on':'')+'">'+o[1]+'</button>'}).join('');var cur=document.documentElement.dataset.theme||'dark';
+function fillSt(){storageLine();$('stbk').innerHTML=isOwner()?'<span class="note" style="margin:0;align-self:center">Backup reminder</span>'+[['on','Monthly'],['off','Off']].map(function(o){return'<button data-bkr="'+o[0]+'" class="'+((S.bkOff?'off':'on')===o[0]?'on':'')+'">'+o[1]+'</button>'}).join(''):'';$('stdm').innerHTML=[['sound','Chime and banner'],['banner','Banner only'],['off','Off']].map(function(o){return'<button data-duem="'+o[0]+'" class="'+((S.dueMode||'sound')===o[0]?'on':'')+'">'+o[1]+'</button>'}).join('');var cur=document.documentElement.dataset.theme||'dark';
   $('stth').innerHTML=[['dark','Dark'],['light','Light']].map(function(o){return'<button data-th="'+o[0]+'" class="'+(cur===o[0]?'on':'')+'">'+o[1]+'</button>'}).join('');
   $('stid').innerHTML=[[0,'Off'],[5,'5 min'],[15,'15 min'],[30,'30 min'],[60,'1 hour'],[120,'2 hours'],[240,'4 hours'],[480,'8 hours']].map(function(o){return'<button data-idl="'+o[0]+'" class="'+(S.idle===o[0]?'on':'')+'">'+o[1]+'</button>'}).join('');
   $('strt').textContent=fmtT(S.resetAt);$('stmsg').textContent='';$('stver').textContent='EZAide · Version '+VER;
@@ -541,7 +565,7 @@ function maybeReset(d){var k=bizDay(d);if(!S.dayKey){S.dayKey=k;return false}if(
   S.tasks.forEach(function(t){if(t.every>0){t.last=t.done?n:t.last+n;t.done=null}});
   return true}
 function signOut(){S.viewP=null;S.who='';S.adminOk=false;S.pend=null;S.pin={for:'',buf:''};hideUndo();['pin','pm','nu','st','wp','tp','emed','cf','ti','ge','ts','il','ot','te','qc','ns','op','ah','due'].forEach(function(id){$(id).classList.remove('show')});if(['edit','periods','people','admin','menu'].indexOf(S.tab)>-1)S.tab='today';render()}
-function idleCheck(){if(S.adminOk&&Date.now()-S.last>10*60000){lockAdmin();render()}if(S.who&&S.idle>0&&Date.now()-S.last>S.idle*60000&&!$('ah').classList.contains('show'))askHere()}
+function idleCheck(){if(S.who&&S.idle>0&&Date.now()-S.last>S.idle*60000&&!$('ah').classList.contains('show'))askHere()}
 function needWho(){if(S.who)return false;if(!S.people.length){openFR();return true}$('wpm').textContent='';$('wpl').innerHTML=S.people.map(function(p){return'<button data-wp="'+esc(p.name)+'">'+esc(p.name)+'</button>'}).join('')+'<button data-wpn="1">+ Add new user…</button>';$('wp').classList.add('show');return true}
 function openNew(){$('nun').value='';$('nue').textContent='';$('nu').classList.add('show');setTimeout(function(){try{$('nun').focus()}catch(x){}},50)}
 function drawPin(msg){var d='';for(var i=0;i<4;i++)d+=i<S.pin.buf.length?'●':'○';$('pind').textContent=d;$('pinm').textContent=msg||''}
@@ -643,6 +667,9 @@ document.addEventListener('click',function(e){
   if(b.dataset.o){var to0=T(b.dataset.o);if(to0&&to0.done){openDone('o',b.dataset.o);return}togO(b.dataset.o,true);return}
   if(b.dataset.ct){if(S.cdone[b.dataset.ct]){openDone('ct',b.dataset.ct);return}togCt(b.dataset.ct,true);return}
   if(b.dataset.undoco){undoCheck(b.dataset.undoco);return}
+  if(b.dataset.exa){addExtra(+b.dataset.exa,$('exn').value);setTimeout(function(){try{$('exn').focus()}catch(x){}},30);return}
+  if(b.dataset.exd){var xd=b.dataset.exd.split('|');delExtra(+xd[0],+xd[1]);return}
+  if(b.dataset.okind!==undefined){var ok=b.dataset.okind.split('|');setOrder(+ok[0],'kind',ok[1]);return}
   if(b.dataset.dued){dueDone(b.dataset.dued);return}
   if(b.id==='dueok'){ackDue();return}
   if(b.id==='ahy'){S.last=Date.now();$('ah').classList.remove('show');return}
@@ -654,7 +681,9 @@ document.addEventListener('click',function(e){
   if(b.id==='cfx'){$('cf').classList.remove('show');CF=null;return}
   if(b.id==='cfok'){var cfn=CF;$('cf').classList.remove('show');CF=null;if(cfn)cfn();return}
   if(b.id==='bkp2'){saveBackup();return}
-  if(b.id==='bklater'){S.bkSnooze=Date.now()+864e5;render();return}
+  if(b.id==='bklater'){S.bkSnooze=Date.now()+30*864e5;render();return}
+  if(b.id==='bkoff'){S.bkOff=true;render();showHint('Backup reminders are off. An owner can turn them back on in ⚙ Settings.');return}
+  if(b.dataset.bkr!==undefined){if(!isOwner())return;S.bkOff=b.dataset.bkr==='off';S.bkSnooze=0;fillSt();render();return}
   if(b.dataset.wk!==undefined){S.wake=b.dataset.wk==='1';wakeApply();fillSt();return}
   if(b.dataset.atd){var _b=b;askConfirm('Remove this time?',fmtT(T(b.dataset.atd.split('|')[0]).at[+b.dataset.atd.split('|')[1]])+' will be removed from “'+tn(b.dataset.atd.split('|')[0])+'”.','Remove time',function(){var b=_b;var z=b.dataset.atd.split('|'),tz=S.tasks.filter(function(x){return x.id==z[0]})[0];lgc(tz.name+': removed '+fmtT(tz.at[+z[1]]),tz.id);tz.at.splice(+z[1],1);render();});return}
   if(b.dataset.sq){if(needWho())return;var a=b.dataset.sq.split('|'),it=S.stock.filter(function(x){return x.id==a[0]})[0];if(it)setQty(it.id,it.qty+ +a[1]);render();return}
@@ -696,12 +725,15 @@ document.addEventListener('click',function(e){
     blankState();save();render();openFR();return}
 });
 document.addEventListener('input',function(e){if(e.target.id==='tfind')applyFind();if(e.target.id==='logq'){var lv=e.target.value;clearTimeout(window._lqt);window._lqt=setTimeout(function(){S.logq=lv;S.logCap=300;S._lqf=true;render()},250)}});
-document.addEventListener('keydown',function(e){if(e.key!=='Enter')return;var id=e.target.id;if(id==='qcv'){e.preventDefault();saveQC()}else if(id==='rck'){e.preventDefault();checkRC()}else if(id==='rcn2'){e.preventDefault();saveRC()}});
+document.addEventListener('keydown',function(e){if(e.key!=='Enter')return;var id=e.target.id;if(id==='qcv'){e.preventDefault();saveQC()}else if(id==='exn'){e.preventDefault();addExtra(S.teId,e.target.value);setTimeout(function(){try{$('exn').focus()}catch(x){}},30)}else if(id==='rck'){e.preventDefault();checkRC()}else if(id==='rcn2'){e.preventDefault();saveRC()}});
 document.addEventListener('change',function(e){
   if(e.target.id==='rsf'){var f=e.target.files&&e.target.files[0];if(!f)return;var fr=new FileReader();fr.onload=function(){var ok=false;try{ok=applySnap(JSON.parse(fr.result))}catch(x){}
     if(ok){LREPL=true;S.last=Date.now();maybeReset();save();fillSt();$('stmsg').textContent='Restored. Sign in again from the Who’s here menu.';$('fr').classList.remove('show');render();if(S.people.length)needWho();else openFR()}else $('stmsg').textContent='That file is not an EZAide backup. Nothing was changed.'};fr.readAsText(f);return}
   if(e.target.id==='whosel'){var wv=e.target.value;e.target.value=S.who;if(!wv)return;if(wv==='__new')openNew();else openPin(wv);return}
   var d=e.target.dataset;
+  if(d.oamt){setOrder(+d.oamt,'amt',e.target.value);return}
+  if(d.orte){setOrder(+d.orte,'route',e.target.value);return}
+  if(d.onote){setOrder(+d.onote,'note',e.target.value);return}
   if(d.tna){var ta=T(d.tna),v2=e.target.value;if(!ta||!can('sched'))return;if(v2==='__new'){if(!can('stock'))return;NST=ta.id;$('nsn').value='';$('nsq').value=10;$('nsl').value=2;$('nse').textContent='';$('nsfor').textContent='It will be linked to “'+ta.name+'”.';$('ns').classList.add('show');setTimeout(function(){try{$('nsn').focus()}catch(x){}},60);e.target.value='';return}
     var sid=+v2;if(!sid)return;ta.needs=ta.needs||[];if(!ta.needs.some(function(n){return n.sid===sid}))ta.needs.push({sid:sid,use:1});var si=S.stock.filter(function(x){return x.id===sid})[0];lgc(ta.name+': uses '+(si?si.name:'a supply'),ta.id);render();return}
   if(d.tnq){var qa=d.tnq.split('|'),tq2=T(qa[0]);if(!tq2||!can('sched'))return;(tq2.needs||[]).forEach(function(n){if(n.sid===+qa[1])n.use=Math.max(0,Math.round(+e.target.value)||0)});return}
@@ -784,6 +816,28 @@ function openAbout(){var P=['EZAide is a general-purpose organizational tool for
   showSheet('About & disclaimer',P.map(function(x){return'<p style="line-height:1.45;margin:0 0 10px">'+x+'</p>'}).join('')+acc+'<p class="note">EZAide · Version '+VER+'</p>')}
 function sgroup(it,f){var E=['code','people','tasks','emer'],a=it.filter(function(x){return E.indexOf(x[0])>-1}),b=it.filter(function(x){return E.indexOf(x[0])<0});
   return'<p class="note" style="margin:4px 0 2px">Essentials</p>'+a.map(f).join('')+(b.length?'<p class="note" style="margin:14px 0 2px">When you have a minute</p>'+b.map(f).join(''):'')}
+/* ---- 1.12: orders (amount, how given, instructions) ---- */
+var OKIND=[['','None'],['med','Medication'],['feed','Feeding'],['other','Other measured']];
+var OROUTE=['','By mouth','G-tube','J-tube','NG tube','Inhaled','On skin','Other'];
+function ordTxt(t){var o=t&&t.order;if(!o||!o.kind||!(o.amt||o.route))return'';return[o.amt,o.route].filter(Boolean).join(' · ')}
+function ordTag(t){var o=t&&t.order;return o&&o.kind==='med'?'Med':o&&o.kind==='feed'?'Feed':o&&o.kind==='other'?'Measure':''}
+function ordBadge(t){var o=t&&t.order;if(!o||!o.kind)return'';
+  return'<span class="ord"><span class="opill">'+ordTag(t)+'</span>'+(o.amt?'<span class="oamt">'+esc(o.amt)+'</span>':'')+(o.route?'<span class="orte">'+(o.amt?'· ':'')+esc(o.route)+'</span>':'')+'</span>'+(o.note?'<span class="ordn">'+esc(o.note)+'</span>':'')}
+function ordSection(t){var o=t.order||{},k=o.kind||'';
+  var h='<div class="tesec"><p class="note">Amount and instructions <span style="color:var(--mut)">(for meds, feeds, anything measured)</span></p>';
+  h+='<div class="seg" role="group" aria-label="Type" style="margin-bottom:8px">'+OKIND.map(function(x){return'<button data-okind="'+t.id+'|'+x[0]+'" class="'+(k===x[0]?'on':'')+'">'+x[1]+'</button>'}).join('')+'</div>';
+  if(k){h+='<div class="addrow"><input type="text" data-oamt="'+t.id+'" value="'+esc(o.amt||'')+'" maxlength="40" placeholder="Amount, e.g. 5 mL" aria-label="Amount" style="min-width:140px"><select data-orte="'+t.id+'" aria-label="How it’s given" style="flex:none">'+OROUTE.map(function(r){return'<option value="'+esc(r||'-')+'"'+((o.route||'')===r?' selected':'')+'>'+(r||'How it’s given…')+'</option>'}).join('')+'</select></div>';
+    h+='<input type="text" data-onote="'+t.id+'" value="'+esc(o.note||'')+'" maxlength="120" placeholder="Instructions, e.g. run over 30 min on the pump" aria-label="Instructions" style="width:100%;margin-top:8px">';
+    h+='<p class="note" style="margin-top:6px">Enter it exactly as the doctor ordered. Checking the task off means it was given as written here.'+(o.by?' Last changed by '+esc(o.by)+' on '+new Date(o.at).toLocaleDateString([],{month:'short',day:'numeric'})+'.':'')+'</p>'}
+  return h+'</div>'}
+function setOrder(tid,field,val){var t=T(tid);if(!t||!can('sched'))return;t.order=t.order||{kind:'',amt:'',route:'',note:''};var o=t.order;val=String(val||'').trim();if(field==='route'&&val==='-')val='';var old=o[field]||'';if(old===val)return;
+  o[field]=val;o.by=S.who;o.at=Date.now();
+  var lbl={kind:'type',amt:'amount',route:'how it’s given',note:'instructions'}[field],shown=function(v){return field==='kind'?(OKIND.filter(function(x){return x[0]===v})[0]||['','None'])[1]:(v||'none')};
+  lgc(t.name+': '+lbl+' '+shown(old)+' → '+shown(val),t.id);if(field==='kind'&&!val){t.order={kind:'',amt:'',route:'',note:'',by:S.who,at:Date.now()}}render()}
+/* ---- 1.12: "also have ready" (not counted) ---- */
+function extrasHtml(list){return list.length?'<p class="sec">Also have ready</p>'+list.map(function(x){return'<div class="emr"><span>'+esc(x)+'</span><span class="note" style="margin:0">Not counted</span></div>'}).join(''):''}
+function addExtra(tid,v){var t=T(tid);if(!t||!can('sched'))return;v=String(v||'').trim();if(!v)return;t.extras=t.extras||[];if(t.extras.some(function(x){return x.toLowerCase()===v.toLowerCase()}))return;t.extras.push(v);lgc(t.name+': also have ready '+v,t.id);render()}
+function delExtra(tid,i){var t=T(tid);if(!t||!can('sched')||!t.extras)return;var v=t.extras.splice(i,1)[0];lgc(t.name+': no longer lists '+v,t.id);render()}
 /* ---- 1.11 safety code ---- */
 /* ---- 1.11: safety ---- */
 /* done tasks: tap shows details; undo is a deliberate step */
@@ -793,7 +847,7 @@ function doneInfo(kind,key){var t,who,lbl;
   else{t=T(key);who=t&&t.done;lbl=t?t.name:''}
   return{t:t,who:who,lbl:lbl}}
 function openDone(kind,key){var x=doneInfo(kind,key);if(!x.who)return;
-  showSheet(x.lbl,'<p style="margin:0 0 6px;font-size:18px">✓ Done by <b>'+esc(x.who.who)+'</b> at '+esc(x.who.time)+'</p><p class="note">It stays checked off. If this was a mistake, undo it below; the undo is recorded in the Log.</p>','<button data-undoco="'+kind+'|'+esc(key)+'" style="color:var(--bad)">Undo this check-off</button>')}
+  showSheet(x.lbl,'<p style="margin:0 0 6px;font-size:18px">✓ Done by <b>'+esc(x.who.who)+'</b> at '+esc(x.who.time)+'</p>'+(ordTxt(x.t)?'<p style="margin:0 0 6px">Given as ordered: <b>'+esc(ordTxt(x.t))+'</b></p>':'')+'<p class="note">It stays checked off. If this was a mistake, undo it below; the undo is recorded in the Log.</p>','<button data-undoco="'+kind+'|'+esc(key)+'" style="color:var(--bad)">Undo this check-off</button>')}
 function undoCheck(v){var i=v.indexOf('|'),kind=v.slice(0,i),key=v.slice(i+1);if(needWho())return;$('ti').classList.remove('show');
   if(kind==='k'&&S.done[key])togK(key,false);else if(kind==='ct'&&S.cdone[key])togCt(key,false);else if(kind==='i'&&T(key)&&T(key).done)togI(key,false);else if(kind==='o'&&T(key)&&T(key).done)togO(key,false);
   showHint('Check-off undone. It’s back on the board.')}
@@ -830,7 +884,7 @@ function chime(){if(!AC||S.dueMode!=='sound')return;try{var t0=AC.currentTime;[[
 function dueItems(){var now=Date.now(),nm=new Date().getHours()*60+new Date().getMinutes(),out=[],win=60;
   S.tasks.forEach(function(t){
     (t.at||[]).forEach(function(x){var q=t.id+'@'+x;if(S.cdone[q])return;var p=S.periods.filter(function(z){return inP(z,mins(x))})[0]||S.periods[0],d=slotDiff(x,nm,p);
-      if(d>=0&&d<Math.max(win,t.grace||60))out.push({key:'c:'+q+':'+S.dayKey,name:t.name,when:fmtT(x),kind:'ct',ref:q})});
+      if(d>=0&&d<Math.max(win,t.grace||60))out.push({key:'c:'+q+':'+S.dayKey,name:t.name,when:fmtT(x),ord:ordTxt(t),kind:'ct',ref:q})});
     if(t.once&&!t.done&&t.time&&t.date===bizDay()){var ts=onceTs(t),d2=(now-ts)/60000;if(d2>=0&&d2<win)out.push({key:'o:'+t.id+':'+t.date,name:t.name,when:fmtT(t.time),kind:'o',ref:String(t.id)})}});
   S.moves.forEach(function(m){if(m.to!=='at')return;var k=m.tid+'|'+m.from,d3=(now-m.ts)/60000;if(S.done[k]||!T(m.tid))return;if(d3>=0&&d3<win)out.push({key:'m:'+k+':'+m.ts,name:tn(m.tid),when:fmt(new Date(m.ts)),kind:'k',ref:k})});
   return out}
@@ -842,7 +896,7 @@ function checkDue(){if(!S.people.length||S.dueMode==='off')return;S.alerted=S.al
 function ring(){clearTimeout(DUE.rt);if(!$('due').classList.contains('show'))return;chime();DUE.rings++;if(DUE.rings<5)DUE.rt=setTimeout(ring,120000)}
 function drawDue(){var it=DUE.shown.filter(function(x){return !S.alerted[x.key]});if(!it.length){ackDue();return}
   $('dueh').textContent=it.length===1?'Due now':it.length+' things are due';
-  $('duel').innerHTML=it.map(function(x){return'<div class="srow"><span class="sname" style="font-size:19px">'+esc(x.name)+'<span class="meta">Due at '+esc(x.when)+'</span></span><button class="tpok" data-dued="'+esc(x.key)+'" style="flex:none;font-size:16px;padding:8px 16px">Mark done</button></div>'}).join('')}
+  $('duel').innerHTML=it.map(function(x){return'<div class="srow"><span class="sname" style="font-size:19px">'+esc(x.name)+'<span class="meta">Due at '+esc(x.when)+(x.ord?' · <b style="color:var(--tx)">'+esc(x.ord)+'</b>':'')+'</span></span><button class="tpok" data-dued="'+esc(x.key)+'" style="flex:none;font-size:16px;padding:8px 16px">Mark done</button></div>'}).join('')}
 function ackDue(){(DUE.shown||[]).forEach(function(x){S.alerted[x.key]=1});DUE.shown=[];clearTimeout(DUE.rt);$('due').classList.remove('show');save()}
 function dueDone(key){if(needWho())return;var x=DUE.shown.filter(function(y){return y.key===key})[0];if(!x)return;
   if(x.kind==='ct'&&!S.cdone[x.ref])togCt(x.ref,true);else if(x.kind==='k'&&!S.done[x.ref])togK(x.ref,true);else if(x.kind==='o'){var t=T(x.ref);if(t&&!t.done)togO(x.ref,true)}
@@ -957,12 +1011,12 @@ function pinKey(k){
       if(pp.stage===1){pp.first=pp.buf;pp.buf='';pp.stage=2;$('pint').textContent='Enter it again to confirm';drawPin('');return}
       if(pp.buf===pp.first){var ex=S.people.filter(function(x){return x.name===pp.name})[0];
         if(ex){ex.pin=pp.first;ex.mustReset=false}else S.people.push({name:pp.name,pin:pp.first,role:needMigrate()?undefined:'caregiver'});
-        var same=S.who===pp.name;S.who=pp.name;if(!same)lockAdmin();$('pin').classList.remove('show');render();if(same)showHint('Your code was changed.');else maybeTour();return}
+        var same=S.who===pp.name;S.who=pp.name;if(!same){lockAdmin();if(isStaff()&&!needMigrate()){S.adminOk=true;S.last=Date.now()}}$('pin').classList.remove('show');render();if(same)showHint('Your code was changed.');else maybeTour();return}
       pp.buf='';pp.first='';pp.stage=1;$('pint').textContent='Choose your code, '+pp.name;drawPin('Those didn’t match. Start again.');return}
     if(pp.for==='__admin'){var m=me();if(m&&m.pin===pp.buf){pinOk();S.adminOk=true;S.last=Date.now();$('pin').classList.remove('show');goArea(pp.back||'menu');return}pinWrong();return}
     if(pp.for==='__old'){if(pp.buf===S.adminPin){pinOk();$('pin').classList.remove('show');openOwnerPick(pp.back);return}pinWrong();return}
     var p=S.people.filter(function(x){return x.name===pp.for})[0];
-    if(p&&p.pin===pp.buf){pinOk();S.who=p.name;lockAdmin();$('pin').classList.remove('show');render();maybeTour();return}
+    if(p&&p.pin===pp.buf){pinOk();S.who=p.name;lockAdmin();if(isStaff()&&!needMigrate()){S.adminOk=true;S.last=Date.now()}$('pin').classList.remove('show');render();maybeTour();return}
     pinWrong();return}
   drawPin('')}
 function lockAdmin(){S.adminOk=false;if(['edit','periods','people','admin','menu'].indexOf(S.tab)>-1)S.tab='today'}
@@ -984,7 +1038,7 @@ function saveRC(){var a=$('rcn').value.trim(),b=$('rcn2').value.trim(),p=S.peopl
   if(hintBad($('rch').value,a)){$('rce').textContent='The hint can’t include the code itself.';return}
   p.pin=a;p.mustReset=false;p.hint=$('rch').value.trim();S.who=p.name;lg('Changed',p.name+'’s code reset with the recovery key');$('rc').classList.remove('show');S.adminOk=true;S.last=Date.now();S.tab='menu';render();showKey()}
 /* log */
-function lg(a,d,x){S.log.unshift({ts:new Date(),who:S.who,a:a,d:d||'',tid:x&&x.tid!=null?+x.tid:undefined,sid:x&&x.sid!=null?+x.sid:undefined})}
+function lg(a,d,x){if(x&&x.tid!=null&&(a==='Completed'||a==='Logged')){var ot=ordTxt(T(x.tid));if(ot)d=(d||'')+' · '+ot}S.log.unshift({ts:new Date(),who:S.who,a:a,d:d||'',tid:x&&x.tid!=null?+x.tid:undefined,sid:x&&x.sid!=null?+x.sid:undefined})}
 function lgc(d,tid){lg('Changed',d,tid!=null?{tid:tid}:null)}
 function logMatch(r,sel){if(!sel)return true;var k=sel.charAt(0),id=+sel.slice(2);
   if(k==='t'){if(r.tid!=null)return r.tid===id;var t=T(id);return !r.sid&&!!t&&r.d.toLowerCase().indexOf(t.name.toLowerCase())>-1}
@@ -1097,19 +1151,19 @@ function stepsOf(g){return(g.steps||'').split('\n').map(function(x){return x.tri
 function needsHtml(list){return list.map(function(x){var out=isOut(x),low=x.i.qty<=x.i.low;
   return'<div class="emr"><span>'+esc(x.i.name)+'<span class="meta">'+(x.n.use?'Uses '+x.n.use+' each time':'Needed, not used up')+'</span></span><span style="display:flex;gap:8px;align-items:center"><span style="font-variant-numeric:tabular-nums">'+x.i.qty+' on hand</span>'+(out?'<span class="tag" style="background:#4a1f1b;color:#ffd9d4">Out</span>':low?'<span class="tag">Low</span>':'<span class="tag ok">OK</span>')+'</span></div>'}).join('')}
 function stepsHtml(g){var st=stepsOf(g);return st.length?'<ol class="emol">'+st.map(function(x){return'<li>'+esc(x)+'</li>'}).join('')+'</ol>':'<p class="note">No steps written yet.</p>'}
-function infoBtn(t){if(!t)return'';var g=guideOf(t),nd=needsOf(t);if(!g&&!nd.length)return'';var out=nd.some(isOut),low=nd.some(function(x){return x.i.qty<=x.i.low});
+function infoBtn(t){if(!t)return'';var g=guideOf(t),nd=needsOf(t);if(!g&&!nd.length&&!(t.extras||[]).length)return'';var out=nd.some(isOut),low=nd.some(function(x){return x.i.qty<=x.i.low});
   return'<button class="push infob" data-ti="'+t.id+'" aria-label="How-to and supplies for '+esc(t.name)+'">'+(g?'How-to':'Supplies')+(out?'<span class="tag" style="background:#4a1f1b;color:#ffd9d4;display:block;margin-top:3px;font-size:11px;padding:1px 5px">Out</span>':low?'<span class="tag" style="display:block;margin-top:3px;font-size:11px;padding:1px 5px">Low</span>':'')+'</button>'}
-function addInfo(h){return h.replace(/(<div class="trow"><button class="task[^"]*" data-(?:k|i|o|ct|c|pr)="(\d+)[^>]*>[\s\S]*?<\/button>)(<\/div>)/g,function(m,a,id,c){return a+infoBtn(T(id))+c})}
+function addInfo(h){return h.replace(/(<div class="trow"><button class="task[^"]*" data-(?:k|i|o|ct|c|pr)="(\d+)[^>]*>[\s\S]*?<\/button>)(<\/div>)/g,function(m,a,id,c){var t=T(id),ob=ordBadge(t);a=a.replace(/<span class="nm">([^<]*)/,'<span class="nm"><span class="tn">$1</span>');if(ob)a=a.replace(/(<span class="tn">[^<]*<\/span>)/,function(m0){return m0+ob});return a+infoBtn(t)+c})}
 function showSheet(title,body,foot){$('tit').textContent=title;$('tib').innerHTML=body;$('tif').innerHTML=(foot||'')+'<button data-cl="ti">Close</button>';$('ti').classList.add('show')}
 function openInfo(tid){var t=T(tid);if(!t)return;var g=guideOf(t),nd=needsOf(t),h='';
-  h+=nd.length?'<p class="sec" style="margin-top:4px">What you’ll need</p>'+needsHtml(nd):'<p class="note">No supplies listed for this task.</p>';
+  h+=nd.length?'<p class="sec" style="margin-top:4px">What you’ll need</p>'+needsHtml(nd):'';h+=extrasHtml(t.extras||[]);if(!nd.length&&!(t.extras||[]).length)h+='<p class="note">No supplies listed for this task.</p>';
   h+=g?'<p class="sec">How to · '+esc(g.title)+'</p>'+stepsHtml(g):'<p class="note">No how-to guide linked to this task yet.</p>';
   showSheet(t.name,h)}
 function openGuide(gid){var g=S.guides.filter(function(x){return x.id===gid})[0];if(!g)return;var ts=S.tasks.filter(function(t){return t.guide===gid}),all={};
   ts.forEach(function(t){needsOf(t).forEach(function(x){var k=x.i.id;if(!all[k]||(x.n.use||0)>(all[k].n.use||0))all[k]=x})});
   var nd=Object.keys(all).map(function(k){return all[k]}),h='';
   if(ts.length)h+='<p class="note" style="margin-top:0">Used for: '+ts.map(function(t){return esc(t.name)}).join(', ')+'</p>';
-  if(nd.length)h+='<p class="sec">What you’ll need</p>'+needsHtml(nd);
+  if(nd.length)h+='<p class="sec">What you’ll need</p>'+needsHtml(nd);var ex=[];ts.forEach(function(t){(t.extras||[]).forEach(function(x){if(ex.indexOf(x)<0)ex.push(x)})});h+=extrasHtml(ex);
   h+='<p class="sec">Steps</p>'+stepsHtml(g);
   showSheet(g.title,h,can('guides')?'<button data-ge="'+g.id+'">Edit guide</button>':'')}
 function library(){var gs=S.guides.slice().sort(function(a,b){return a.title.localeCompare(b.title)});
@@ -1173,10 +1227,11 @@ function undoPrn(id){var t=T(id);if(!t||!t.hist||!t.hist.length)return;t.hist.po
 /* ---- confirm, backup reminder, keep awake ---- */
 var CF=null;
 function askConfirm(title,msg,ok,fn,safe){CF=fn;$('cft').textContent=title;$('cfm').textContent=msg;$('cfok').textContent=ok;$('cfok').className='cfok'+(safe?' go':'');$('cf').classList.add('show')}
-function bkBanner(){var now=Date.now(),wk=7*864e5;if(!S.tasks.length||(S.bkSnooze&&now<S.bkSnooze))return'';
-  if(S.lastBackup&&now-S.lastBackup<wk)return'';if(!S.lastBackup&&now-(S.since||now)<864e5)return'';
+function bkBanner(){var now=Date.now(),mo=30*864e5;
+  if(!isOwner()||S.bkOff||!S.tasks.length||(S.bkSnooze&&now<S.bkSnooze))return'';
+  if(S.lastBackup&&now-S.lastBackup<mo)return'';if(!S.lastBackup&&now-(S.since||now)<7*864e5)return'';
   var d=S.lastBackup?Math.floor((now-S.lastBackup)/864e5):0;
-  return'<div class="vb"><span>'+(S.lastBackup?'No backup in '+d+' days.':'This iPad hasn’t been backed up yet.')+' The iPad holds the only copy of your data.</span><span style="display:flex;gap:8px;flex-wrap:wrap"><button id="bklater" style="background:transparent;color:var(--due);border-color:var(--due)">Remind me tomorrow</button><button id="bkp2">Save a backup</button></span></div>'}
+  return'<div class="bkline"><span>'+(S.lastBackup?'Last backup: '+d+' days ago.':'This device hasn’t been backed up yet.')+'</span><button id="bkp2">Back up now</button><button id="bklater">Not now</button><button id="bkoff">Don’t remind me</button></div>'}
 var WL=null;
 function wakeApply(){try{if(S.wake&&!document.hidden&&'wakeLock' in navigator){if(!WL)navigator.wakeLock.request('screen').then(function(l){WL=l;l.addEventListener('release',function(){WL=null})}).catch(function(){})}else if(WL){WL.release();WL=null}}catch(e){}}
 document.addEventListener('visibilitychange',wakeApply);document.addEventListener('pointerdown',function(){if(S.wake&&!WL)wakeApply()},true);

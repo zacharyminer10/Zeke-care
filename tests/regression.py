@@ -104,6 +104,15 @@ def main():
         code(pg, '1111'); clear(pg)
         check('E2 correct code works after the pause', pg.evaluate("S.who==='Owner'&&S.pinFail.n===0"))
 
+        # N. owners/managers go straight into the Menu after signing in
+        pg.evaluate("S.who='';S.adminOk=false;render()")
+        pg.select_option('#whosel', 'Owner'); code(pg, '1111'); clear(pg)
+        pg.click('#nav [data-t="menu"]')
+        check('N1 owner opens Menu without retyping a code', not pg.is_visible('#pin') and pg.evaluate("S.tab")=='menu')
+        pg.click('[data-lock]'); pg.click('#nav [data-t="menu"]')
+        check('N2 after tapping Lock, the Menu asks for the code', pg.is_visible('#pin'))
+        code(pg, '1111')
+
         # F. idle asks, never signs out
         pg.evaluate('S.idle=60;S.last=Date.now()-61*60000;idleCheck()')
         check('F1 idle shows Still here? and keeps person', pg.is_visible('#ah') and pg.evaluate("S.who==='Owner'"))
@@ -116,6 +125,33 @@ def main():
         check('G2 Mark done from banner checks it off', pg.evaluate(f"!!S.cdone['503@{x}']"))
         pg.evaluate('checkDue()')
         check('G3 no repeat alert after handling', not pg.is_visible('#due'))
+
+        # K. backup reminder: owners only, monthly, quiet
+        pg.evaluate("S.who='Owner';S.bkOff=false;S.bkSnooze=0;S.lastBackup=Date.now()-20*864e5;S.tab='today';render()")
+        check('K1 no backup reminder within 30 days', pg.locator('.bkline').count() == 0)
+        pg.evaluate("S.lastBackup=Date.now()-34*864e5;render()")
+        check('K2 owner sees a small reminder after 30 days', pg.locator('.bkline').count() == 1)
+        pg.evaluate("S.who='Nurse';render()")
+        check('K3 caregivers never see it', pg.locator('.bkline').count() == 0)
+        pg.evaluate("S.who='Owner';render()"); pg.click('#bklater')
+        check('K4 Not now snoozes about a month', pg.evaluate("Math.round((S.bkSnooze-Date.now())/864e5)") == 30)
+
+        # L. doctor's orders on tasks
+        pg.evaluate("S.who='Owner';S.adminOk=true;S.last=Date.now();var d=new Date(Date.now()+3600000),x=String(d.getHours()).padStart(2,'0')+':00';S.tasks.push({id:801,name:'Feed B',periods:[],every:0,at:[x],needs:[]});setOrder(801,'kind','feed');setOrder(801,'amt','120 mL');setOrder(801,'route','G-tube');S.tab='today';render()")
+        check('L1 order shows on the tile', '120 mL' in pg.locator('[data-ct^="801@"]').first.inner_text())
+        pg.locator('[data-ct^="801@"]').first.click()
+        check('L2 check-off logs the order as given', pg.evaluate("S.log[0].a==='Completed'&&S.log[0].d.indexOf('120 mL')>-1"))
+        pg.evaluate("setOrder(801,'amt','140 mL')")
+        check('L3 order change is logged, old entry keeps old amount', pg.evaluate("S.log[0].d.indexOf('120 mL → 140 mL')>-1&&S.log.some(r=>r.a==='Completed'&&r.d.indexOf('120 mL')>-1)"))
+        pg.evaluate("S.adminOk=false;setOrder(801,'amt','999 mL')")
+        check('L4 only people who can edit tasks can change an order', pg.evaluate("T(801).order.amt==='140 mL'"))
+
+        # M. "also have ready" items are listed but never counted
+        pg.evaluate("S.adminOk=true;S.last=Date.now();var n=S.stock.length;addExtra(801,'Wet washcloth');addExtra(801,'wet washcloth');window._n=n")
+        check('M1 also-have-ready adds once and creates no inventory', pg.evaluate("T(801).extras.length===1&&S.stock.length===window._n"))
+        pg.evaluate("S.tab='today';render()"); pg.click('[data-ti="801"]')
+        check('M2 shows on the task card as not counted', 'Wet washcloth' in pg.inner_text('#tib') and 'Not counted' in pg.inner_text('#tib'))
+        pg.click('[data-cl="ti"]')
 
         # H. inventory + log database persistence
         pg.evaluate("S.stock.push({id:601,name:'Gauze',qty:10,low:2});S.tab='stock';render()")
