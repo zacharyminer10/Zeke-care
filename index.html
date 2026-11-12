@@ -154,6 +154,10 @@ b,strong,.ch b,.panel .ch b,.sh .shn,.tpv,.emal,.emr b{font-weight:500}
 nav button,nav button.on,.pill,.tag,.sec,.who button.on,.rs button.on,.tchip,.upd,.toast{font-weight:500}
 .tpok,.toast button,.vb button,.upd button,.cfok,.pad button{font-weight:600}
 .task .box{font-weight:600}
+/* 1.9 roles */
+.tesec{margin-top:14px;padding-top:4px;border-top:1px solid var(--line)}
+.permbox{display:flex;flex-wrap:wrap;gap:6px;width:100%;padding-top:6px;border-top:1px dashed var(--line)}
+.lrow[hidden],.lday[hidden],#lnone[hidden]{display:none}
 /* 1.8 recovery + first task */
 .hintbox{display:flex;flex-direction:column;gap:2px;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin:0 0 12px}.hintbox b{font-size:18px}.hintbox[hidden]{display:none}
 .rkv{font:600 26px/1.2 ui-monospace,"SF Mono",Menlo,monospace;letter-spacing:.06em;text-align:center;background:var(--bg);border:1px dashed var(--acc);border-radius:12px;padding:16px 8px;margin:0 0 6px;-webkit-user-select:all;user-select:all}
@@ -225,7 +229,7 @@ nav{flex-wrap:wrap}nav button{white-space:nowrap}
 <div class="rs"><button id="tourre">Show the tour</button></div><div><button id="stx">Done</button></div><div class="row" style="border:0;padding:14px 0 0;justify-content:flex-end"><span class="note" style="margin:0" id="stver"></span><button id="chkup">Check for updates</button></div></div></div>
 <div class="modal" id="wp"><div class="card"><h2>Who’s here?</h2><p class="note">Pick your name, then enter your code.</p><p class="note" id="wpm" style="color:var(--ok)" aria-live="polite"></p><div class="pmb" id="wpl"></div><button id="wpx">Cancel</button></div></div>
 <div class="modal" id="nu"><div class="card"><h2>New user</h2><p class="note">Enter your name. You’ll choose your own 4-digit code next.</p><input type="text" id="nun" placeholder="Your name" maxlength="24" aria-label="Your name" style="width:100%;margin-bottom:8px"><p class="note" id="nue" style="color:var(--bad)" aria-live="polite"></p><div style="display:flex;gap:8px"><button id="nuok">Next</button><button id="nux">Cancel</button></div></div></div>
-<div class="modal" id="pin"><div class="card"><h2 id="pint"></h2><p class="dots" id="pind"></p><p class="note" id="pinm" aria-live="polite"></p><div class="pad" id="pad"></div><button id="pinx">Cancel</button><button id="pinforgot" hidden style="width:100%;margin-top:8px;background:transparent;border-color:transparent;color:var(--acc)">Forgot the admin code?</button></div></div>
+<div class="modal" id="pin"><div class="card"><h2 id="pint"></h2><p class="dots" id="pind"></p><p class="note" id="pinm" aria-live="polite"></p><div class="pad" id="pad"></div><button id="pinx">Cancel</button><button id="pinforgot" hidden style="width:100%;margin-top:8px;background:transparent;border-color:transparent;color:var(--acc)">Forgot your code?</button></div></div>
 <div class="modal" id="pm"><div class="card"><h2 id="pmt"></h2><div id="pmrw"><p class="note">Reason (optional)</p><div class="rs" id="pmr"></div><p class="note">Where should this go?</p></div><div class="pmb" id="pmb"></div><p class="note" id="pmerr" style="color:var(--bad)" aria-live="polite"></p><button id="pmx">Cancel</button></div></div>
 <div class="modal" id="modal"><div class="card" style="max-width:580px">
   <h2>Emergency</h2>
@@ -237,24 +241,25 @@ nav{flex-wrap:wrap}nav button{white-space:nowrap}
 <div class="modal" id="te"><div class="card" style="max-width:560px"><h2 id="tet"></h2><div id="teb"></div><div style="display:flex;gap:8px;margin-top:18px;align-items:center"><button id="tedel" data-del="" style="color:var(--bad)">Remove task</button><span style="flex:1"></span><button data-cl="te" class="tpok" style="flex:none;font-size:16px;padding:8px 26px">Done</button></div></div></div>
 <div class="modal" id="qc"><div class="card" style="max-width:360px"><h2 id="qct"></h2><p class="note" style="margin-top:0">How many are on hand right now?</p><input type="number" id="qcv" inputmode="numeric" min="0" aria-label="Count on hand" style="width:100%;font-size:28px;text-align:center"><p class="note" id="qce" style="color:var(--bad)" aria-live="polite"></p><div style="display:flex;gap:8px"><button data-cl="qc">Cancel</button><button id="qcok" class="tpok" style="font-size:18px">Save count</button></div></div></div>
 <div class="modal" id="tour"><div class="card" style="max-width:460px"><div id="tourb"></div><div id="tourd" class="tdots"></div><div style="display:flex;gap:8px;align-items:center"><button id="tourskip" style="background:transparent;border-color:transparent;color:var(--mut)">Skip</button><span style="flex:1"></span><button id="tourback">Back</button><button id="tournext" class="tpok" style="flex:none;font-size:16px;padding:8px 22px">Next</button></div></div></div>
-<div class="modal" id="fr"><div class="card" style="max-width:460px"><h2>Welcome to Care Board</h2><p style="margin:0 0 14px;line-height:1.45">Let’s set up this device. You’ll be the first person on the board and its admin.</p>
+<div class="modal" id="fr"><div class="card" style="max-width:460px"><h2>Welcome to Care Board</h2><p style="margin:0 0 14px;line-height:1.45">Let’s set up this device. You’ll be the first person on the board and its owner. You can add everyone else after.</p>
 <p class="note">Your name</p><input type="text" id="frn" maxlength="24" placeholder="Your first name" autocomplete="off" aria-label="Your name" style="width:100%">
 <p class="note">Your 4-digit sign-in code</p><input type="text" id="frp" class="pinin" inputmode="numeric" maxlength="4" autocomplete="off" aria-label="Your sign-in code" style="width:100%">
-<p class="note">Admin code (4 digits)</p><input type="text" id="fra" class="pinin" inputmode="numeric" maxlength="4" autocomplete="off" aria-label="Admin code" style="width:100%"><p class="note" style="margin-top:6px">The admin code unlocks the Menu, where schedules, people, and emergency info are changed. Use a different code from your sign-in code.</p>
-<p class="note">Hint for the admin code (optional)</p><input type="text" id="frh" maxlength="60" autocomplete="off" placeholder="Something only you’d recognize" aria-label="Admin code hint" style="width:100%"><p class="note" style="margin-top:6px">A word or phrase that reminds you of the code, like “our street number.” Don’t type the code itself.</p>
+
+<p class="note">Hint for your code (optional)</p><input type="text" id="frh" maxlength="60" autocomplete="off" placeholder="Something only you’d recognize" aria-label="Admin code hint" style="width:100%"><p class="note" style="margin-top:6px">A word or phrase that reminds you of the code, like “our street number.” Don’t type the code itself.</p>
 <p class="note" id="fre" style="color:var(--bad)" aria-live="polite"></p>
 <button id="frok" class="tpok" style="width:100%;font-size:17px">Set up the board</button>
 <button id="frrs" style="width:100%;margin-top:8px;background:transparent">Restore from a backup instead</button></div></div>
 <div class="modal" id="rk"><div class="card" style="max-width:460px"><h2>Save your recovery key</h2><p style="margin:0 0 12px;line-height:1.45">If the admin code is ever forgotten, this key resets it. Write it down, take a screenshot, or copy it somewhere safe. It won’t be shown again.</p><p id="rkv" class="rkv"></p><p class="note" id="rkm" aria-live="polite"></p><div style="display:flex;gap:8px"><button id="rkcopy">Copy key</button><button id="rkok" class="tpok" style="font-size:17px">I’ve saved it</button></div></div></div>
-<div class="modal" id="rc"><div class="card" style="max-width:440px"><h2>Forgot the admin code?</h2><div id="rchint" class="hintbox" hidden></div>
-<div id="rcnone"><p style="line-height:1.45">No recovery key was set up on this device, so the admin code can’t be reset here. Ask whoever set up the board if they know the code.</p><button id="rctry2" style="margin-right:8px">Try the code again</button><p style="display:none"></p><button data-cl="rc">Close</button></div>
+<div class="modal" id="rc"><div class="card" style="max-width:440px"><h2 id="rct">Forgot your code?</h2><div id="rchint" class="hintbox" hidden></div>
+<div id="rcnone"><p id="rcnonet" style="line-height:1.45">No recovery key was set up on this device, so the admin code can’t be reset here. Ask whoever set up the board if they know the code.</p><button id="rctry2" style="margin-right:8px">Try the code again</button><p style="display:none"></p><button data-cl="rc">Close</button></div>
 <div id="rc1f"><div id="rc1"><button id="rctry" style="width:100%;margin-bottom:4px">I remember it now</button><p class="note">Still stuck? Enter the recovery key you saved when the board was set up to choose a new code.</p><input type="text" id="rck" autocomplete="off" autocapitalize="characters" placeholder="XXXX-XXXX-XXXX" aria-label="Recovery key" style="width:100%;font-size:20px;letter-spacing:.08em;text-align:center"><div style="display:flex;gap:8px;margin-top:12px"><button data-cl="rc">Cancel</button><button id="rcgo" class="tpok" style="font-size:17px">Next</button></div></div>
-<div id="rc2" hidden><p class="note" style="margin-top:0">Key accepted. Choose a new admin code.</p><input type="text" id="rcn" class="pinin" inputmode="numeric" maxlength="4" autocomplete="off" aria-label="New admin code" placeholder="New code" style="width:100%"><input type="text" id="rcn2" class="pinin" inputmode="numeric" maxlength="4" autocomplete="off" aria-label="New admin code again" placeholder="Again" style="width:100%;margin-top:8px"><p class="note">New hint (optional)</p><input type="text" id="rch" maxlength="60" autocomplete="off" placeholder="Something only you’d recognize" aria-label="New hint" style="width:100%"><div style="display:flex;gap:8px;margin-top:12px"><button data-cl="rc">Cancel</button><button id="rcok" class="tpok" style="font-size:17px">Save new code</button></div></div>
+<div id="rc2" hidden><p class="note" style="margin-top:0">Key accepted. Choose a new code.</p><input type="text" id="rcn" class="pinin" inputmode="numeric" maxlength="4" autocomplete="off" aria-label="New code" placeholder="New code" style="width:100%"><input type="text" id="rcn2" class="pinin" inputmode="numeric" maxlength="4" autocomplete="off" aria-label="New code again" placeholder="Again" style="width:100%;margin-top:8px"><p class="note">New hint (optional)</p><input type="text" id="rch" maxlength="60" autocomplete="off" placeholder="Something only you’d recognize" aria-label="New hint" style="width:100%"><div style="display:flex;gap:8px;margin-top:12px"><button data-cl="rc">Cancel</button><button id="rcok" class="tpok" style="font-size:17px">Save new code</button></div></div>
 <p class="note" id="rce" style="color:var(--bad)" aria-live="polite"></p></div></div></div>
 <div class="modal" id="ft"><div class="card" style="max-width:480px"><p class="note" style="margin:0 0 4px">Last step</p><h2>Try it: add your first task</h2><p style="margin:0 0 12px;line-height:1.45">Something you do every day works best. You can change or remove it later.</p>
 <input type="text" id="ftn" maxlength="80" placeholder="Task name" aria-label="Task name" style="width:100%"><div class="rs" id="ftex" style="margin:8px 0 0"><button data-ftex="Morning medication">Morning medication</button><button data-ftex="Check dressing">Check dressing</button><button data-ftex="Drink water">Drink water</button></div>
 <p class="note">How often</p><div class="rs" id="ftk"></div><div class="rs" id="ftt"></div><p class="note" id="fte" style="color:var(--bad)" aria-live="polite"></p>
 <div style="display:flex;gap:8px;align-items:center"><button id="ftskip" style="background:transparent;border-color:transparent;color:var(--mut)">Skip for now</button><span style="flex:1"></span><button id="ftok" class="tpok" style="flex:none;font-size:16px;padding:8px 20px">Add task</button></div></div></div>
+<div class="modal" id="op"><div class="card" style="max-width:440px"><h2>Who’s the owner?</h2><p style="margin:0 0 12px;line-height:1.45">This update replaces the shared admin code with roles. Pick the person who should be the owner. Owners can do everything and set everyone else’s role. Everyone else starts as a caregiver.</p><div class="pmb" id="opl"></div><button data-cl="op">Cancel</button></div></div>
 <div class="toast" id="toast" hidden role="status"><span id="toastt"></span><button id="toastu">Undo</button></div>
 <div class="modal" id="cf"><div class="card" style="max-width:420px"><h2 id="cft"></h2><p id="cfm" style="margin:0 0 16px"></p><div style="display:flex;gap:8px"><button id="cfx">Cancel</button><button id="cfok" class="cfok"></button></div></div></div>
 <div class="modal" id="ti"><div class="card" style="max-width:600px"><h2 id="tit"></h2><div id="tib"></div><div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap" id="tif"></div></div></div>
@@ -262,9 +267,10 @@ nav{flex-wrap:wrap}nav button{white-space:nowrap}
 <div class="modal" id="ts"><div class="card" style="max-width:600px"><h2 id="tst"></h2><div id="tsb"></div><div style="display:flex;gap:8px;margin-top:12px"><button data-cl="ts">Cancel</button><button id="tsok" class="tpok" style="font-size:18px">Save</button></div></div></div>
 <div class="modal" id="il"><div class="card" style="max-width:520px"><h2 id="ilt"></h2><p class="note">Check every task that needs this supply. “Uses” is how many come off the count each time that task is checked off. Use 0 for things that are needed but not used up, like scissors.</p><div id="ilb"></div><div style="display:flex;gap:8px"><button data-cl="il">Cancel</button><button id="ilok" class="tpok" style="font-size:18px">Save</button></div></div></div>
 <div class="modal" id="ot"><div class="card" style="max-width:480px"><h2>Add a one-time task</h2><p class="note" style="margin-top:0">For things that only need doing once. It shows on Today and drops off after it’s checked off.</p><input type="text" id="otn" placeholder="What needs doing?" maxlength="80" aria-label="What needs doing" style="width:100%"><p class="note">When</p><div class="rs" id="otd"></div><input type="date" id="otdt" aria-label="Date" style="margin:-4px 0 12px" hidden><p class="note">Time (optional)</p><div class="rs" id="ottw"></div><p class="note" id="ote" style="color:var(--bad)" aria-live="polite"></p><div style="display:flex;gap:8px"><button data-cl="ot">Cancel</button><button id="otok" class="tpok" style="font-size:18px">Add task</button></div></div></div>
+<div class="modal" id="ns"><div class="card" style="max-width:400px"><h2>New supply</h2><p class="note" style="margin-top:0" id="nsfor"></p><input type="text" id="nsn" maxlength="60" placeholder="Supply name" aria-label="Supply name" style="width:100%"><div class="row" style="border:0;padding:10px 0 0"><label class="c">On hand now <input type="number" id="nsq" min="0" value="10" style="width:80px"></label><label class="c">Reorder at <input type="number" id="nsl" min="0" value="2" style="width:70px"></label></div><p class="note" id="nse" style="color:var(--bad)" aria-live="polite"></p><div style="display:flex;gap:8px"><button data-cl="ns">Cancel</button><button id="nsok" class="tpok" style="font-size:17px">Add and link</button></div></div></div>
 <div class="modal" id="tp"><div class="card" style="max-width:380px"><h2 id="tpt">Pick a time</h2><p class="note" id="tps" style="margin:0 0 4px"></p><p class="tpv" id="tpv" aria-live="polite"></p><div class="tpw"><div class="tpc" id="tph" aria-label="Hour"></div><div class="tpc" id="tpm" aria-label="Minute"></div><div class="tpc" id="tpa" aria-label="AM or PM"></div></div><p class="note" style="text-align:center;margin:4px 0 10px">Scroll to the time, then tap ✓ to save it.</p><p class="note" id="tpe" style="color:var(--bad);text-align:center" aria-live="polite"></p><div style="display:flex;gap:8px"><button id="tpx">Cancel</button><button id="tpok" class="tpok" aria-label="Save this time">✓</button></div></div></div>
 <script>
-var VER='1.8';
+var VER='1.9';
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
 var S={
   tab:'today',who:'',people:[{name:'Zach',pin:'1111'},{name:'Wife',pin:'2222'},{name:'Nurse',pin:'3333'}],pend:null,pin:{for:'',buf:''},reason:'',
@@ -302,7 +308,7 @@ function cntTile(t){var c=S.cnt[t.id]||{n:0},ok=c.n>=t.times;
   return'<div class="trow"><button class="task '+(ok?'done':'')+'" data-c="'+t.id+'" data-lpc="'+t.id+'"><span class="box" style="width:auto;min-width:30px;padding:0 6px">'+c.n+'/'+t.times+'</span><span class="nm">'+esc(t.name)+'<span class="meta">'+(c.last?'Last: '+esc(c.who)+' at '+c.last+'. Hold to undo':t.times+' times per day. Tap to log one')+'</span></span></button></div>'}
 function ivTile(t){var left=t.every-t.last,d=t.done;
   var tag=d?'<span class="tag ok">Done</span>':left<0?'<span class="tag" style="background:#4a1f1b;color:#ffd9d4">Overdue</span>':left===0?'<span class="tag">Due today</span>':'<span class="tag ok">In '+left+' day'+(left>1?'s':'')+'</span>';
-  return'<div class="trow"><button class="task '+(d?'done':'')+'" data-i="'+t.id+'"'+(!d&&left<=0?' data-lpi="'+t.id+'"':'')+'><span class="box">'+(d?'✓':'')+'</span><span class="nm">'+esc(t.name)+'<span class="meta">'+(d?esc(d.who)+' at '+d.time:fl(t)+(left<=0?', hold to push a day':''))+'</span></span>'+tag+'</button></div>'}
+  return'<div class="trow"><button class="task '+(d?'done':'')+'" data-i="'+t.id+'"'+(!d&&left<=0?' data-lpi="'+t.id+'"':'')+'><span class="box">'+(d?'✓':'')+'</span><span class="nm">'+esc(t.name)+'<span class="meta">'+(d?esc(d.who)+' at '+d.time+' · next due '+dlabel(addDays(bizDay(),t.every)):fl(t)+(left<=0?', hold to push a day':left<=7?' · tap if done early':''))+'</span></span>'+tag+'</button></div>'}
 function slotDiff(x,nm,p){var m=mins(x),st=mins(p.start),e=mins(p.end);
   if(st<e)return nm-m;
   if(m>=st)return nm<e?nm+1440-m:nm-m;
@@ -347,7 +353,7 @@ function stats(m){var open=0,over=0,p=m.p;
   return{open:open,over:over}}
 function grp(title,tiles){return tiles?'<p class="sec">'+title+'</p><div class="tiles">'+tiles+'</div>':''}
 function today(){
-  var cur=nowP(),h=(S.setup&&S.adminOk?setupCard(false):'')+bkBanner();var lowi=S.stock.filter(function(i){return i.qty<=i.low});h+='<div class="topbar"><span class="note" style="margin:0;flex:1;min-width:200px;color:var(--due)">'+(lowi.length?'Low on supplies: '+lowi.map(function(i){return esc(i.name)}).join(', '):'')+'</span><button id="otadd">+ Add a one-time task</button></div>';
+  var cur=nowP(),h=(S.setup&&can('owner')?setupCard(false):'')+bkBanner();var lowi=S.stock.filter(function(i){return i.qty<=i.low});h+='<div class="topbar"><span class="note" style="margin:0;flex:1;min-width:200px;color:var(--due)">'+(lowi.length?'Low on supplies: '+lowi.map(function(i){return esc(i.name)}).join(', '):'')+'</span><button id="otadd">+ Add a one-time task</button></div>';
   if(S.viewP&&(S.viewFrom!==cur.id||!S.periods.some(function(q){return q.id===S.viewP})))S.viewP=null;
   var models=S.periods.map(function(q){return periodModel(q,cur)}),view=models.filter(function(m){return m.p.id===(S.viewP||cur.id)})[0]||models[0];
   h+='<div class="shifts" role="group" aria-label="Shift">'+models.map(function(m){var st=stats(m),on=m===view;
@@ -413,7 +419,6 @@ function deferTile(s,p){var m=s.m,t=s.t,k=t.id+'|'+m.from,dn=S.done[k],diff=Math
   return'<div class="trow"><button class="task '+(dn?'done':'')+'" data-k="'+k+'"'+(dn?'':' data-lpd="'+k+'"')+(diff>=0&&!dn?' style="border:2px solid var(--due)"':'')+'><span class="box">'+(dn?'✓':'')+'</span><span class="nm">'+esc(t.name)+'<span class="meta">'+(dn?esc(dn.who)+' at '+dn.time:'Moved to '+fmt(new Date(m.ts))+' by '+esc(m.who)+(m.reason?', '+esc(m.reason.toLowerCase()):'')+'. Hold to change')+'</span></span>'+tg+'</button></div>'}
 function tn(id){var t=S.tasks.filter(function(x){return x.id==id})[0];return t?t.name:'a task'}
 function pn(id){if(id==='tomorrow')return 'tomorrow';var p=S.periods.filter(function(x){return x.id===id})[0];return p?p.name:id}
-function lg(a,d){S.log.unshift({ts:new Date(),who:S.who,a:a,d:d||''})}
 function use(id,d){var t=T(id);if(!t||!t.needs)return;t.needs.forEach(function(n){if(!n.use)return;S.stock.forEach(function(i){if(i.id===n.sid)i.qty=Math.max(0,i.qty-n.use*(d||1))})})}
 function fl(t){var n=t.n||t.every,u=t.unit||'days';return n===1?'Every '+u.slice(0,-1):'Every '+n+' '+u}
 function fq(t){return t.once?'once':t.at&&t.at.length?'clock':t.times>0?'times':t.prn?'prn':t.every>0?(t.unit||'days'):'period'}
@@ -424,7 +429,7 @@ function setFreq(id,k){var t=S.tasks.filter(function(x){return x.id===id})[0];if
   else{t.unit=k;t.every=t.n*(k==='weeks'?7:k==='months'?30:1);t.last=t.last||0}}
 var FQ=[['period','Each time of day'],['clock','At set times'],['times','Times per day'],['days','Every X days'],['weeks','Every X weeks'],['months','Every X months'],['prn','As needed'],['once','One time']];
 function edit2(){
-  var h='<div class="col"><div class="ch"><b>Add a task</b><small>Name it, pick how often, then fill in the details</small></div><div class="addrow"><input type="text" id="newn" placeholder="New task name" aria-label="New task name"><select id="newk" aria-label="How often">'+FQ.map(function(o){return'<option value="'+o[0]+'">'+o[1]+'</option>'}).join('')+'</select><button id="add" class="tpok" style="flex:none;font-size:16px;min-height:44px;padding:8px 18px">Add task</button></div></div>';
+  var h='<div class="col"><div class="ch"><b>Add a task</b><small>Name it and pick how often. You can add times, supplies, and a guide on the next screen.</small></div><div class="addrow"><input type="text" id="newn" placeholder="New task name" aria-label="New task name"><select id="newk" aria-label="How often">'+FQ.map(function(o){return'<option value="'+o[0]+'">'+o[1]+'</option>'}).join('')+'</select><button id="add" class="tpok" style="flex:none;font-size:16px;min-height:44px;padding:8px 18px">Add task</button></div></div>';
   h+='<div class="col" style="margin-top:12px"><div class="ch"><b>Tasks</b><small>'+S.tasks.length+' task'+(S.tasks.length===1?'':'s')+' · tap one to change it</small></div>';
   if(S.tasks.length>6)h+='<input type="search" id="tfind" placeholder="Find a task" aria-label="Find a task" value="'+esc(S.tfind||'')+'" style="width:100%;margin-bottom:6px">';
   if(!S.tasks.length)h+='<p class="note">No tasks yet. Add the first one above.</p>';
@@ -456,9 +461,14 @@ function drawTE(){var t=T(S.teId);if(!t){$('te').classList.remove('show');return
   else if(f==='prn')h+='<p class="note">Minimum time between</p><label class="c"><input type="number" min="0" step="0.5" value="'+(t.gap||0)+'" data-gap="'+t.id+'" aria-label="Hours between" style="width:80px"> hours (0 = no limit)</label>';
   else if(f==='once')h+='<p class="note">When</p><div class="rs" style="align-items:center"><input type="date" value="'+t.date+'" data-od="'+t.id+'" aria-label="Date"><button class="tchip'+(S.flash===t.id+'@'+t.time?' new':'')+'" data-otp="'+t.id+'">'+(t.time?fmtT(t.time):'Pick a time')+'</button>'+(t.time?'<button data-otc="'+t.id+'">Any time</button>':'')+'</div>';
   var nd=needsOf(t),g=guideOf(t);
-  h+='<p class="note">Supplies and how-to</p><p class="note" style="margin-top:-4px;color:var(--tx)">'+(nd.length?nd.map(function(x){return esc(x.i.name)+(x.n.use?' ('+x.n.use+')':'')}).join(', '):'No supplies')+' · '+(g?'Guide: '+esc(g.title):'No guide')+'</p><p class="note" style="margin-top:-8px">Change supplies in Inventory and guides in the How-to tab.</p>';
+  var free=S.stock.filter(function(i){return !(t.needs||[]).some(function(n){return n.sid===i.id})}).sort(function(a,b){return a.name.localeCompare(b.name)});
+  h+='<div class="tesec"><p class="note">Supplies this task uses <span style="color:var(--mut)">(optional)</span></p>';
+  h+=nd.length?'<div class="elist" style="margin-bottom:8px">'+nd.map(function(x){return'<div class="srow" style="padding:6px 10px"><span class="sname">'+esc(x.i.name)+'<span class="meta">'+x.i.qty+' on hand</span></span><label class="c">Uses <input type="number" min="0" value="'+x.n.use+'" data-tnq="'+t.id+'|'+x.i.id+'" aria-label="How many '+esc(x.i.name)+' each time" style="width:64px"></label><button class="tx" data-tnx="'+t.id+'|'+x.i.id+'" aria-label="Unlink '+esc(x.i.name)+'">×</button></div>'}).join('')+'</div>':'';
+  h+='<select data-tna="'+t.id+'" aria-label="Add a supply" style="width:100%"><option value="">+ Add a supply…</option>'+free.map(function(i){return'<option value="'+i.id+'">'+esc(i.name)+' ('+i.qty+' on hand)</option>'}).join('')+(can('stock')?'<option value="__new">New supply…</option>':'')+'</select>';
+  h+='<p class="note" style="margin-top:6px">“Uses” is how many come off the count each time this is checked off. Use 0 for things that aren’t used up.</p></div>';
+  h+='<div class="tesec"><p class="note">How-to guide <span style="color:var(--mut)">(optional)</span></p><select data-tg="'+t.id+'" aria-label="How-to guide" style="width:100%"><option value="">None</option>'+S.guides.map(function(x){return'<option value="'+x.id+'"'+(g&&g.id===x.id?' selected':'')+'>'+esc(x.title)+'</option>'}).join('')+(can('guides')?'<option value="__new">Write a new guide…</option>':'')+'</select></div>';
   $('tet').textContent=t.name;$('teb').innerHTML=h;$('tedel').dataset.del=t.id}
-function stock(){var ad=S.adminOk,srt=S.ssort==='qty'?'qty':'az',items=S.stock.slice().sort(function(a,b){var la=a.qty<=a.low,lb=b.qty<=b.low;if(la!==lb)return la?-1:1;if(srt==='qty'&&a.qty!==b.qty)return a.qty-b.qty;return a.name.localeCompare(b.name)});
+function stock(){var ad=can('stock'),srt=S.ssort==='qty'?'qty':'az',items=S.stock.slice().sort(function(a,b){var la=a.qty<=a.low,lb=b.qty<=b.low;if(la!==lb)return la?-1:1;if(srt==='qty'&&a.qty!==b.qty)return a.qty-b.qty;return a.name.localeCompare(b.name)});
   var nlow=S.stock.filter(function(i){return i.qty<=i.low}).length;
   var h='<div class="col"><div class="ch"><b>Inventory</b><small>'+S.stock.length+' supplies'+(nlow?' · <span style="color:var(--bad)">'+nlow+' low</span>':'')+'</small></div>';
   var sortbar='<div class="sortbar"><span class="note" style="margin:0">Sort</span><div class="seg" role="group" aria-label="Sort supplies">'+[['az','A–Z'],['qty','Count']].map(function(o){return'<button data-ssort="'+o[0]+'" class="'+(srt===o[0]?'on':'')+'" aria-pressed="'+(srt===o[0])+'">'+o[1]+'</button>'}).join('')+'</div><span class="note" style="margin:0">'+(srt==='qty'?'Fewest on hand first':'')+(nlow?(srt==='qty'?' · ':'')+'Low supplies stay on top':'')+'</span></div>';
@@ -470,7 +480,7 @@ function stock(){var ad=S.adminOk,srt=S.ssort==='qty'?'qty':'az',items=S.stock.s
     h2+='<span class="scnt"><button data-sq="'+i.id+'|-1" aria-label="One less '+esc(i.name)+'">−</button><button class="sq" data-qc="'+i.id+'" aria-label="Set count for '+esc(i.name)+'">'+i.qty+'</button><button data-sq="'+i.id+'|1" aria-label="One more '+esc(i.name)+'">+</button></span>';
     if(ad)h2+='<span class="sadm"><label class="c">Reorder at <input type="number" min="0" value="'+i.low+'" data-sl="'+i.id+'" style="width:64px"></label><button data-il="'+i.id+'">Tasks ('+lt.length+')</button><button data-sd="'+i.id+'" style="color:var(--bad)">Remove</button></span>';
     return h2+'</div>'}).join('')+'</div>';
-  h+='<p class="note">Tap − or + to adjust, or tap the number to enter an exact count. '+(ad?'Supplies linked to tasks go down on their own when those tasks are checked off.':'Adding, removing, or linking supplies needs the admin code.')+'</p>';
+  h+='<p class="note">Tap − or + to adjust, or tap the number to enter an exact count. '+(ad?'Supplies linked to tasks go down on their own when those tasks are checked off.':'Adding, removing, or linking supplies needs the Manage supplies permission.')+'</p>';
   if(!ad)h+='<button data-unlock="stock">Unlock to manage supplies</button>';
   return h+'</div>'}
 function setQty(id,q){var it=S.stock.filter(function(x){return x.id==id})[0];if(!it)return;q=Math.max(0,Math.round(q)||0);if(q===it.qty)return;var from=it.qty;it.qty=q;
@@ -480,21 +490,18 @@ function setQty(id,q){var it=S.stock.filter(function(x){return x.id==id})[0];if(
 var QC=null;
 function openQC(id){var it=S.stock.filter(function(x){return x.id==id})[0];if(!it)return;QC=it.id;$('qct').textContent=it.name;$('qcv').value=it.qty;$('qce').textContent='';$('qc').classList.add('show');setTimeout(function(){try{$('qcv').focus();$('qcv').select()}catch(x){}},60)}
 function saveQC(){var v=$('qcv').value.trim();if(!/^\d+$/.test(v)){$('qce').textContent='Enter a whole number, like 12.';return}setQty(QC,+v);$('qc').classList.remove('show');render()}
-function logv(){
-  var who=S.logf,tp=S.logt,rows=S.log.filter(function(r){return(!who||r.who===who)&&(!tp||(tp==='missed'?r.a==='Missed':tp==='inv'?r.a==='Inventory':CHG.indexOf(r.a)>-1))});
-  var h='<div class="col"><div class="ch"><b>Change log</b><small>Check-offs, missed tasks, and schedule changes</small></div><div class="row"><label class="c">Person <select data-lf="1"><option value="">Everyone</option>'+S.people.map(function(p){return'<option'+(p.name===who?' selected':'')+'>'+esc(p.name)+'</option>'}).join('')+'<option'+(who==='System'?' selected':'')+'>System</option></select></label><label class="c">Show <select data-lt="1"><option value="">Everything</option><option value="missed"'+(tp==='missed'?' selected':'')+'>Missed only</option><option value="changes"'+(tp==='changes'?' selected':'')+'>Schedule changes</option><option value="inv"'+(tp==='inv'?' selected':'')+'>Inventory counts</option></select></label></div>';
-  if(!rows.length)h+='<p class="note">'+(tp==='missed'?'Nothing missed so far. Anything left undone at the daily reset is listed here.':'Nothing here yet. Every task check-off and undo shows up with who did it and when.')+'</p>';
-  var day='';
-  rows.forEach(function(r){var dd=r.ts.toLocaleDateString([],{weekday:'long',month:'short',day:'numeric'});if(dd!==day){day=dd;h+='<p class="note" style="margin:14px 0 4px"><b>'+dd+'</b></p>'}
-    var ms=r.a==='Missed',cg=CHG.indexOf(r.a)>-1;
-    h+='<div class="row"><span style="min-width:74px;color:var(--mut)">'+fmt(r.ts)+'</span><span class="tag'+(ms?'':' ok')+'" style="min-width:56px;text-align:center">'+esc(r.who)+'</span><span style="flex:1;min-width:180px"><b'+(ms?' style="color:var(--due)"':cg?' style="color:var(--acc)"':'')+'>'+esc(r.a)+'</b> '+esc(r.d)+'</span></div>'});
-  return h+'</div>';
-}
-function menu(){
-  var items=[['edit','Edit tasks','Add, rename, or remove tasks and choose when they happen'],['periods','Times of day','Rename Day and Night, change hours, or add more'],['people','People','Names and 4-digit codes'],['admin','Admin settings','Emergency info and Start fresh']];
-  var h=(S.setup?setupCard(true):'')+(!S.rkey?'<div class="vb"><span>Create a recovery key so a forgotten admin code can be reset.</span><button id="rknew">Create recovery key</button></div>':'')+'<div class="row" style="border:0;padding:0 0 12px;justify-content:space-between"><span class="note" style="margin:0">Admin unlocked until you lock it, sign out, or someone else signs in.</span><button data-lock="1">Lock admin</button></div><div class="grid">';
-  items.forEach(function(i){h+='<button class="task" data-t="'+i[0]+'" style="display:block;min-height:96px"><span class="nm" style="display:block;font-size:20px;font-weight:600">'+i[1]+'</span><span class="meta">'+i[2]+'</span></button>'});
-  return h+'</div>';
+function menu(){var p=me(),items=[];
+  if(can('sched'))items.push(['edit','Edit tasks','Add, rename, or remove tasks and choose when they happen']);
+  if(can('owner'))items.push(['periods','Times of day','Rename Day and Night, change hours, or add more'],['people','People and roles','Add people, set roles, and reset codes']);
+  if(can('emer'))items.push(['emedit','Emergency info','Numbers, what to tell 911, and the plan']);
+  if(can('stock'))items.push(['stock','Manage supplies','Add, remove, and link supplies in Inventory']);
+  if(can('guides'))items.push(['library','Write guides','Add and edit how-to guides']);
+  if(can('owner'))items.push(['admin','Admin settings','Recovery key, your code hint, setup checklist, and Start fresh']);
+  var h=(isOwner()&&S.setup?setupCard(true):'')+(isOwner()&&!S.rkey?'<div class="vb"><span>Create a recovery key so a forgotten owner code can be reset.</span><button id="rknew">Create recovery key</button></div>':'');
+  h+='<div class="row" style="border:0;padding:0 0 12px;justify-content:space-between"><span class="note" style="margin:0">Signed in as <b>'+esc(S.who)+'</b> · '+roleName(p&&p.role)+'. Locks after 10 minutes without activity, when you sign out, or when someone else signs in.</span><button data-lock="1">Lock</button></div>';
+  if(!items.length)h+='<p class="note">Your role doesn’t include any admin tools yet. An owner can turn them on in People and roles.</p>';
+  h+='<div class="grid">'+items.map(function(i){return'<button class="task" '+(i[0]==='emedit'?'id="emedit"':'data-t="'+i[0]+'"')+' style="display:block;min-height:88px"><span class="nm" style="display:block;font-size:19px;font-weight:500">'+i[1]+'</span><span class="meta">'+i[2]+'</span></button>'}).join('')+'</div>';
+  return h;
 }
 function week(){
   var names=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],h='<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(230px,1fr))">';
@@ -536,51 +543,20 @@ function maybeReset(d){var k=bizDay(d);if(!S.dayKey){S.dayKey=k;return false}if(
   S.done={};S.cdone={};S.cnt={};S.moves=[];S.tasks=S.tasks.filter(function(t){return !(t.once&&t.done)});
   S.tasks.forEach(function(t){if(t.every>0){t.last=t.done?n:t.last+n;t.done=null}});
   return true}
-function signOut(){S.viewP=null;S.who='';S.adminOk=false;S.pend=null;S.pin={for:'',buf:''};hideUndo();['pin','pm','nu','st','wp','tp','emed','cf','ti','ge','ts','il','ot','te','qc'].forEach(function(id){$(id).classList.remove('show')});if(['edit','periods','people','admin','menu'].indexOf(S.tab)>-1)S.tab='today';render()}
-function idleCheck(){if(S.who&&S.idle>0&&Date.now()-S.last>S.idle*60000)signOut()}
+function signOut(){S.viewP=null;S.who='';S.adminOk=false;S.pend=null;S.pin={for:'',buf:''};hideUndo();['pin','pm','nu','st','wp','tp','emed','cf','ti','ge','ts','il','ot','te','qc','ns','op'].forEach(function(id){$(id).classList.remove('show')});if(['edit','periods','people','admin','menu'].indexOf(S.tab)>-1)S.tab='today';render()}
+function idleCheck(){if(S.adminOk&&Date.now()-S.last>10*60000){lockAdmin();render()}if(S.who&&S.idle>0&&Date.now()-S.last>S.idle*60000)signOut()}
 function needWho(){if(S.who)return false;if(!S.people.length){openFR();return true}$('wpm').textContent='';$('wpl').innerHTML=S.people.map(function(p){return'<button data-wp="'+esc(p.name)+'">'+esc(p.name)+'</button>'}).join('')+'<button data-wpn="1">+ Add new user…</button>';$('wp').classList.add('show');return true}
 function openNew(){$('nun').value='';$('nue').textContent='';$('nu').classList.add('show');setTimeout(function(){try{$('nun').focus()}catch(x){}},50)}
-function newPad(nn){S.pin={for:'__new',buf:'',name:nn,stage:1,first:''};var k='';['1','2','3','4','5','6','7','8','9','','0','del'].forEach(function(n){k+=n===''?'<span></span>':'<button data-pk="'+n+'" aria-label="'+(n==='del'?'Delete':n)+'">'+(n==='del'?'⌫':n)+'</button>'});$('pad').innerHTML=k;$('pint').textContent='Choose your code, '+nn;drawPin('Pick 4 digits you will remember.');$('pin').classList.add('show')}
-function openPin(name){
-  if(name===S.who&&name!=='__admin')return;
-  S.pin={for:name,buf:''};
-  var k='';['1','2','3','4','5','6','7','8','9','','0','del'].forEach(function(n){k+=n===''?'<span></span>':'<button data-pk="'+n+'" aria-label="'+(n==='del'?'Delete':n)+'">'+(n==='del'?'⌫':n)+'</button>'});
-  $('pad').innerHTML=k;$('pinforgot').hidden=name!=='__admin';$('pint').textContent=name==='__admin'?'Admin code':'Code for '+name;drawPin('');$('pin').classList.add('show');
-}
 function drawPin(msg){var d='';for(var i=0;i<4;i++)d+=i<S.pin.buf.length?'●':'○';$('pind').textContent=d;$('pinm').textContent=msg||''}
-function pinKey(k){
-  if(k==='del')S.pin.buf=S.pin.buf.slice(0,-1);else if(S.pin.buf.length<4)S.pin.buf+=k;
-  if(S.pin.buf.length===4){
-    if(S.pin.for==='__new'){var pp=S.pin;
-      if(pp.stage===1){pp.first=pp.buf;pp.buf='';pp.stage=2;$('pint').textContent='Enter it again to confirm';drawPin('');return}
-      if(pp.buf===pp.first){S.people.push({name:pp.name,pin:pp.first});S.who=pp.name;lockAdmin();$('pin').classList.remove('show');render();maybeTour();return}
-      pp.buf='';pp.first='';pp.stage=1;$('pint').textContent='Choose your code, '+pp.name;drawPin('Those didn’t match. Start again.');return}
-    if(S.pin.for==='__admin'){if(S.pin.buf===S.adminPin){S.adminOk=true;S.tab=S.pin.back||'menu';$('pin').classList.remove('show');render();return}S.pin.buf='';drawPin('That code doesn’t match. Try again.');return}
-    var p=S.people.filter(function(x){return x.name===S.pin.for})[0];
-    if(p&&p.pin===S.pin.buf){S.who=p.name;lockAdmin();$('pin').classList.remove('show');render();maybeTour();return}
-    S.pin.buf='';drawPin('That code doesn’t match. Try again.');return;
-  }
-  drawPin('');
-}
-function lockAdmin(){S.adminOk=false;if(['edit','periods','people','admin','menu'].indexOf(S.tab)>-1)S.tab='today'}
 function admin(){fresh=false;
-  var h='<div class="col"><div class="ch"><b>Admin settings</b><small>Only people with the admin code can open this</small></div>';
-  h+='<div class="row"><span style="flex:1;min-width:200px"><b>Admin recovery key</b><span class="meta">'+(S.rkey?'Set. Making a new key replaces the old one.':'Not set. Without it, a forgotten admin code can’t be reset.')+'</span></span><button id="rknew">'+(S.rkey?'Make a new key':'Create recovery key')+'</button></div>';
-  h+='<div class="row"><span style="flex:1;min-width:200px"><b>Admin code hint</b><span class="meta">Shown when someone taps “Forgot the admin code?” Don’t type the code itself.</span></span><input type="text" data-ahint="1" maxlength="60" value="'+esc(S.ahint||'')+'" placeholder="No hint" aria-label="Admin code hint" style="flex:1;min-width:200px"></div>';
+  var h='<div class="col"><div class="ch"><b>Admin settings</b><small>Owners only</small></div>';
+  h+='<div class="row"><span style="flex:1;min-width:200px"><b>Recovery key</b><span class="meta">'+(S.rkey?'Set. It resets an owner’s code. Making a new key replaces the old one.':'Not set. Without it, a forgotten owner code can’t be reset.')+'</span></span><button id="rknew">'+(S.rkey?'Make a new key':'Create recovery key')+'</button></div>';
+  h+='<div class="row"><span style="flex:1;min-width:200px"><b>Your code hint</b><span class="meta">Shown when you tap “Forgot your code?” Don’t type the code itself.</span></span><input type="text" data-ahint="1" maxlength="60" value="'+esc((me()||{}).hint||'')+'" placeholder="No hint" aria-label="Your code hint" style="flex:1;min-width:200px"></div>';
   h+='<div class="row"><span style="flex:1;min-width:200px"><b>Emergency info</b><span class="meta">Numbers, what to tell 911, and the plan shown on the Emergency button</span></span><button id="emedit">Edit emergency info</button></div>';
   h+='<div class="row"><span style="flex:1;min-width:200px"><b>Setup checklist</b><span class="meta">Show the step-by-step setup list in the Menu again</span></span><button id="setupre">Show checklist</button></div>';
   h+='<div class="row"><span style="flex:1;min-width:200px"><b>Start fresh</b><span class="meta">Erases all tasks, supplies, people, and the log on this iPad. Download a backup first.</span></span><button id="fresh" style="color:var(--bad)">Start fresh</button></div>';
   return h+'<p class="note" id="admmsg" aria-live="polite"></p></div>'}
-function people(){
-  var h='<div class="col"><div class="ch"><b>People</b><small>Each person has a 4-digit code</small></div>';
-  S.people.forEach(function(p,i){
-    h+='<div class="row"><input type="text" value="'+esc(p.name)+'" data-ppn="'+i+'" aria-label="Name"><label class="c">Code <input type="text" inputmode="numeric" maxlength="4" value="'+esc(p.pin)+'" data-ppp="'+i+'" style="width:90px;flex:none;min-width:0"></label>'+(S.people.length>1?'<button data-ppd="'+i+'">Remove</button>':'')+'</div>';
-  });
-  h+='<div class="row"><label class="c">Admin code <input type="text" inputmode="numeric" maxlength="4" value="'+esc(S.adminPin)+'" data-adm="1" style="width:90px;flex:none;min-width:0"></label></div>';
-  h+='<div class="row"><input type="text" id="newpn" placeholder="Name"><input type="text" id="newpp" inputmode="numeric" maxlength="4" placeholder="4-digit code" style="width:130px;flex:none;min-width:0"><button id="addpp">Add person</button></div><p class="note">The admin code opens the Menu, Admin settings, and supply management.</p></div>';
-  return h;
-}
-function render(keep){head();if(keep)return;setTimeout(function(){if($('te').classList.contains('show'))drawTE();if(S.tab==='edit')applyFind()},0);var back=['edit','periods','people','admin'].indexOf(S.tab)>-1?'<button data-t="menu" style="margin-bottom:12px">← Menu</button>':'';$('main').innerHTML=back+(S.tab==='today'?today():S.tab==='week'?week():S.tab==='menu'?menu():S.tab==='edit'?edit2():S.tab==='stock'?stock():S.tab==='log'?logv():S.tab==='library'?library():S.tab==='periods'?periods():S.tab==='admin'?admin():people())}
+function render(keep){head();if(keep)return;setTimeout(function(){if($('te').classList.contains('show'))drawTE();if(S.tab==='edit')applyFind();if(S.tab==='log')applyLogQ()},0);var back=['edit','periods','people','admin'].indexOf(S.tab)>-1?'<button data-t="menu" style="margin-bottom:12px">← Menu</button>':'';$('main').innerHTML=back+(S.tab==='today'?today():S.tab==='week'?week():S.tab==='menu'?menu():S.tab==='edit'?edit2():S.tab==='stock'?stock():S.tab==='log'?logv():S.tab==='library'?library():S.tab==='periods'?periods():S.tab==='admin'?admin():people())}
 document.addEventListener('click',function(e){
   var b=e.target.closest('button');if(!b)return;
   if(!S.who&&(b.dataset.pr||b.dataset.k||b.dataset.i||b.dataset.o||b.dataset.po||b.dataset.ct||b.dataset.c||b.dataset.mv||b.dataset.pi||b.dataset.undo||b.dataset.undomv)){needWho();return}
@@ -591,7 +567,7 @@ document.addEventListener('click',function(e){
   if(b.dataset.idl!==undefined){S.idle=+b.dataset.idl;S.last=Date.now();fillSt();return}
   if(b.id==='nux'){$('nu').classList.remove('show');return}
   if(b.id==='nuok'){var nn=$('nun').value.trim();if(!nn){$('nue').textContent='Please enter a name.';return}if(S.people.some(function(x){return x.name.toLowerCase()===nn.toLowerCase()})){$('nue').textContent='That name is already in use.';return}$('nu').classList.remove('show');newPad(nn);return}
-  if(b.dataset.t){var tt2=b.dataset.t;if(tt2==='menu'&&!S.adminOk){openPin('__admin');return}S.tab=tt2;render();return}
+  if(b.dataset.t){var tt2=b.dataset.t;if(tt2==='menu'||AREA[tt2]){if(!S.adminOk){unlock(tt2);return}goArea(tt2);return}S.tab=tt2;render();return}
   if(b.dataset.push){var a=b.dataset.push.split('|');S.reason='';openPush(+a[0],a[1]);return}
   if(b.dataset.md){var a=b.dataset.md.split('|');pushAt(+a[0],a[1],new Date().getTime()+ +a[2]*60000);return}
   if(b.dataset.mt){var a=b.dataset.mt.split('|'),ts0=function(v){var d0=new Date();d0.setHours(+v.split(':')[0],+v.split(':')[1],0,0);return d0.getTime()};openTP({title:'Move to a time',sub:tn(+a[0]),check:function(v){return ts0(v)<=Date.now()?'Pick a time later than now.':''},ok:function(v){pushAt(+a[0],a[1],ts0(v))}});return}
@@ -603,27 +579,30 @@ document.addEventListener('click',function(e){
   if(b.dataset.undo){var a=b.dataset.undo.split('|');S.moves=S.moves.filter(function(m){return !(m.tid===+a[0]&&m.from===a[1]&&m.to==='tomorrow')});render();return}
   if(b.dataset.undomv){var a=b.dataset.undomv.split('|');S.moves=S.moves.filter(function(m){return !(m.tid===+a[0]&&m.to===a[1])});render();return}
   if(b.id==='pmx'){$('pm').classList.remove('show');return}
-  if(b.dataset.ata){var tk=S.tasks.filter(function(x){return x.id==b.dataset.ata})[0];openTP({title:'Add a time',sub:tk.name,taken:tk.at.slice(),ok:function(v){tk.at.push(v);tk.at.sort();lgc(tk.name+': added '+fmtT(v));flashAt(tk.id,v)}});return}
-  if(b.dataset.atp){var z2=b.dataset.atp.split('|'),tq=S.tasks.filter(function(x){return x.id==z2[0]})[0],ix=+z2[1];openTP({title:'Change time',sub:tq.name,val:tq.at[ix],taken:tq.at.filter(function(_,j){return j!==ix}),ok:function(v){var ov=tq.at[ix];tq.at[ix]=v;tq.at.sort();if(ov!==v)lgc(tq.name+': '+fmtT(ov)+' changed to '+fmtT(v));flashAt(tq.id,v)}});return}
+  if(b.dataset.ata){var tk=S.tasks.filter(function(x){return x.id==b.dataset.ata})[0];openTP({title:'Add a time',sub:tk.name,taken:tk.at.slice(),ok:function(v){tk.at.push(v);tk.at.sort();lgc(tk.name+': added '+fmtT(v),tk.id);flashAt(tk.id,v)}});return}
+  if(b.dataset.atp){var z2=b.dataset.atp.split('|'),tq=S.tasks.filter(function(x){return x.id==z2[0]})[0],ix=+z2[1];openTP({title:'Change time',sub:tq.name,val:tq.at[ix],taken:tq.at.filter(function(_,j){return j!==ix}),ok:function(v){var ov=tq.at[ix];tq.at[ix]=v;tq.at.sort();if(ov!==v)lgc(tq.name+': '+fmtT(ov)+' changed to '+fmtT(v),tq.id);flashAt(tq.id,v)}});return}
   if(b.dataset.otp){var to=S.tasks.filter(function(x){return x.id==b.dataset.otp})[0];openTP({title:'Time for this task',sub:to.name,val:to.time||null,ok:function(v){to.time=v;flashAt(to.id,v)}});return}
   if(b.id==='tpok'){tpSave();return}
   if(b.id==='tpx'){tpClose(true);return}
-  if(b.id==='emedit'){if(!S.adminOk){openPin('__admin');return}openEmEd();return}
+  if(b.id==='emedit'){if(!can('emer')){unlock('menu');return}openEmEd();return}
   if(b.dataset.emadd!==undefined){emRead();EM.contacts.push({n:'',p:''});drawEmEd();var ins=$('emf').querySelectorAll('[data-emn]');if(ins.length)ins[ins.length-1].focus();return}
   if(b.dataset.emdel!==undefined){emRead();EM.contacts.splice(+b.dataset.emdel,1);drawEmEd();return}
   if(b.id==='emx'){$('emed').classList.remove('show');return}
   if(b.id==='emok'){emRead();EM.contacts=EM.contacts.filter(function(c){return c.n.trim()||c.p.trim()});S.emer=EM;$('emed').classList.remove('show');if($('admmsg'))$('admmsg').textContent='Emergency info saved.';return}
   if(b.dataset.lock){lockAdmin();render();return}
   if(b.dataset.te){openTE(+b.dataset.te);return}
+  if(b.dataset.tnx){if(!can('sched'))return;var xa=b.dataset.tnx.split('|'),tx=T(xa[0]);if(!tx)return;tx.needs=(tx.needs||[]).filter(function(n){return n.sid!==+xa[1]});var sx=S.stock.filter(function(x){return x.id===+xa[1]})[0];lgc(tx.name+': no longer uses '+(sx?sx.name:'a supply'),tx.id);render();return}
+  if(b.id==='nsok'){var nn2=$('nsn').value.trim(),tn2=T(NST);if(!nn2){$('nse').textContent='Enter a name.';return}if(S.stock.some(function(x){return x.name.toLowerCase()===nn2.toLowerCase()})){$('nse').textContent='That supply already exists. Pick it from the list instead.';return}
+    var ni={id:S.nid++,name:nn2,qty:Math.max(0,+$('nsq').value||0),low:Math.max(0,+$('nsl').value||0)};S.stock.push(ni);if(tn2){tn2.needs=tn2.needs||[];tn2.needs.push({sid:ni.id,use:1});lgc(tn2.name+': uses '+nn2+' (new supply)',tn2.id)}$('ns').classList.remove('show');render();return}
   if(b.id==='frok'){saveFR();return}
   if(b.id==='pinforgot'){openRC();return}
   if(b.id==='rcgo'){checkRC();return}
-  if(b.id==='rctry2'){$('rc').classList.remove('show');openPin('__admin');return}
-  if(b.id==='rctry'){$('rc').classList.remove('show');openPin('__admin');return}
+  if(b.id==='rctry2'){$('rc').classList.remove('show');openPin(RCP==='__old'?'__old':RCP===S.who?'__admin':RCP);return}
+  if(b.id==='rctry'){$('rc').classList.remove('show');openPin(RCP==='__old'?'__old':RCP===S.who?'__admin':RCP);return}
   if(b.id==='rcok'){saveRC();return}
   if(b.id==='rkcopy'){copyKey();return}
   if(b.id==='rkok'){doneKey();return}
-  if(b.id==='rknew'){if(!S.adminOk)return;showKey();return}
+  if(b.id==='rknew'){if(!can('owner'))return;showKey();return}
   if(b.dataset.ftex){$('ftn').value=b.dataset.ftex;$('fte').textContent='';return}
   if(b.dataset.ftk){FT.k=b.dataset.ftk;drawFT();return}
   if(b.id==='fttime'){openTP({title:'Time for this task',sub:$('ftn').value.trim(),val:FT.time||null,ok:function(v){FT.time=v;drawFT()}});return}
@@ -634,7 +613,7 @@ document.addEventListener('click',function(e){
   if(b.id==='tourback'){if(TOUR.i>0){TOUR.i--;drawTour()}return}
   if(b.id==='tourskip'){endTour();return}
   if(b.id==='tourre'){$('st').classList.remove('show');openTour();return}
-  if(b.dataset.sgo){var g=b.dataset.sgo;if(g==='emer'){openEmEd();return}if(g==='bkp'){saveBackup();return}S.tab=g;render();return}
+  if(b.dataset.sgo){var g=b.dataset.sgo;if(g==='emer'){openEmEd();return}if(g==='bkp'){saveBackup();return}if(g==='rkey'){showKey();return}S.tab=g;render();return}
   if(b.dataset.sok){S.setupHours=true;render();return}
   if(b.dataset.shide){S.setup=false;render();return}
   if(b.id==='setupre'){S.setup=true;S.tab='menu';render();return}
@@ -648,14 +627,14 @@ document.addEventListener('click',function(e){
   if(b.id==='otok'){saveOT();return}
   if(b.dataset.gv){openGuide(b.dataset.gv);return}
   if(b.dataset.cl){$(b.dataset.cl).classList.remove('show');return}
-  if(b.dataset.ge){if(!S.adminOk)return;openGE(b.dataset.ge);return}
-  if(b.id==='gnew'){if(!S.adminOk)return;openGE(null);return}
+  if(b.dataset.ge){if(!can('guides'))return;openGE(b.dataset.ge);return}
+  if(b.id==='gnew'){if(!can('guides'))return;openGE(null);return}
   if(b.id==='gsave'){saveGE();return}
   if(b.id==='gdel'){var gid=GE.id;askConfirm('Delete this guide?','“'+(GE.title||'This guide')+'” will be removed from the library and from its tasks.','Delete guide',function(){S.guides=S.guides.filter(function(g){return g.id!==gid});S.tasks.forEach(function(t){if(t.guide===gid)delete t.guide});$('ge').classList.remove('show');render()});return}
-  if(b.dataset.unlock){openPin('__admin');S.pin.back=b.dataset.unlock;return}
+  if(b.dataset.unlock){unlock(b.dataset.unlock);return}
   if(b.dataset.tset){openTS(+b.dataset.tset);return}
   if(b.id==='tsok'){saveTS();return}
-  if(b.dataset.il){if(!S.adminOk)return;openIL(+b.dataset.il);return}
+  if(b.dataset.il){if(!can('stock'))return;openIL(+b.dataset.il);return}
   if(b.id==='ilok'){saveIL();return}
   if(b.dataset.k){togK(b.dataset.k,true);return}
   if(b.dataset.i){togI(b.dataset.i,true);return}
@@ -669,22 +648,26 @@ document.addEventListener('click',function(e){
   if(b.id==='bkp2'){saveBackup();return}
   if(b.id==='bklater'){S.bkSnooze=Date.now()+864e5;render();return}
   if(b.dataset.wk!==undefined){S.wake=b.dataset.wk==='1';wakeApply();fillSt();return}
-  if(b.dataset.atd){var _b=b;askConfirm('Remove this time?',fmtT(T(b.dataset.atd.split('|')[0]).at[+b.dataset.atd.split('|')[1]])+' will be removed from “'+tn(b.dataset.atd.split('|')[0])+'”.','Remove time',function(){var b=_b;var z=b.dataset.atd.split('|'),tz=S.tasks.filter(function(x){return x.id==z[0]})[0];lgc(tz.name+': removed '+fmtT(tz.at[+z[1]]));tz.at.splice(+z[1],1);render();});return}
+  if(b.dataset.atd){var _b=b;askConfirm('Remove this time?',fmtT(T(b.dataset.atd.split('|')[0]).at[+b.dataset.atd.split('|')[1]])+' will be removed from “'+tn(b.dataset.atd.split('|')[0])+'”.','Remove time',function(){var b=_b;var z=b.dataset.atd.split('|'),tz=S.tasks.filter(function(x){return x.id==z[0]})[0];lgc(tz.name+': removed '+fmtT(tz.at[+z[1]]),tz.id);tz.at.splice(+z[1],1);render();});return}
   if(b.dataset.sq){if(needWho())return;var a=b.dataset.sq.split('|'),it=S.stock.filter(function(x){return x.id==a[0]})[0];if(it)setQty(it.id,it.qty+ +a[1]);render();return}
   if(b.dataset.qc){if(needWho())return;openQC(+b.dataset.qc);return}
   if(b.id==='qcok'){saveQC();return}
   if(b.dataset.ssort){S.ssort=b.dataset.ssort;render();return}
-  if(b.dataset.sd){if(!S.adminOk)return;var _b=b;askConfirm('Remove this supply?','“'+((S.stock.filter(function(x){return x.id==b.dataset.sd})[0])||{}).name+'” and its count will be removed.','Remove supply',function(){var b=_b;S.stock=S.stock.filter(function(x){return x.id!=b.dataset.sd});S.tasks.forEach(function(t){t.needs=(t.needs||[]).filter(function(n){return n.sid!=b.dataset.sd})});render();});return}
-  if(b.id==='addi'){if(!S.adminOk)return;var nm2=$('newi').value.trim();if(!nm2)return;S.stock.push({id:S.nid++,name:nm2,qty:Math.max(0,+$('newq').value||0),low:2});render();return}
+  if(b.dataset.sd){if(!can('stock'))return;var _b=b;askConfirm('Remove this supply?','“'+((S.stock.filter(function(x){return x.id==b.dataset.sd})[0])||{}).name+'” and its count will be removed.','Remove supply',function(){var b=_b;S.stock=S.stock.filter(function(x){return x.id!=b.dataset.sd});S.tasks.forEach(function(t){t.needs=(t.needs||[]).filter(function(n){return n.sid!=b.dataset.sd})});render();});return}
+  if(b.id==='addi'){if(!can('stock'))return;var nm2=$('newi').value.trim();if(!nm2)return;S.stock.push({id:S.nid++,name:nm2,qty:Math.max(0,+$('newq').value||0),low:2});render();return}
   if(b.dataset.pk){pinKey(b.dataset.pk);return}
   if(b.id==='pinx'){$('pin').classList.remove('show');return}
   if(b.dataset.rs){S.reason=S.reason===b.dataset.rs?'':b.dataset.rs;if(S.pend)openPush(S.pend.tid,S.pend.from);return}
-  if(b.dataset.ppd){var _b=b;askConfirm('Remove this person?','“'+((S.people[+b.dataset.ppd]||{}).name||'')+'” won’t be able to sign in anymore. Their past check-offs stay in the log.','Remove person',function(){var b=_b;var x=S.people.splice(+b.dataset.ppd,1)[0];if(x&&x.name===S.who){S.who=S.people[0].name;lockAdmin()}render();});return}
-  if(b.id==='addpp'){var nm=$('newpn').value.trim(),pp=$('newpp').value.trim();if(!nm||!/^\d{4}$/.test(pp)){$('newpp').style.borderColor='var(--bad)';return}S.people.push({name:nm,pin:pp});render();return}
-  if(b.dataset.del){var _b=b;askConfirm('Remove this task?','“'+tn(b.dataset.del)+'” and its schedule will be removed. This can’t be undone.','Remove task',function(){var b=_b;lg('Removed task',tn(b.dataset.del));S.tasks=S.tasks.filter(function(x){return x.id!=b.dataset.del});render();});return}
+  if(b.dataset.ppd){if(!can('owner'))return;var _i=+b.dataset.ppd,_p=S.people[_i];if(!_p||_p.name===S.who||(_p.role==='owner'&&owners().length<=1))return;askConfirm('Remove this person?','“'+_p.name+'” won’t be able to sign in anymore. Their past check-offs stay in the log.','Remove person',function(){var ix=S.people.indexOf(_p);if(ix>-1)S.people.splice(ix,1);lg('Changed','Removed '+_p.name);render()});return}
+  if(b.dataset.prs){if(!can('owner'))return;var _q=S.people[+b.dataset.prs];if(!_q)return;askConfirm('Reset '+_q.name+'’s code?','Their current code stops working. They’ll choose a new one the next time they sign in.','Reset code',function(){_q.pin=null;_q.mustReset=true;lg('Changed',_q.name+'’s code was reset');render()},true);return}
+  if(b.dataset.pmy){setCodePad(S.who,true,'Choose a new code, '+S.who);return}
+  if(b.dataset.own){pickOwner(b.dataset.own);return}
+  if(b.dataset.lclr){S.logf='';S.logt='';S.logi='';S.logq='';render();return}
+  if(b.id==='addpp'){if(!can('owner'))return;addPerson();return}
+  if(b.dataset.del){var _b=b;askConfirm('Remove this task?','“'+tn(b.dataset.del)+'” and its schedule will be removed. This can’t be undone.','Remove task',function(){var b=_b;lg('Removed task',tn(b.dataset.del),{tid:b.dataset.del});S.tasks=S.tasks.filter(function(x){return x.id!=b.dataset.del});render();});return}
   if(b.dataset.pd){var _b=b;askConfirm('Remove this time of day?','“'+((S.periods.filter(function(x){return x.id===b.dataset.pd})[0])||{}).name+'” will be removed, and its routine tasks will lose this time of day.','Remove',function(){var b=_b;var id=b.dataset.pd;S.periods=S.periods.filter(function(p){return p.id!==id});S.tasks.forEach(function(t){t.periods=t.periods.filter(function(x){return x!==id})});render();});return}
-  if(b.id==='add'){var n=$('newn').value.trim();if(!n){$('newn').focus();return}var nk=$('newk').value,mk=function(){var nt={id:S.nid++,name:n,periods:[],every:0,n:3,times:0,prn:false,last:0};S.tasks.push(nt);setFreq(nt.id,nk);if(nk!=='clock'){S.teId=nt.id;setTimeout(function(){openTE(nt.id)},0)}if(nk!=='clock')lg('Added task',n+' ('+(FQ.filter(function(o){return o[0]===fq(T(nt.id))})[0]||['',''])[1].toLowerCase()+')');return nt};
-    if(nk==='clock'){openTP({title:'First time for this task',sub:n,ok:function(v){var nt=mk();nt.at=[v];lg('Added task',n+' (at set times: '+fmtT(v)+')');$('newn').value='';openTE(nt.id);flashAt(nt.id,v)}});return}
+  if(b.id==='add'){var n=$('newn').value.trim();if(!n){$('newn').focus();return}var nk=$('newk').value,mk=function(){var nt={id:S.nid++,name:n,periods:[],every:0,n:3,times:0,prn:false,last:0};S.tasks.push(nt);setFreq(nt.id,nk);if(nk!=='clock'){S.teId=nt.id;setTimeout(function(){openTE(nt.id)},0)}if(nk!=='clock')lg('Added task',n+' ('+(FQ.filter(function(o){return o[0]===fq(T(nt.id))})[0]||['',''])[1].toLowerCase()+')',{tid:nt.id});return nt};
+    if(nk==='clock'){openTP({title:'First time for this task',sub:n,ok:function(v){var nt=mk();nt.at=[v];lg('Added task',n+' (at set times: '+fmtT(v)+')',{tid:nt.id});$('newn').value='';openTE(nt.id);flashAt(nt.id,v)}});return}
     mk();render();return}
   if(b.id==='addp'){S.periods.push({id:'p'+S.nid++,name:'New period',start:'12:00',end:'13:00'});render();return}
   if(b.id==='sos'){fillEm();$('modal').classList.add('show');return}
@@ -696,33 +679,38 @@ document.addEventListener('click',function(e){
   if(b.id==='chkup'){checkUpdate(true);return}
   if(b.id==='updgo'){applyUpdate();return}
   if(b.id==='rst'){$('rsf').value='';$('rsf').click();return}
-  if(b.id==='fresh'){if(!S.adminOk)return;if(!fresh){fresh=true;b.textContent='Tap again to erase everything';return}
+  if(b.id==='fresh'){if(!can('owner'))return;if(!fresh){fresh=true;b.textContent='Tap again to erase everything';return}
     blankState();save();render();openFR();return}
 });
-document.addEventListener('input',function(e){if(e.target.id==='tfind')applyFind()});
+document.addEventListener('input',function(e){if(e.target.id==='tfind')applyFind();if(e.target.id==='logq')applyLogQ()});
 document.addEventListener('keydown',function(e){if(e.key!=='Enter')return;var id=e.target.id;if(id==='qcv'){e.preventDefault();saveQC()}else if(id==='rck'){e.preventDefault();checkRC()}else if(id==='rcn2'){e.preventDefault();saveRC()}});
 document.addEventListener('change',function(e){
   if(e.target.id==='rsf'){var f=e.target.files&&e.target.files[0];if(!f)return;var fr=new FileReader();fr.onload=function(){var ok=false;try{ok=applySnap(JSON.parse(fr.result))}catch(x){}
     if(ok){S.last=Date.now();maybeReset();save();fillSt();$('stmsg').textContent='Restored. Sign in again from the Who’s here menu.';$('fr').classList.remove('show');render();if(S.people.length)needWho();else openFR()}else $('stmsg').textContent='That file is not a Care Board backup. Nothing was changed.'};fr.readAsText(f);return}
   if(e.target.id==='whosel'){var wv=e.target.value;e.target.value=S.who;if(!wv)return;if(wv==='__new')openNew();else openPin(wv);return}
   var d=e.target.dataset;
+  if(d.tna){var ta=T(d.tna),v2=e.target.value;if(!ta||!can('sched'))return;if(v2==='__new'){if(!can('stock'))return;NST=ta.id;$('nsn').value='';$('nsq').value=10;$('nsl').value=2;$('nse').textContent='';$('nsfor').textContent='It will be linked to “'+ta.name+'”.';$('ns').classList.add('show');setTimeout(function(){try{$('nsn').focus()}catch(x){}},60);e.target.value='';return}
+    var sid=+v2;if(!sid)return;ta.needs=ta.needs||[];if(!ta.needs.some(function(n){return n.sid===sid}))ta.needs.push({sid:sid,use:1});var si=S.stock.filter(function(x){return x.id===sid})[0];lgc(ta.name+': uses '+(si?si.name:'a supply'),ta.id);render();return}
+  if(d.tnq){var qa=d.tnq.split('|'),tq2=T(qa[0]);if(!tq2||!can('sched'))return;(tq2.needs||[]).forEach(function(n){if(n.sid===+qa[1])n.use=Math.max(0,Math.round(+e.target.value)||0)});return}
+  if(d.tg){var tg=T(d.tg),gv=e.target.value;if(!tg||!can('sched'))return;if(gv==='__new'){if(!can('guides'))return;e.target.value=tg.guide||'';openGE(null,tg.id);$('gtt').value=tg.name;return}if(gv)tg.guide=gv;else delete tg.guide;lgc(tg.name+': '+(gv?'guide set to “'+guideOf(tg).title+'”':'guide removed'),tg.id);render();return}
+  if(d.prl!==undefined){if(!can('owner'))return;setRole(+d.prl,e.target.value,e.target);return}
+  if(d.pperm){if(!can('owner'))return;var pq=d.pperm.split('|'),pp2=S.people[+pq[0]];if(!pp2)return;pp2.perms=pp2.perms||{};pp2.perms[pq[1]]=e.target.checked;lg('Changed',pp2.name+(e.target.checked?' can now: ':' can no longer: ')+PERMS.filter(function(k){return k[0]===pq[1]})[0][1].toLowerCase());return}
+  if(d.li!==undefined){S.logi=e.target.value;render();return}
   if(d.lf!==undefined){S.logf=e.target.value;render();return}
   if(d.lt!==undefined){S.logt=e.target.value;render();return}
   if(d.at){var y=d.at.split('|'),ty=S.tasks.filter(function(x){return x.id==y[0]})[0];ty.at[+y[1]]=e.target.value||'12:00';ty.at.sort();render();return}
-  if(d.adm){if(/^\d{4}$/.test(e.target.value)){S.adminPin=e.target.value}else e.target.value=S.adminPin;return}
   if(d.od!==undefined){S.tasks.filter(function(t){return t.id==d.od})[0].date=e.target.value||bizDay();return}
   if(d.ot!==undefined){S.tasks.filter(function(t){return t.id==d.ot})[0].time=e.target.value||'';return}
-  if(d.ahint){var hv=e.target.value.trim();if(hintBad(hv,S.adminPin)){e.target.value=S.ahint||'';if($('admmsg'))$('admmsg').textContent='The hint can’t include the admin code itself.';return}S.ahint=hv;if($('admmsg'))$('admmsg').textContent=hv?'Hint saved.':'Hint removed.';return}
-  if(d.gap){var gt=T(d.gap);gt.gap=Math.max(0,+e.target.value||0);lgc(gt.name+': minimum gap '+gt.gap+'h');return}
+  if(d.ahint){var mp=me(),hv=e.target.value.trim();if(!mp||!isOwner())return;if(hintBad(hv,mp.pin)){e.target.value=mp.hint||'';if($('admmsg'))$('admmsg').textContent='The hint can’t include your code.';return}mp.hint=hv;if($('admmsg'))$('admmsg').textContent=hv?'Hint saved.':'Hint removed.';return}
+  if(d.gap){var gt=T(d.gap);gt.gap=Math.max(0,+e.target.value||0);lgc(gt.name+': minimum gap '+gt.gap+'h',gt.id);return}
   if(d.gr){S.tasks.filter(function(t){return t.id==d.gr})[0].grace=Math.max(5,+e.target.value||60);return}
-  if(d.f){var fid=+d.f,fv=e.target.value;if(fv==='clock'){var ft=S.tasks.filter(function(t){return t.id===fid})[0];openTP({title:'First time for this task',sub:ft.name,ok:function(v){setFreq(fid,'clock');ft.at=[v];lgc(ft.name+': now at set times ('+fmtT(v)+')');flashAt(fid,v)},cancel:render});return}setFreq(fid,fv);lgc(T(fid).name+': now '+(FQ.filter(function(o){return o[0]===fq(T(fid))})[0]||['',''])[1].toLowerCase());render();return}
-  if(d.tm){var tmt=T(d.tm);tmt.times=Math.max(1,+e.target.value||1);lgc(tmt.name+': '+tmt.times+' times per day')}
+  if(d.f){var fid=+d.f,fv=e.target.value;if(fv==='clock'){var ft=S.tasks.filter(function(t){return t.id===fid})[0];openTP({title:'First time for this task',sub:ft.name,ok:function(v){setFreq(fid,'clock');ft.at=[v];lgc(ft.name+': now at set times ('+fmtT(v)+')',fid);flashAt(fid,v)},cancel:render});return}setFreq(fid,fv);lgc(T(fid).name+': now '+(FQ.filter(function(o){return o[0]===fq(T(fid))})[0]||['',''])[1].toLowerCase(),fid);render();return}
+  if(d.tm){var tmt=T(d.tm);tmt.times=Math.max(1,+e.target.value||1);lgc(tmt.name+': '+tmt.times+' times per day',tmt.id)}
   if(d.sl){S.stock.filter(function(x){return x.id==d.sl})[0].low=Math.max(0,+e.target.value||0);render();return}
   if(d.ppn!==undefined){var i=+d.ppn,o=S.people[i].name,v=e.target.value.trim()||o;S.people[i].name=v;if(S.who===o)S.who=v;head()}
-  if(d.ppp!==undefined){var j=+d.ppp;if(/^\d{4}$/.test(e.target.value))S.people[j].pin=e.target.value;else e.target.value=S.people[j].pin}
-  if(d.n){var tn0=T(d.n),nv=e.target.value.trim();if(!nv){e.target.value=tn0.name}else if(nv!==tn0.name){lgc('Renamed “'+tn0.name+'” to “'+nv+'”');tn0.name=nv}}
-  if(d.e){var tt=S.tasks.filter(function(t){return t.id==d.e})[0];tt.n=Math.max(1,+e.target.value||1);tt.every=tt.n*(tt.unit==='weeks'?7:tt.unit==='months'?30:1);lgc(tt.name+': every '+tt.n+' '+(tt.unit||'days'))}
-  if(d.p){var a=d.p.split('|'),t=S.tasks.filter(function(t){return t.id==a[0]})[0],i=t.periods.indexOf(a[1]);if(e.target.checked&&i<0)t.periods.push(a[1]);if(!e.target.checked&&i>-1)t.periods.splice(i,1);lgc(t.name+': '+(e.target.checked?'added to ':'removed from ')+pn(a[1]))}
+  if(d.n){var tn0=T(d.n),nv=e.target.value.trim();if(!nv){e.target.value=tn0.name}else if(nv!==tn0.name){lgc('Renamed “'+tn0.name+'” to “'+nv+'”',tn0.id);tn0.name=nv}}
+  if(d.e){var tt=S.tasks.filter(function(t){return t.id==d.e})[0];tt.n=Math.max(1,+e.target.value||1);tt.every=tt.n*(tt.unit==='weeks'?7:tt.unit==='months'?30:1);lgc(tt.name+': every '+tt.n+' '+(tt.unit||'days'),tt.id)}
+  if(d.p){var a=d.p.split('|'),t=S.tasks.filter(function(t){return t.id==a[0]})[0],i=t.periods.indexOf(a[1]);if(e.target.checked&&i<0)t.periods.push(a[1]);if(!e.target.checked&&i>-1)t.periods.splice(i,1);lgc(t.name+': '+(e.target.checked?'added to ':'removed from ')+pn(a[1]),t.id)}
   var P=function(id){return S.periods.filter(function(p){return p.id===id})[0]};
   if(d.pn)P(d.pn).name=e.target.value||'Unnamed';
 });
@@ -748,6 +736,118 @@ document.addEventListener('pointermove',function(e){if(lp.t&&(Math.abs(e.clientX
 document.addEventListener('contextmenu',function(e){if(e.target.closest('.task'))e.preventDefault()});
 document.addEventListener('click',function(e){if(lp.fired){lp.fired=false;e.stopImmediatePropagation();e.preventDefault()}},true);
 ['pointerdown','keydown','input'].forEach(function(n){document.addEventListener(n,function(){S.last=Date.now()},true)});
+/* ---- 1.9: roles and permissions ---- */
+var PERMS=[['sched','Edit tasks and schedules'],['stock','Manage supplies (add, remove, link)'],['guides','Write and edit how-to guides'],['emer','Edit emergency info']];
+var ROLES=[['owner','Owner'],['manager','Manager'],['caregiver','Caregiver']];
+var AREA={edit:'sched',periods:'owner',people:'owner',admin:'owner'};
+function me(){return S.people.filter(function(p){return p.name===S.who})[0]}
+function roleName(r){return(ROLES.filter(function(x){return x[0]===r})[0]||ROLES[2])[1]}
+function isOwner(){var p=me();return !!p&&p.role==='owner'}
+function isStaff(){var p=me();return !!p&&(p.role==='owner'||p.role==='manager')}
+function can(k){var p=me();if(!p||!S.adminOk)return false;if(p.role==='owner')return true;return k!=='owner'&&p.role==='manager'&&!!(p.perms&&p.perms[k])}
+function needMigrate(){return S.people.length>0&&!S.people.some(function(p){return p.role==='owner'})}
+function owners(){return S.people.filter(function(p){return p.role==='owner'})}
+function unlock(back){if(needWho())return;if(needMigrate()){openPin('__old');S.pin.back=back;return}
+  if(!isStaff()){showHint('That’s for owners and managers. Ask an owner if you need access.');return}
+  if(S.adminOk){goArea(back);return}openPin('__admin');S.pin.back=back}
+function goArea(t){var need=AREA[t];if(need&&!can(need)){showHint('Your role can’t open that. Ask an owner to change your permissions.');S.tab='menu'}else S.tab=t;render();
+  if(t==='stock'&&!can('stock'))showHint('You can count supplies. Adding, removing, or linking them needs the “Manage supplies” permission.');
+  if(t==='library'&&!can('guides'))showHint('You can read guides. Writing them needs the “Write and edit how-to guides” permission.')}
+function openOwnerPick(back){OPB=back||'menu';$('opl').innerHTML=S.people.map(function(p){return'<button data-own="'+esc(p.name)+'">'+esc(p.name)+'</button>'}).join('');$('op').classList.add('show')}
+var OPB='menu';
+function pickOwner(n){S.people.forEach(function(p){if(!p.role)p.role='caregiver';if(p.name===n){p.role='owner';if(S.ahint&&!p.hint)p.hint=S.ahint}});
+  lg('Changed',n+' set as owner (admin code retired)');$('op').classList.remove('show');
+  if(n===S.who){S.adminOk=true;S.last=Date.now();goArea(OPB)}else{lockAdmin();render();showHint('Done. '+n+' is the owner. Sign in as '+n+' to open the Menu.')}}
+/* people screen */
+function people(){var mine=S.who,nown=owners().length;
+  var h='<div class="col"><div class="ch"><b>People and roles</b><small>Codes stay private. Reset one and that person picks a new code next time they sign in.</small></div>';
+  h+='<div class="addrow" style="margin-bottom:12px"><input type="text" id="newpn" placeholder="Name" maxlength="24" aria-label="New person’s name"><select id="newpr" aria-label="Role" style="flex:none">'+ROLES.map(function(r){return'<option value="'+r[0]+'"'+(r[0]==='caregiver'?' selected':'')+'>'+r[1]+'</option>'}).join('')+'</select><button id="addpp" class="tpok" style="flex:none;font-size:16px;min-height:44px;padding:8px 18px">Add person</button></div>';
+  h+='<p class="note" id="ppe" style="color:var(--bad);margin-top:-6px" aria-live="polite"></p>';
+  h+='<div class="elist">'+S.people.map(function(p,i){var r=p.role||'caregiver',self=p.name===mine,lastOwner=r==='owner'&&nown<=1;
+    var h2='<div class="srow" style="align-items:flex-start"><span class="sname"><input type="text" value="'+esc(p.name)+'" data-ppn="'+i+'" aria-label="Name" style="width:100%;max-width:260px"><span class="meta" style="margin-top:4px">'+(p.pin&&!p.mustReset?'Has a code':'Picks a new code at next sign-in')+(self?' · This is you':'')+(lastOwner?' · Only owner':'')+'</span></span>';
+    h2+='<span style="display:flex;flex-wrap:wrap;gap:6px;align-items:center"><select data-prl="'+i+'" aria-label="Role for '+esc(p.name)+'">'+ROLES.map(function(x){return'<option value="'+x[0]+'"'+(x[0]===r?' selected':'')+'>'+x[1]+'</option>'}).join('')+'</select>';
+    h2+=self?'<button data-pmy="1">Change my code</button>':'<button data-prs="'+i+'">Reset code</button>';
+    if(!self&&!lastOwner)h2+='<button data-ppd="'+i+'" style="color:var(--bad)">Remove</button>';
+    h2+='</span>';
+    if(r==='manager'){var pm=p.perms||{};h2+='<span class="permbox"><span class="note" style="margin:0 0 4px;width:100%">'+esc(p.name)+' can:</span>'+PERMS.map(function(k){return'<label class="c chk"><input type="checkbox" data-pperm="'+i+'|'+k[0]+'"'+(pm[k[0]]?' checked':'')+'>'+k[1]+'</label>'}).join('')+'</span>'}
+    return h2+'</div>'}).join('')+'</div>';
+  h+='<p class="note"><b>Owner</b>: everything, including people, roles, and Admin settings. <b>Manager</b>: only what’s checked. <b>Caregiver</b>: check off, push, add one-time tasks, count supplies, read guides, and view the Log. People who add themselves from Who’s here start as Caregiver.</p>';
+  return h+'</div>'}
+function addPerson(){var nm=$('newpn').value.trim(),r=$('newpr').value;if(!nm){$('ppe').textContent='Enter a name.';$('newpn').focus();return}
+  if(S.people.some(function(p){return p.name.toLowerCase()===nm.toLowerCase()})){$('ppe').textContent='That name is already on the board.';return}
+  var np={name:nm,pin:null,mustReset:true,role:r};if(r==='manager')np.perms={sched:true,stock:true,guides:true,emer:false};S.people.push(np);lg('Changed','Added '+nm+' as '+roleName(r));render()}
+function setRole(i,r,sel){var p=S.people[i];if(!p)return;var was=p.role||'caregiver';if(was===r)return;
+  if(was==='owner'&&owners().length<=1){sel.value=was;showHint('There has to be at least one owner. Make someone else an owner first.');return}
+  p.role=r;if(r==='manager'&&!p.perms)p.perms={sched:true,stock:true,guides:true,emer:false};lg('Changed',p.name+' is now '+roleName(r));
+  if(p.name===S.who&&r!=='owner'){lockAdmin();render();showHint('You changed your own role, so the Menu is locked.');return}render()}
+/* sign-in codes */
+function setCodePad(nn,existing,title){S.pin={for:'__new',buf:'',name:nn,stage:1,first:'',existing:!!existing};padKeys();$('pinforgot').hidden=true;$('pint').textContent=title||('Choose your code, '+nn);drawPin('Pick 4 digits you will remember. Only you will know it.');$('pin').classList.add('show')}
+function padKeys(){var k='';['1','2','3','4','5','6','7','8','9','','0','del'].forEach(function(n){k+=n===''?'<span></span>':'<button data-pk="'+n+'" aria-label="'+(n==='del'?'Delete':n)+'">'+(n==='del'?'⌫':n)+'</button>'});$('pad').innerHTML=k}
+function newPad(nn){setCodePad(nn,false)}
+function openPin(name){
+  if(name===S.who&&name!=='__admin')return;
+  var p=S.people.filter(function(x){return x.name===name})[0];
+  if(p&&(!p.pin||p.mustReset)){setCodePad(name,true,'Welcome, '+name+'. Choose your code');return}
+  S.pin={for:name,buf:''};padKeys();
+  $('pinforgot').hidden=name==='__new';$('pinforgot').textContent=name==='__old'?'Forgot the old admin code?':'Forgot your code?';
+  $('pint').textContent=name==='__admin'?'Confirm it’s you, '+S.who:name==='__old'?'Old admin code':'Code for '+name;
+  drawPin(name==='__old'?'One-time step after the update: enter the admin code you used before.':'');$('pin').classList.add('show')}
+function pinKey(k){
+  if(k==='del')S.pin.buf=S.pin.buf.slice(0,-1);else if(S.pin.buf.length<4)S.pin.buf+=k;
+  if(S.pin.buf.length===4){var pp=S.pin;
+    if(pp.for==='__new'){
+      if(pp.stage===1){pp.first=pp.buf;pp.buf='';pp.stage=2;$('pint').textContent='Enter it again to confirm';drawPin('');return}
+      if(pp.buf===pp.first){var ex=S.people.filter(function(x){return x.name===pp.name})[0];
+        if(ex){ex.pin=pp.first;ex.mustReset=false}else S.people.push({name:pp.name,pin:pp.first,role:needMigrate()?undefined:'caregiver'});
+        var same=S.who===pp.name;S.who=pp.name;if(!same)lockAdmin();$('pin').classList.remove('show');render();if(same)showHint('Your code was changed.');else maybeTour();return}
+      pp.buf='';pp.first='';pp.stage=1;$('pint').textContent='Choose your code, '+pp.name;drawPin('Those didn’t match. Start again.');return}
+    if(pp.for==='__admin'){var m=me();if(m&&m.pin===pp.buf){S.adminOk=true;S.last=Date.now();$('pin').classList.remove('show');goArea(pp.back||'menu');return}pp.buf='';drawPin('That code doesn’t match. Try again.');return}
+    if(pp.for==='__old'){if(pp.buf===S.adminPin){$('pin').classList.remove('show');openOwnerPick(pp.back);return}pp.buf='';drawPin('That code doesn’t match. Try again.');return}
+    var p=S.people.filter(function(x){return x.name===pp.for})[0];
+    if(p&&p.pin===pp.buf){S.who=p.name;lockAdmin();$('pin').classList.remove('show');render();maybeTour();return}
+    pp.buf='';drawPin('That code doesn’t match. Try again.');return}
+  drawPin('')}
+function lockAdmin(){S.adminOk=false;if(['edit','periods','people','admin','menu'].indexOf(S.tab)>-1)S.tab='today'}
+/* recovery */
+var RCP=null;
+function openRC(){var f=S.pin.for;RCP=f==='__admin'?S.who:f;$('pin').classList.remove('show');
+  var p=S.people.filter(function(x){return x.name===RCP})[0],old=RCP==='__old',own=old||(p&&p.role==='owner'),hint=old?S.ahint:(p&&p.hint);
+  $('rct').textContent=old?'Forgot the old admin code?':'Forgot your code?';
+  $('rc1').hidden=false;$('rc2').hidden=true;$('rck').value='';$('rcn').value='';$('rcn2').value='';$('rch').value='';$('rce').textContent='';
+  $('rchint').hidden=!(own&&hint);$('rchint').innerHTML=own&&hint?'<span class="note" style="margin:0">Your hint</span><b>'+esc(hint)+'</b>':'';
+  var nokey=!own||!S.rkey;$('rcnone').hidden=!nokey;$('rc1f').hidden=nokey;
+  $('rcnonet').textContent=!own?'Ask an owner to reset your code. They can do it in Menu → People and roles, and you’ll pick a new code the next time you sign in.':'No recovery key was set up on this device, so this code can’t be reset here. If there’s another owner, they can reset it for you in Menu → People and roles.';
+  $('rc').classList.add('show');if(!nokey)setTimeout(function(){try{$('rck').focus()}catch(x){}},60)}
+function checkRC(){if(normKey($('rck').value)!==normKey(S.rkey)){$('rce').textContent='That recovery key doesn’t match. Check for typos and try again.';return}$('rce').textContent='';
+  if(RCP==='__old'){$('rc').classList.remove('show');lg('Changed','Old admin code bypassed with the recovery key');openOwnerPick('menu');return}
+  $('rc1').hidden=true;$('rc2').hidden=false;setTimeout(function(){try{$('rcn').focus()}catch(x){}},60)}
+function saveRC(){var a=$('rcn').value.trim(),b=$('rcn2').value.trim(),p=S.people.filter(function(x){return x.name===RCP})[0];if(!p)return;
+  if(!/^\d{4}$/.test(a)){$('rce').textContent='The new code needs to be 4 digits.';return}if(a!==b){$('rce').textContent='The two codes don’t match.';return}
+  if(hintBad($('rch').value,a)){$('rce').textContent='The hint can’t include the code itself.';return}
+  p.pin=a;p.mustReset=false;p.hint=$('rch').value.trim();S.who=p.name;lg('Changed',p.name+'’s code reset with the recovery key');$('rc').classList.remove('show');S.adminOk=true;S.last=Date.now();S.tab='menu';render();showKey()}
+/* log */
+function lg(a,d,x){S.log.unshift({ts:new Date(),who:S.who,a:a,d:d||'',tid:x&&x.tid!=null?+x.tid:undefined,sid:x&&x.sid!=null?+x.sid:undefined})}
+function lgc(d,tid){lg('Changed',d,tid!=null?{tid:tid}:null)}
+function logMatch(r,sel){if(!sel)return true;var k=sel.charAt(0),id=+sel.slice(2);
+  if(k==='t'){if(r.tid!=null)return r.tid===id;var t=T(id);return !r.sid&&!!t&&r.d.toLowerCase().indexOf(t.name.toLowerCase())>-1}
+  if(r.sid!=null)return r.sid===id;var it=S.stock.filter(function(x){return x.id===id})[0];return !r.tid&&!!it&&r.d.toLowerCase().indexOf(it.name.toLowerCase())>-1}
+function logv(){
+  var who=S.logf,tp=S.logt,sel=S.logi||'',rows=S.log.filter(function(r){return(!who||r.who===who)&&(!tp||(tp==='missed'?r.a==='Missed':tp==='inv'?r.a==='Inventory':CHG.indexOf(r.a)>-1))&&logMatch(r,sel)});
+  var ts=S.tasks.slice().sort(function(a,b){return a.name.localeCompare(b.name)}),ss=S.stock.slice().sort(function(a,b){return a.name.localeCompare(b.name)});
+  var h='<div class="col"><div class="ch"><b>Change log</b><small>'+rows.length+' entr'+(rows.length===1?'y':'ies')+'</small></div>';
+  h+='<input type="search" id="logq" placeholder="Search the log" aria-label="Search the log" value="'+esc(S.logq||'')+'" style="width:100%;margin-bottom:8px">';
+  h+='<div class="row" style="padding-top:0"><label class="c">Task or supply <select data-li="1" style="max-width:240px"><option value="">All</option>'+(ts.length?'<optgroup label="Tasks">'+ts.map(function(t){return'<option value="t:'+t.id+'"'+(sel==='t:'+t.id?' selected':'')+'>'+esc(t.name)+'</option>'}).join('')+'</optgroup>':'')+(ss.length?'<optgroup label="Supplies">'+ss.map(function(i){return'<option value="s:'+i.id+'"'+(sel==='s:'+i.id?' selected':'')+'>'+esc(i.name)+'</option>'}).join('')+'</optgroup>':'')+'</select></label>';
+  h+='<label class="c">Person <select data-lf="1"><option value="">Everyone</option>'+S.people.map(function(p){return'<option'+(p.name===who?' selected':'')+'>'+esc(p.name)+'</option>'}).join('')+'<option'+(who==='System'?' selected':'')+'>System</option></select></label><label class="c">Show <select data-lt="1"><option value="">Everything</option><option value="missed"'+(tp==='missed'?' selected':'')+'>Missed only</option><option value="changes"'+(tp==='changes'?' selected':'')+'>Schedule changes</option><option value="inv"'+(tp==='inv'?' selected':'')+'>Inventory counts</option></select></label>'+(who||tp||sel||S.logq?'<button data-lclr="1">Clear filters</button>':'')+'</div>';
+  if(!rows.length)h+='<p class="note">'+(sel||who||tp?'Nothing matches these filters.':'Nothing here yet. Every task check-off and undo shows up with who did it and when.')+'</p>';
+  var day='';
+  rows.forEach(function(r){var dd=r.ts.toLocaleDateString([],{weekday:'long',month:'short',day:'numeric'});if(dd!==day){day=dd;h+='<p class="note lday" style="margin:14px 0 4px"><b>'+dd+'</b></p>'}
+    var ms=r.a==='Missed',cg=CHG.indexOf(r.a)>-1;
+    h+='<div class="row lrow" data-q="'+esc((r.who+' '+r.a+' '+r.d).toLowerCase())+'"><span style="min-width:74px;color:var(--mut)">'+fmt(r.ts)+'</span><span class="tag'+(ms?'':' ok')+'" style="min-width:56px;text-align:center">'+esc(r.who)+'</span><span style="flex:1;min-width:180px"><b'+(ms?' style="color:var(--due)"':cg?' style="color:var(--acc)"':'')+'>'+esc(r.a)+'</b> '+esc(r.d)+'</span></div>'});
+  return h+'<p class="note" id="lnone" hidden>No entries match your search.</p></div>'}
+function applyLogQ(){var q=$('logq');if(!q)return;var v=q.value.trim().toLowerCase(),any=false;S.logq=q.value;
+  var kids=[].slice.call(document.querySelectorAll('main .lrow, main .lday')),cur=null,vis=0;
+  kids.forEach(function(el){if(el.classList.contains('lday')){if(cur)cur.hidden=!vis;cur=el;vis=0;return}var on=!v||el.dataset.q.indexOf(v)>-1;el.hidden=!on;if(on){vis++;any=true}});if(cur)cur.hidden=!vis;
+  $('lnone').hidden=any||!kids.length}
 /* ---- 1.8: admin recovery key + first task ---- */
 var RKA='ABCDEFGHJKMNPQRSTUVWXYZ23456789';
 function newKey(){var a=new Uint32Array(12),k='';try{crypto.getRandomValues(a)}catch(e){for(var i=0;i<12;i++)a[i]=Math.floor(Math.random()*1e9)}for(var j=0;j<12;j++){k+=RKA[a[j]%RKA.length];if(j===3||j===7)k+='-'}return k}
@@ -758,13 +858,6 @@ function showKey(after){S.rkey=newKey();save();RKNEXT=after||null;$('rkv').textC
 function copyKey(){var k=S.rkey;try{navigator.clipboard.writeText(k).then(function(){$('rkm').textContent='Copied. Paste it somewhere safe, like Notes or an email to yourself.'},function(){selKey()})}catch(e){selKey()}}
 function selKey(){try{var r=document.createRange();r.selectNodeContents($('rkv'));var s=window.getSelection();s.removeAllRanges();s.addRange(r);$('rkm').textContent='Select and copy the key above, or write it down.'}catch(e){}}
 function doneKey(){$('rk').classList.remove('show');lg('Changed','New admin recovery key created');var f=RKNEXT;RKNEXT=null;render();if(f)f()}
-function openRC(){$('pin').classList.remove('show');$('rc1').hidden=false;$('rc2').hidden=true;$('rck').value='';$('rcn').value='';$('rcn2').value='';$('rce').textContent='';
-  $('rch').value='';$('rchint').hidden=!S.ahint;$('rchint').innerHTML=S.ahint?'<span class="note" style="margin:0">Your hint</span><b>'+esc(S.ahint)+'</b>':'';$('rcnone').hidden=!!S.rkey;$('rc1f').hidden=!S.rkey;$('rc').classList.add('show');if(S.rkey)setTimeout(function(){try{$('rck').focus()}catch(x){}},60)}
-function checkRC(){if(normKey($('rck').value)!==normKey(S.rkey)){$('rce').textContent='That recovery key doesn’t match. Check for typos and try again.';return}$('rce').textContent='';$('rc1').hidden=true;$('rc2').hidden=false;setTimeout(function(){try{$('rcn').focus()}catch(x){}},60)}
-function saveRC(){var a=$('rcn').value.trim(),b=$('rcn2').value.trim();if(!/^\d{4}$/.test(a)){$('rce').textContent='The new admin code needs to be 4 digits.';return}if(a!==b){$('rce').textContent='The two codes don’t match.';return}
-  if(S.people.some(function(p){return p.pin===a})){$('rce').textContent='Pick a code that isn’t also someone’s sign-in code.';return}
-  if(hintBad($('rch').value,a)){$('rce').textContent='The hint can’t include the admin code itself.';return}S.ahint=$('rch').value.trim();
-  S.adminPin=a;S.adminSet=true;lg('Changed','Admin code reset with the recovery key');$('rc').classList.remove('show');S.adminOk=true;S.tab='menu';render();showKey()}
 var FT=null;
 function openFT(){FT={k:'clock',time:''};$('ftn').value='';$('fte').textContent='';drawFT();$('ft').classList.add('show')}
 function drawFT(){$('ftk').innerHTML=[['clock','At a set time'],['period','Each time of day'],['prn','As needed'],['once','Just once today']].map(function(o){return'<button data-ftk="'+o[0]+'" class="'+(FT.k===o[0]?'on':'')+'">'+o[1]+'</button>'}).join('');
@@ -773,7 +866,7 @@ function saveFT(){var n=$('ftn').value.trim();if(!n){$('fte').textContent='Type 
   if(FT.k==='clock'&&!FT.time){$('fte').textContent='Pick a time for this task.';return}
   var t={id:S.nid++,name:n,periods:[],every:0,n:3,times:0,prn:false,last:0,needs:[]};S.tasks.push(t);
   if(FT.k==='once'){t.once=true;t.date=bizDay();t.time=''}else setFreq(t.id,FT.k);if(FT.k==='clock')t.at=[FT.time];
-  lg('Added task',n+' (first task)');S.firstRun=false;$('ft').classList.remove('show');S.tab='today';S.viewP=null;
+  lg('Added task',n+' (first task)',{tid:t.id});S.firstRun=false;$('ft').classList.remove('show');S.tab='today';S.viewP=null;
   if(FT.k==='clock'){var mm=mins(FT.time),own=S.periods.filter(function(q){return inP(q,mm)})[0];if(own&&own.id!==nowP().id){S.viewP=own.id;S.viewFrom=nowP().id}}
   render();var el=document.querySelector('[data-k^="'+t.id+'|"],[data-ct^="'+t.id+'@"],[data-pr="'+t.id+'"],[data-o="'+t.id+'"]');
   if(el){el.classList.add('flashtile');try{el.scrollIntoView({block:'center',behavior:'smooth'})}catch(x){}}
@@ -783,11 +876,11 @@ function showHint(msg){clearTimeout(UNDO.t);UNDO.fn=null;$('toastt').textContent
 function blankState(){S.tasks=[];S.stock=[];S.guides=[];S.people=[];S.log=[];S.moves=[];S.done={};S.cdone={};S.cnt={};
   S.emer={alert:'Call 911 first if he is in distress.',contacts:[{n:'Emergency',p:'911'}],tell:'',plan:''};
   S.who='';S.adminOk=false;S.adminPin='1234';S.adminSet=false;S.rkey='';S.ahint='';S.firstRun=false;S.setup=true;S.setupHours=false;S.lastBackup=0;S.bkSnooze=0;S.since=Date.now();S.nid=20;S.dayKey=bizDay();S.tab='today';S.viewP=null}
-function openFR(){['frn','frp','fra','frh'].forEach(function(id){$(id).value=''});$('fre').textContent='';$('fr').classList.add('show');setTimeout(function(){try{$('frn').focus()}catch(x){}},80)}
-function saveFR(){var n=$('frn').value.trim(),pc=$('frp').value.trim(),ac=$('fra').value.trim(),er='';
-  if(!n)er='Enter your name.';else if(!/^\d{4}$/.test(pc))er='Your sign-in code needs to be 4 digits.';else if(!/^\d{4}$/.test(ac))er='The admin code needs to be 4 digits.';else if(pc===ac)er='Use a different admin code from your sign-in code.';else if(hintBad($('frh').value,ac))er='The hint can’t include the admin code itself.';
+function openFR(){['frn','frp','frh'].forEach(function(id){$(id).value=''});$('fre').textContent='';$('fr').classList.add('show');setTimeout(function(){try{$('frn').focus()}catch(x){}},80)}
+function saveFR(){var n=$('frn').value.trim(),pc=$('frp').value.trim(),hv=$('frh').value.trim(),er='';
+  if(!n)er='Enter your name.';else if(!/^\d{4}$/.test(pc))er='Your code needs to be 4 digits.';else if(hintBad(hv,pc))er='The hint can’t include your code.';
   if(er){$('fre').textContent=er;return}
-  S.people=[{name:n,pin:pc}];S.adminPin=ac;S.adminSet=true;S.ahint=$('frh').value.trim();S.who=n;S.adminOk=true;S.last=Date.now();S.tab='menu';S.firstRun=true;$('fr').classList.remove('show');save();render();showKey(maybeTour)}
+  S.people=[{name:n,pin:pc,role:'owner',hint:hv}];S.who=n;S.adminOk=true;S.last=Date.now();S.tab='menu';S.firstRun=true;$('fr').classList.remove('show');save();render();showKey(maybeTour)}
 /* ---- 1.7: welcome tour + setup checklist ---- */
 var TOUR=null;
 function tourCards(n){var tile=function(name,meta,tag,done,extra){return'<div class="trow" style="margin:0"><div class="task'+(done?' done':'')+'" style="cursor:default"><span class="box">'+(done?'✓':'')+'</span><span class="nm">'+name+'<span class="meta">'+meta+'</span></span>'+(tag||'')+'</div>'+(extra||'')+'</div>'};
@@ -806,7 +899,7 @@ function drawTour(){var c=TOUR.c[TOUR.i],n=TOUR.c.length,last=TOUR.i===n-1;
   $('tourback').hidden=TOUR.i===0;$('tourskip').hidden=last;$('tournext').textContent=last?'Got it':'Next'}
 function endTour(){var p=S.people.filter(function(x){return x.name===S.who})[0];if(p)p.toured=true;$('tour').classList.remove('show');TOUR=null;if(S.firstRun&&S.adminOk&&!S.tasks.length)openFT()}
 function setupItems(){var e=S.emer||{contacts:[]};return[
-  ['code','Set the admin code','So only you can change schedules',!!S.adminSet||S.adminPin!=='1234','people'],
+  ['code','Save a recovery key','So a forgotten owner code can be reset',!!S.rkey,'rkey'],
   ['people','Add everyone else who’ll use this','Family and each nurse, or let them add themselves from Who’s here',S.people.length>1,'people'],
   ['hours','Check Day and Night hours','When each shift starts and ends',!!S.setupHours,'periods'],
   ['tasks','Add tasks, feeds, and meds','Set times for anything on a schedule',S.tasks.length>0,'edit'],
@@ -827,13 +920,13 @@ document.addEventListener('click',function(e){var m=e.target;if(!m.classList||!m
   m.classList.remove('show')});
 /* ---- 1.5: supplies per task, how-to library ---- */
 var OT=null,CHG=['Changed','Added task','Removed task'];
-function lgc(d){lg('Changed',d)}
 function drawOT(){$('otd').innerHTML=[['today','Today'],['tomorrow','Tomorrow'],['pick','Pick a date']].map(function(o){return'<button data-otday="'+o[0]+'" class="'+(OT.day===o[0]?'on':'')+'">'+o[1]+'</button>'}).join('');$('otdt').hidden=OT.day!=='pick';
   $('ottw').innerHTML='<button id="ottime" class="tchip">'+(OT.time?fmtT(OT.time):'Pick a time')+'</button>'+(OT.time?'<button id="ottclr">Any time</button>':'')}
 function saveOT(){var n=$('otn').value.trim();if(!n){$('ote').textContent='Type what needs doing.';$('otn').focus();return}
   var td=bizDay(),dt=OT.day==='today'?td:OT.day==='tomorrow'?addDays(td,1):$('otdt').value;if(!dt||dt<td){$('ote').textContent='Pick today or a later date.';return}
   S.tasks.push({id:S.nid++,name:n,periods:[],every:0,once:true,date:dt,time:OT.time||'',needs:[],by:S.who});
-  lg('Added task',n+' (one-time, '+(dt===td?'today':dlabel(dt))+(OT.time?' at '+fmtT(OT.time):'')+')');$('ot').classList.remove('show');render()}
+  var _nt=S.tasks[S.tasks.length-1];lg('Added task',n+' (one-time, '+(dt===td?'today':dlabel(dt))+(OT.time?' at '+fmtT(OT.time):'')+')',{tid:_nt.id});$('ot').classList.remove('show');render()}
+var NST=null;
 function migrate15(){S.guides=S.guides||[];S.tasks.forEach(function(t){t.needs=t.needs||[]});
   S.stock.forEach(function(i){if(i.link!=null){var t=T(i.link);if(t&&!t.needs.some(function(n){return n.sid===i.id}))t.needs.push({sid:i.id,use:1})}delete i.link})}
 function needsOf(t){return(t&&t.needs||[]).map(function(n){return{n:n,i:S.stock.filter(function(x){return x.id===n.sid})[0]}}).filter(function(x){return x.i})}
@@ -857,16 +950,16 @@ function openGuide(gid){var g=S.guides.filter(function(x){return x.id===gid})[0]
   if(ts.length)h+='<p class="note" style="margin-top:0">Used for: '+ts.map(function(t){return esc(t.name)}).join(', ')+'</p>';
   if(nd.length)h+='<p class="sec">What you’ll need</p>'+needsHtml(nd);
   h+='<p class="sec">Steps</p>'+stepsHtml(g);
-  showSheet(g.title,h,S.adminOk?'<button data-ge="'+g.id+'">Edit guide</button>':'')}
+  showSheet(g.title,h,can('guides')?'<button data-ge="'+g.id+'">Edit guide</button>':'')}
 function library(){var gs=S.guides.slice().sort(function(a,b){return a.title.localeCompare(b.title)});
   var h='<div class="col"><div class="ch"><b>How-to library</b><small>Instructions anyone on shift can open</small></div>';
-  if(!gs.length)h+='<p class="note">No guides yet. '+(S.adminOk?'Tap New guide to write the first one.':'An admin can add guides.')+'</p>';
+  if(!gs.length)h+='<p class="note">No guides yet. '+(can('guides')?'Tap New guide to write the first one.':'An owner or manager can add guides.')+'</p>';
   else h+='<div class="tiles">'+gs.map(function(g){var ts=S.tasks.filter(function(t){return t.guide===g.id}),n=stepsOf(g).length;return'<div class="trow"><button class="task" data-gv="'+g.id+'"><span class="nm">'+esc(g.title)+'<span class="meta">'+n+' step'+(n===1?'':'s')+(ts.length?' · For: '+ts.map(function(t){return esc(t.name)}).join(', '):' · Not linked to a task')+'</span></span></button></div>'}).join('')+'</div>';
-  h+=S.adminOk?'<div class="row" style="border:0;padding-bottom:0"><button id="gnew">+ New guide</button></div>':'<div class="row" style="border:0;padding-bottom:0"><span class="note" style="margin:0;flex:1;min-width:200px">Anyone can read guides. Adding or changing them needs the admin code.</span><button data-unlock="library">Unlock to edit</button></div>';
+  h+=can('guides')?'<div class="row" style="border:0;padding-bottom:0"><button id="gnew">+ New guide</button></div>':'<div class="row" style="border:0;padding-bottom:0"><span class="note" style="margin:0;flex:1;min-width:200px">Anyone can read guides. Adding or changing them needs the admin code.</span><button data-unlock="library">Unlock to edit</button></div>';
   return h+'</div>'}
 var GE=null;
-function openGE(gid){var g=gid?S.guides.filter(function(x){return x.id===gid})[0]:null;$('ti').classList.remove('show');
-  GE={id:g?g.id:null,title:g?g.title:'',steps:g?g.steps:'',tasks:S.tasks.filter(function(t){return g&&t.guide===g.id}).map(function(t){return t.id})};
+function openGE(gid,pre){var g=gid?S.guides.filter(function(x){return x.id===gid})[0]:null;$('ti').classList.remove('show');
+  GE={id:g?g.id:null,title:g?g.title:'',steps:g?g.steps:'',tasks:S.tasks.filter(function(t){return g&&t.guide===g.id}).map(function(t){return t.id})};if(pre&&GE.tasks.indexOf(pre)<0)GE.tasks.push(pre);
   var h='<p class="note" style="margin-top:0">Title</p><input type="text" id="gtt" value="'+esc(GE.title)+'" placeholder="e.g. Trach tie change" style="width:100%;margin-bottom:10px">';
   h+='<p class="note">Steps (one per line)</p><textarea id="gst" style="min-height:180px" placeholder="Wash hands&#10;Gather supplies&#10;…">'+esc(GE.steps)+'</textarea>';
   h+='<p class="note">Show this guide on these tasks</p><div style="display:flex;flex-wrap:wrap;gap:6px 14px;margin-bottom:10px">'+S.tasks.map(function(t){var og=guideOf(t);return'<label class="c"><input type="checkbox" data-gtk="'+t.id+'"'+(GE.tasks.indexOf(t.id)>-1?' checked':'')+'>'+esc(t.name)+(og&&og.id!==GE.id?' <span style="font-size:13px">(now: '+esc(og.title)+')</span>':'')+'</label>'}).join('')+'</div>';
@@ -897,13 +990,13 @@ function showUndo(msg,fn){clearTimeout(UNDO.t);UNDO.fn=fn;$('toastu').hidden=fal
 function hideUndo(){clearTimeout(UNDO.t);UNDO.fn=null;$('toast').hidden=true}
 function T(id){return S.tasks.filter(function(x){return x.id==id})[0]}
 function togK(k,ui){var tid=+k.split('|')[0],lbl=tn(tid)+' ('+pn(k.split('|')[1])+')';
-  if(S.done[k]){delete S.done[k];use(tid,-1);lg('Undid',lbl);if(ui)hideUndo()}else{S.done[k]={who:S.who,time:fmt(new Date())};use(tid);lg('Completed',lbl);if(ui)showUndo('Checked off: '+tn(tid),function(){togK(k,false)})}render()}
-function togI(id,ui){var t=T(id);if(!t)return;t.done=t.done?null:{who:S.who,time:fmt(new Date()),pid:nowP().id};use(t.id,t.done?1:-1);lg(t.done?'Completed':'Undid',t.name);if(ui){if(t.done)showUndo('Checked off: '+t.name,function(){togI(id,false)});else hideUndo()}render()}
-function togO(id,ui){var t=T(id);if(!t)return;t.done=t.done?null:{who:S.who,time:fmt(new Date()),pid:nowP().id};use(t.id,t.done?1:-1);lg(t.done?'Completed':'Undid',t.name+' (one-time)');if(ui){if(t.done)showUndo('Checked off: '+t.name,function(){togO(id,false)});else hideUndo()}render()}
+  if(S.done[k]){delete S.done[k];use(tid,-1);lg('Undid',lbl,{tid:tid});if(ui)hideUndo()}else{S.done[k]={who:S.who,time:fmt(new Date())};use(tid);lg('Completed',lbl,{tid:tid});if(ui)showUndo('Checked off: '+tn(tid),function(){togK(k,false)})}render()}
+function togI(id,ui){var t=T(id);if(!t)return;t.done=t.done?null:{who:S.who,time:fmt(new Date()),pid:nowP().id};use(t.id,t.done?1:-1);lg(t.done?'Completed':'Undid',t.name,{tid:t.id});if(ui){if(t.done)showUndo('Checked off: '+t.name,function(){togI(id,false)});else hideUndo()}render()}
+function togO(id,ui){var t=T(id);if(!t)return;t.done=t.done?null:{who:S.who,time:fmt(new Date()),pid:nowP().id};use(t.id,t.done?1:-1);lg(t.done?'Completed':'Undid',t.name+' (one-time)',{tid:t.id});if(ui){if(t.done)showUndo('Checked off: '+t.name,function(){togO(id,false)});else hideUndo()}render()}
 function togCt(q,ui){var qi=+q.split('@')[0],lbl=tn(qi)+' at '+fmtT(q.split('@')[1]);
-  if(S.cdone[q]){delete S.cdone[q];use(qi,-1);lg('Undid',lbl);if(ui)hideUndo()}else{S.cdone[q]={who:S.who,time:fmt(new Date())};use(qi);lg('Completed',lbl);if(ui)showUndo('Checked off: '+lbl,function(){togCt(q,false)})}render()}
-function addC(id){var c=S.cnt[id]||(S.cnt[id]={n:0});c.n++;c.last=fmt(new Date());c.who=S.who;use(+id);lg('Logged',tn(id));showUndo('Logged: '+tn(id)+' ('+c.n+')',function(){decC(id)});render()}
-function decC(id){var c2=S.cnt[id];if(c2&&c2.n>0){c2.n--;use(+id,-1);lg('Undid',tn(id));if(!c2.n)c2.last=''}render()}
+  if(S.cdone[q]){delete S.cdone[q];use(qi,-1);lg('Undid',lbl,{tid:qi});if(ui)hideUndo()}else{S.cdone[q]={who:S.who,time:fmt(new Date())};use(qi);lg('Completed',lbl,{tid:qi});if(ui)showUndo('Checked off: '+lbl,function(){togCt(q,false)})}render()}
+function addC(id){var c=S.cnt[id]||(S.cnt[id]={n:0});c.n++;c.last=fmt(new Date());c.who=S.who;use(+id);lg('Logged',tn(id),{tid:id});showUndo('Logged: '+tn(id)+' ('+c.n+')',function(){decC(id)});render()}
+function decC(id){var c2=S.cnt[id];if(c2&&c2.n>0){c2.n--;use(+id,-1);lg('Undid',tn(id),{tid:id});if(!c2.n)c2.last=''}render()}
 /* ---- as needed ---- */
 function dayStart(){var q=S.dayKey.split('-'),m=mins(S.resetAt);return new Date(+q[0],+q[1]-1,+q[2],Math.floor(m/60),m%60).getTime()}
 function ago(ms){var m=Math.max(0,Math.round(ms/60000));return m<1?'just now':m<60?m+' min ago':Math.floor(m/60)+'h '+(m%60?m%60+'m ':'')+'ago'}
@@ -914,8 +1007,8 @@ function prnTile(t){var hs=t.hist||[],last=hs[hs.length-1],ds=dayStart(),n=hs.fi
   return'<div class="trow"><button class="task" data-pr="'+t.id+'"'+(last?' data-lpr="'+t.id+'"':'')+'><span class="box" style="font-size:22px">+</span><span class="nm">'+esc(t.name)+'<span class="meta">'+meta+'</span></span>'+tg+'</button></div>'}
 function logPrn(id,force){var t=T(id);if(!t)return;var hs=t.hist||(t.hist=[]),last=hs[hs.length-1],wait=last&&t.gap?last.ts+t.gap*36e5-Date.now():0;
   if(wait>0&&!force){askConfirm('Too soon?','“'+t.name+'” was last logged '+ago(Date.now()-last.ts)+' by '+last.who+'. The minimum gap is '+t.gap+' hours ('+dur(wait)+' to go). Log it anyway?','Log anyway',function(){logPrn(id,true)},true);return}
-  hs.push({ts:Date.now(),who:S.who});if(hs.length>60)hs.splice(0,hs.length-60);use(t.id);lg('Logged',t.name+' (as needed)'+(wait>0?', early':''));showUndo('Logged: '+t.name,function(){undoPrn(id)});render()}
-function undoPrn(id){var t=T(id);if(!t||!t.hist||!t.hist.length)return;t.hist.pop();use(t.id,-1);lg('Undid',t.name+' (as needed)');render()}
+  hs.push({ts:Date.now(),who:S.who});if(hs.length>60)hs.splice(0,hs.length-60);use(t.id);lg('Logged',t.name+' (as needed)'+(wait>0?', early':''),{tid:t.id});showUndo('Logged: '+t.name,function(){undoPrn(id)});render()}
+function undoPrn(id){var t=T(id);if(!t||!t.hist||!t.hist.length)return;t.hist.pop();use(t.id,-1);lg('Undid',t.name+' (as needed)',{tid:t.id});render()}
 /* ---- confirm, backup reminder, keep awake ---- */
 var CF=null;
 function askConfirm(title,msg,ok,fn,safe){CF=fn;$('cft').textContent=title;$('cfm').textContent=msg;$('cfok').textContent=ok;$('cfok').className='cfok'+(safe?' go':'');$('cf').classList.add('show')}
@@ -961,7 +1054,7 @@ function drawEmEd(){var h='<p class="note" style="margin-top:0">Top message (sho
   $('emf').innerHTML=h}
 function emRead(){EM.alert=$('ema').value.trim();EM.tell=$('emt').value;EM.plan=$('empl').value;EM.contacts=EM.contacts.map(function(c,i){var a=$('emf').querySelector('[data-emn="'+i+'"]'),b=$('emf').querySelector('[data-emp="'+i+'"]');return{n:a?a.value.trim():c.n,p:b?b.value.trim():c.p}})}
 /* ---- local persistence (this device only) ---- */
-var KEY='zeke-care-board.v1',TRANSIENT=['tab','who','pend','pin','reason','adminOk','viewP','viewFrom','logf','logt','flash'],saved=false,lastSave=null;
+var KEY='zeke-care-board.v1',TRANSIENT=['tab','who','pend','pin','reason','adminOk','viewP','viewFrom','logf','logt','logi','logq','flash'],saved=false,lastSave=null;
 function snap(){var o={};Object.keys(S).forEach(function(k){if(TRANSIENT.indexOf(k)<0)o[k]=S[k]});return{app:'zeke-care-board',v:1,at:new Date().toISOString(),theme:document.documentElement.dataset.theme||'dark',state:o}}
 function applySnap(d){if(!d||d.app!=='zeke-care-board'||!d.state||!Array.isArray(d.state.tasks)||!Array.isArray(d.state.periods)||!d.state.periods.length||!Array.isArray(d.state.people)||!d.state.people.length)return false;
   Object.keys(d.state).forEach(function(k){S[k]=d.state[k]});
