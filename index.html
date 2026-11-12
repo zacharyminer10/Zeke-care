@@ -154,6 +154,8 @@ b,strong,.ch b,.panel .ch b,.sh .shn,.tpv,.emal,.emr b{font-weight:500}
 nav button,nav button.on,.pill,.tag,.sec,.who button.on,.rs button.on,.tchip,.upd,.toast{font-weight:500}
 .tpok,.toast button,.vb button,.upd button,.cfok,.pad button{font-weight:600}
 .task .box{font-weight:600}
+/* store: trial status + alert prompt */
+.trl{font-size:13px;color:var(--mut);margin-left:10px;padding:2px 9px;border:1px solid var(--line);border-radius:999px;white-space:nowrap}.trl[hidden]{display:none}
 /* store: disclaimer */
 .tpok:disabled{opacity:.45;cursor:not-allowed}
 /* 1.8 recovery + first task */
@@ -211,7 +213,7 @@ nav{flex-wrap:wrap}nav button{white-space:nowrap}
 </head>
 <body>
 <header>
-  <h1>EZAide</h1><span class="clock" id="clock"></span>
+  <h1>EZAide</h1><span class="clock" id="clock"></span><span class="trl" id="trl" hidden></span>
   <div class="sp"></div>
   <div class="who" id="who"></div>
   <button class="sos" id="sos">Emergency</button>
@@ -253,6 +255,7 @@ nav{flex-wrap:wrap}nav button{white-space:nowrap}
 <div id="rc1f"><div id="rc1"><button id="rctry" style="width:100%;margin-bottom:4px">I remember it now</button><p class="note">Still stuck? Enter the recovery key you saved when the board was set up to choose a new code.</p><input type="text" id="rck" autocomplete="off" autocapitalize="characters" placeholder="XXXX-XXXX-XXXX" aria-label="Recovery key" style="width:100%;font-size:20px;letter-spacing:.08em;text-align:center"><div style="display:flex;gap:8px;margin-top:12px"><button data-cl="rc">Cancel</button><button id="rcgo" class="tpok" style="font-size:17px">Next</button></div></div>
 <div id="rc2" hidden><p class="note" style="margin-top:0">Key accepted. Choose a new admin code.</p><input type="text" id="rcn" class="pinin" inputmode="numeric" maxlength="4" autocomplete="off" aria-label="New admin code" placeholder="New code" style="width:100%"><input type="text" id="rcn2" class="pinin" inputmode="numeric" maxlength="4" autocomplete="off" aria-label="New admin code again" placeholder="Again" style="width:100%;margin-top:8px"><p class="note">New hint (optional)</p><input type="text" id="rch" maxlength="60" autocomplete="off" placeholder="Something only you’d recognize" aria-label="New hint" style="width:100%"><div style="display:flex;gap:8px;margin-top:12px"><button data-cl="rc">Cancel</button><button id="rcok" class="tpok" style="font-size:17px">Save new code</button></div></div>
 <p class="note" id="rce" style="color:var(--bad)" aria-live="polite"></p></div></div></div>
+<div class="modal" id="na"><div class="card" style="max-width:440px"><h2>Want an alert when it’s due?</h2><p style="line-height:1.45;margin:0 0 14px">EZAide can send a notification at the set time, even if the app is closed. You can change which alerts you get any time in Admin settings.</p><div style="display:flex;gap:8px;align-items:center"><button id="nano" style="background:transparent;border-color:transparent;color:var(--mut)">Not now</button><span style="flex:1"></span><button id="nayes" class="tpok" style="flex:none;font-size:16px;padding:8px 20px">Turn on alerts</button></div></div></div>
 <div class="modal" id="dc"><div class="card" style="max-width:520px"><h2>Before you start</h2><p style="line-height:1.45;margin:0 0 10px">EZAide is a checklist and tracking aid for caregivers. It is not a medical device and does not give medical advice, diagnose, or treat any condition.</p><ul style="margin:0 0 12px;padding-left:20px;line-height:1.45"><li>Always follow the instructions from your care team and the labels on prescriptions and supplies. If EZAide ever differs from them, they are right.</li><li>Reminders can be missed if the device is off, muted, out of battery, or notifications are turned off. Don’t rely on the app as your only reminder for medications or feeds.</li><li>Your information is stored only on this device. Back it up regularly from ⚙ Settings.</li><li><b>In an emergency, call 911.</b></li></ul><label style="display:flex;gap:10px;align-items:flex-start;margin:0 0 14px;cursor:pointer;line-height:1.4"><input type="checkbox" id="dcck" style="width:22px;height:22px;flex:none;margin-top:1px"><span>I understand EZAide is a tracking aid, not a substitute for medical care or professional judgment.</span></label><button id="dcok" class="tpok" style="width:100%;font-size:17px" disabled>Continue</button></div></div>
 <div class="modal" id="ft"><div class="card" style="max-width:480px"><p class="note" style="margin:0 0 4px">Last step</p><h2>Try it: add your first task</h2><p style="margin:0 0 12px;line-height:1.45">Something you do every day works best. You can change or remove it later.</p>
 <input type="text" id="ftn" maxlength="80" placeholder="Task name" aria-label="Task name" style="width:100%"><div class="rs" id="ftex" style="margin:8px 0 0"><button data-ftex="Morning medication">Morning medication</button><button data-ftex="Check dressing">Check dressing</button><button data-ftex="Drink water">Drink water</button></div>
@@ -569,7 +572,7 @@ function people(){
   h+='<div class="row"><input type="text" id="newpn" placeholder="Name"><input type="text" id="newpp" inputmode="numeric" maxlength="4" placeholder="4-digit code" style="width:130px;flex:none;min-width:0"><button id="addpp">Add person</button></div><p class="note">The admin code opens the Menu, Admin settings, and supply management.</p></div>';
   return h;
 }
-function render(keep){head();if(keep)return;setTimeout(function(){if($('te').classList.contains('show'))drawTE();if(S.tab==='edit')applyFind()},0);var back=['edit','periods','people','admin'].indexOf(S.tab)>-1?'<button data-t="menu" style="margin-bottom:12px">← Menu</button>':'';$('main').innerHTML=back+(S.tab==='today'?today():S.tab==='week'?week():S.tab==='menu'?menu():S.tab==='edit'?edit2():S.tab==='stock'?stock():S.tab==='log'?logv():S.tab==='library'?library():S.tab==='periods'?periods():S.tab==='admin'?admin():people())}
+function render(keep){head();storeHooks();if(keep)return;setTimeout(function(){if($('te').classList.contains('show'))drawTE();if(S.tab==='edit')applyFind()},0);var back=['edit','periods','people','admin'].indexOf(S.tab)>-1?'<button data-t="menu" style="margin-bottom:12px">← Menu</button>':'';$('main').innerHTML=back+(S.tab==='today'?today():S.tab==='week'?week():S.tab==='menu'?menu():S.tab==='edit'?edit2():S.tab==='stock'?stock():S.tab==='log'?logv():S.tab==='library'?library():S.tab==='periods'?periods():S.tab==='admin'?admin():people())}
 document.addEventListener('click',function(e){
   var b=e.target.closest('button');if(!b)return;
   if(!S.who&&(b.dataset.pr||b.dataset.k||b.dataset.i||b.dataset.o||b.dataset.po||b.dataset.ct||b.dataset.c||b.dataset.mv||b.dataset.pi||b.dataset.undo||b.dataset.undomv)){needWho();return}
@@ -618,6 +621,8 @@ document.addEventListener('click',function(e){
   if(b.id==='fttime'){openTP({title:'Time for this task',sub:$('ftn').value.trim(),val:FT.time||null,ok:function(v){FT.time=v;drawFT()}});return}
   if(b.id==='ftok'){saveFT();return}
   if(b.id==='dcok'){acceptDC();return}
+  if(b.id==='nayes'){answerNA(true);return}
+  if(b.id==='nano'){answerNA(false);return}
   if(b.id==='abt'){$('st').classList.remove('show');openAbout();return}
   if(b.id==='ftskip'){if($('fthk').checked)S.setupHours=true;S.firstRun=false;$('ft').classList.remove('show');S.tab='menu';render();return}
   if(b.id==='frrs'){$('rsf').value='';$('rsf').click();return}
@@ -740,6 +745,25 @@ document.addEventListener('contextmenu',function(e){if(e.target.closest('.task')
 document.addEventListener('click',function(e){if(lp.fired){lp.fired=false;e.stopImmediatePropagation();e.preventDefault()}},true);
 ['pointerdown','keydown','input'].forEach(function(n){document.addEventListener(n,function(){S.last=Date.now()},true)});
 
+
+/* ---- store: native bridge, alert permission, trial status ----
+   NAT is the native app (Capacitor) when running from the App Store build; null in the web version.
+   EZStore.trialStart is set by the purchase layer (Phase 4) from Apple's record of the trial item. */
+var NAT=(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform())?Capacitor.Plugins:null;
+window.EZStore=window.EZStore||{trialStart:0,unlocked:false};
+function anyOpen(){return !!document.querySelector('.modal.show')}
+function storeHooks(){
+  // ask for alerts the first time a task has a set time, once
+  if(!S.notifAsked&&S.people.length&&S.tasks.some(function(t){return t.at&&t.at.length})&&!anyOpen())setTimeout(function(){if(!S.notifAsked&&!anyOpen())$('na').classList.add('show')},700);
+  // quiet trial status during the 7-day trial
+  var el=$('trl'),st=window.EZStore;if(!el)return;
+  if(!st.trialStart||st.unlocked){el.hidden=true;return}
+  var left=Math.ceil((st.trialStart+7*864e5-Date.now())/864e5);
+  if(left<1){el.hidden=true;return}
+  el.textContent='Free trial · '+left+(left===1?' day':' days')+' left';el.hidden=false}
+function answerNA(yes){S.notifAsked=true;S.notif=yes?'on':'off';$('na').classList.remove('show');save();
+  lg('Changed','Alerts '+(yes?'turned on':'left off')+(S.who?' by '+S.who:''));
+  if(yes&&NAT&&NAT.LocalNotifications){try{NAT.LocalNotifications.requestPermissions().then(function(r){if(r&&r.display!=='granted'){S.notif='denied';save()}})}catch(x){}}}
 /* ---- store: disclaimer, about, checklist groups, first-run order ---- */
 var DCNEXT=null;
 function openDC(next){DCNEXT=next||null;$('dcck').checked=false;$('dcok').disabled=true;$('dc').classList.add('show')}
@@ -825,7 +849,7 @@ function setupCard(full){var it=setupItems(),done=it.filter(function(x){return x
   if(!full)return'<div class="vb" style="background:var(--panel2);color:var(--tx);border:1px solid var(--acc)"><span>Finish setting up the board · <b>'+done+' of '+it.length+'</b> done</span><button data-t="menu" style="background:var(--acc);color:#0c1420">Open checklist</button></div>';
   return'<div class="col" style="margin-bottom:12px;border-color:var(--acc)"><div class="ch"><b>Set up the board</b><small>'+done+' of '+it.length+' done</small></div><div class="elist">'+sgroup(it,function(x){return'<div class="srow"><span class="box" style="width:26px;height:26px;border-radius:8px;'+(x[3]?'background:var(--ok);border-color:var(--ok);color:#06231c':'')+'">'+(x[3]?'✓':'')+'</span><span class="sname"'+(x[3]?' style="color:var(--mut);text-decoration:line-through"':'')+'>'+x[1]+'<span class="meta" style="text-decoration:none">'+x[2]+'</span></span>'+(x[3]?'':(x[0]==='hours'?'<button data-sgo="periods">Check hours</button><button data-sok="hours">They’re right</button>':'<button data-sgo="'+x[4]+'">'+(x[0]==='bkp'?'Save backup':'Go')+'</button>'))+'</div>'})+'</div><button data-shide="1" style="margin-top:10px;background:transparent;border-color:transparent;color:var(--mut);padding-left:0">Hide this checklist</button></div>'}
 /* ---- 1.6: tap outside a pop-up to close it ---- */
-var MDOWN=null,KEEP=['emed','ge','tour','fr','rk','ft','dc'];
+var MDOWN=null,KEEP=['emed','ge','tour','fr','rk','ft','dc','na'];
 document.addEventListener('pointerdown',function(e){MDOWN=e.target},true);
 document.addEventListener('click',function(e){var m=e.target;if(!m.classList||!m.classList.contains('modal')||!m.classList.contains('show')||MDOWN!==m)return;
   if(KEEP.indexOf(m.id)>-1)return;
