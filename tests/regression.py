@@ -117,6 +117,16 @@ def main():
         pg.evaluate('checkDue()')
         check('G3 no repeat alert after handling', not pg.is_visible('#due'))
 
+        # K. backup reminder: owners only, monthly, quiet
+        pg.evaluate("S.who='Owner';S.bkOff=false;S.bkSnooze=0;S.lastBackup=Date.now()-20*864e5;S.tab='today';render()")
+        check('K1 no backup reminder within 30 days', pg.locator('.bkline').count() == 0)
+        pg.evaluate("S.lastBackup=Date.now()-34*864e5;render()")
+        check('K2 owner sees a small reminder after 30 days', pg.locator('.bkline').count() == 1)
+        pg.evaluate("S.who='Nurse';render()")
+        check('K3 caregivers never see it', pg.locator('.bkline').count() == 0)
+        pg.evaluate("S.who='Owner';render()"); pg.click('#bklater')
+        check('K4 Not now snoozes about a month', pg.evaluate("Math.round((S.bkSnooze-Date.now())/864e5)") == 30)
+
         # H. inventory + log database persistence
         pg.evaluate("S.stock.push({id:601,name:'Gauze',qty:10,low:2});S.tab='stock';render()")
         pg.click('[data-sq="601|-1"]'); pg.wait_for_timeout(300)
