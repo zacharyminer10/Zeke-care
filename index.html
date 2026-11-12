@@ -154,6 +154,8 @@ b,strong,.ch b,.panel .ch b,.sh .shn,.tpv,.emal,.emr b{font-weight:500}
 nav button,nav button.on,.pill,.tag,.sec,.who button.on,.rs button.on,.tchip,.upd,.toast{font-weight:500}
 .tpok,.toast button,.vb button,.upd button,.cfok,.pad button{font-weight:600}
 .task .box{font-weight:600}
+/* store: disclaimer */
+.tpok:disabled{opacity:.45;cursor:not-allowed}
 /* 1.8 recovery + first task */
 .hintbox{display:flex;flex-direction:column;gap:2px;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin:0 0 12px}.hintbox b{font-size:18px}.hintbox[hidden]{display:none}
 .rkv{font:600 26px/1.2 ui-monospace,"SF Mono",Menlo,monospace;letter-spacing:.06em;text-align:center;background:var(--bg);border:1px dashed var(--acc);border-radius:12px;padding:16px 8px;margin:0 0 6px;-webkit-user-select:all;user-select:all}
@@ -209,7 +211,7 @@ nav{flex-wrap:wrap}nav button{white-space:nowrap}
 </head>
 <body>
 <header>
-  <h1>Care board</h1><span class="clock" id="clock"></span>
+  <h1>EZAide</h1><span class="clock" id="clock"></span>
   <div class="sp"></div>
   <div class="who" id="who"></div>
   <button class="sos" id="sos">Emergency</button>
@@ -222,7 +224,7 @@ nav{flex-wrap:wrap}nav button{white-space:nowrap}
 <div class="rs" id="stdt"><button id="bkp">Save a backup</button><button id="rst">Restore from backup</button></div>
 <input type="file" id="rsf" accept=".json,application/json" style="display:none">
 <p class="note" id="stmsg" aria-live="polite"></p>
-<div class="rs"><button id="tourre">Show the tour</button></div><div><button id="stx">Done</button></div><div class="row" style="border:0;padding:14px 0 0;justify-content:flex-end"><span class="note" style="margin:0" id="stver"></span><button id="chkup">Check for updates</button></div></div></div>
+<div class="rs"><button id="tourre">Show the tour</button><button id="abt">About &amp; disclaimer</button></div><div><button id="stx">Done</button></div><div class="row" style="border:0;padding:14px 0 0;justify-content:flex-end"><span class="note" style="margin:0" id="stver"></span><button id="chkup">Check for updates</button></div></div></div>
 <div class="modal" id="wp"><div class="card"><h2>Who’s here?</h2><p class="note">Pick your name, then enter your code.</p><p class="note" id="wpm" style="color:var(--ok)" aria-live="polite"></p><div class="pmb" id="wpl"></div><button id="wpx">Cancel</button></div></div>
 <div class="modal" id="nu"><div class="card"><h2>New user</h2><p class="note">Enter your name. You’ll choose your own 4-digit code next.</p><input type="text" id="nun" placeholder="Your name" maxlength="24" aria-label="Your name" style="width:100%;margin-bottom:8px"><p class="note" id="nue" style="color:var(--bad)" aria-live="polite"></p><div style="display:flex;gap:8px"><button id="nuok">Next</button><button id="nux">Cancel</button></div></div></div>
 <div class="modal" id="pin"><div class="card"><h2 id="pint"></h2><p class="dots" id="pind"></p><p class="note" id="pinm" aria-live="polite"></p><div class="pad" id="pad"></div><button id="pinx">Cancel</button><button id="pinforgot" hidden style="width:100%;margin-top:8px;background:transparent;border-color:transparent;color:var(--acc)">Forgot the admin code?</button></div></div>
@@ -237,10 +239,10 @@ nav{flex-wrap:wrap}nav button{white-space:nowrap}
 <div class="modal" id="te"><div class="card" style="max-width:560px"><h2 id="tet"></h2><div id="teb"></div><div style="display:flex;gap:8px;margin-top:18px;align-items:center"><button id="tedel" data-del="" style="color:var(--bad)">Remove task</button><span style="flex:1"></span><button data-cl="te" class="tpok" style="flex:none;font-size:16px;padding:8px 26px">Done</button></div></div></div>
 <div class="modal" id="qc"><div class="card" style="max-width:360px"><h2 id="qct"></h2><p class="note" style="margin-top:0">How many are on hand right now?</p><input type="number" id="qcv" inputmode="numeric" min="0" aria-label="Count on hand" style="width:100%;font-size:28px;text-align:center"><p class="note" id="qce" style="color:var(--bad)" aria-live="polite"></p><div style="display:flex;gap:8px"><button data-cl="qc">Cancel</button><button id="qcok" class="tpok" style="font-size:18px">Save count</button></div></div></div>
 <div class="modal" id="tour"><div class="card" style="max-width:460px"><div id="tourb"></div><div id="tourd" class="tdots"></div><div style="display:flex;gap:8px;align-items:center"><button id="tourskip" style="background:transparent;border-color:transparent;color:var(--mut)">Skip</button><span style="flex:1"></span><button id="tourback">Back</button><button id="tournext" class="tpok" style="flex:none;font-size:16px;padding:8px 22px">Next</button></div></div></div>
-<div class="modal" id="fr"><div class="card" style="max-width:460px"><h2>Welcome to Care Board</h2><p style="margin:0 0 14px;line-height:1.45">Let’s set up this device. You’ll be the first person on the board and its admin.</p>
+<div class="modal" id="fr"><div class="card" style="max-width:460px"><h2>Welcome to EZAide</h2><p style="margin:0 0 14px;line-height:1.45">Let’s set up this device. You’ll be the first person on the board and its admin.</p>
 <p class="note">Your name</p><input type="text" id="frn" maxlength="24" placeholder="Your first name" autocomplete="off" aria-label="Your name" style="width:100%">
-<p class="note">Your 4-digit sign-in code</p><input type="text" id="frp" class="pinin" inputmode="numeric" maxlength="4" autocomplete="off" aria-label="Your sign-in code" style="width:100%">
-<p class="note">Admin code (4 digits)</p><input type="text" id="fra" class="pinin" inputmode="numeric" maxlength="4" autocomplete="off" aria-label="Admin code" style="width:100%"><p class="note" style="margin-top:6px">The admin code unlocks the Menu, where schedules, people, and emergency info are changed. Use a different code from your sign-in code.</p>
+<p class="note">Your 4-digit sign-in code</p><input type="text" id="frp" class="pinin" inputmode="numeric" maxlength="4" autocomplete="off" aria-label="Your sign-in code" style="width:100%"><p class="note" style="margin-top:6px">You’ll use this to sign in each time. Everyone who uses the board gets their own.</p>
+<p class="note">Admin code (4 digits)</p><input type="text" id="fra" class="pinin" inputmode="numeric" maxlength="4" autocomplete="off" aria-label="Admin code" style="width:100%"><p class="note" style="margin-top:6px">This one is different: it unlocks the Menu, where schedules, people, and emergency info are changed. Only share it with people who should change those.</p>
 <p class="note">Hint for the admin code (optional)</p><input type="text" id="frh" maxlength="60" autocomplete="off" placeholder="Something only you’d recognize" aria-label="Admin code hint" style="width:100%"><p class="note" style="margin-top:6px">A word or phrase that reminds you of the code, like “our street number.” Don’t type the code itself.</p>
 <p class="note" id="fre" style="color:var(--bad)" aria-live="polite"></p>
 <button id="frok" class="tpok" style="width:100%;font-size:17px">Set up the board</button>
@@ -251,9 +253,10 @@ nav{flex-wrap:wrap}nav button{white-space:nowrap}
 <div id="rc1f"><div id="rc1"><button id="rctry" style="width:100%;margin-bottom:4px">I remember it now</button><p class="note">Still stuck? Enter the recovery key you saved when the board was set up to choose a new code.</p><input type="text" id="rck" autocomplete="off" autocapitalize="characters" placeholder="XXXX-XXXX-XXXX" aria-label="Recovery key" style="width:100%;font-size:20px;letter-spacing:.08em;text-align:center"><div style="display:flex;gap:8px;margin-top:12px"><button data-cl="rc">Cancel</button><button id="rcgo" class="tpok" style="font-size:17px">Next</button></div></div>
 <div id="rc2" hidden><p class="note" style="margin-top:0">Key accepted. Choose a new admin code.</p><input type="text" id="rcn" class="pinin" inputmode="numeric" maxlength="4" autocomplete="off" aria-label="New admin code" placeholder="New code" style="width:100%"><input type="text" id="rcn2" class="pinin" inputmode="numeric" maxlength="4" autocomplete="off" aria-label="New admin code again" placeholder="Again" style="width:100%;margin-top:8px"><p class="note">New hint (optional)</p><input type="text" id="rch" maxlength="60" autocomplete="off" placeholder="Something only you’d recognize" aria-label="New hint" style="width:100%"><div style="display:flex;gap:8px;margin-top:12px"><button data-cl="rc">Cancel</button><button id="rcok" class="tpok" style="font-size:17px">Save new code</button></div></div>
 <p class="note" id="rce" style="color:var(--bad)" aria-live="polite"></p></div></div></div>
+<div class="modal" id="dc"><div class="card" style="max-width:520px"><h2>Before you start</h2><p style="line-height:1.45;margin:0 0 10px">EZAide is a checklist and tracking aid for caregivers. It is not a medical device and does not give medical advice, diagnose, or treat any condition.</p><ul style="margin:0 0 12px;padding-left:20px;line-height:1.45"><li>Always follow the instructions from your care team and the labels on prescriptions and supplies. If EZAide ever differs from them, they are right.</li><li>Reminders can be missed if the device is off, muted, out of battery, or notifications are turned off. Don’t rely on the app as your only reminder for medications or feeds.</li><li>Your information is stored only on this device. Back it up regularly from ⚙ Settings.</li><li><b>In an emergency, call 911.</b></li></ul><label style="display:flex;gap:10px;align-items:flex-start;margin:0 0 14px;cursor:pointer;line-height:1.4"><input type="checkbox" id="dcck" style="width:22px;height:22px;flex:none;margin-top:1px"><span>I understand EZAide is a tracking aid, not a substitute for medical care or professional judgment.</span></label><button id="dcok" class="tpok" style="width:100%;font-size:17px" disabled>Continue</button></div></div>
 <div class="modal" id="ft"><div class="card" style="max-width:480px"><p class="note" style="margin:0 0 4px">Last step</p><h2>Try it: add your first task</h2><p style="margin:0 0 12px;line-height:1.45">Something you do every day works best. You can change or remove it later.</p>
 <input type="text" id="ftn" maxlength="80" placeholder="Task name" aria-label="Task name" style="width:100%"><div class="rs" id="ftex" style="margin:8px 0 0"><button data-ftex="Morning medication">Morning medication</button><button data-ftex="Check dressing">Check dressing</button><button data-ftex="Drink water">Drink water</button></div>
-<p class="note">How often</p><div class="rs" id="ftk"></div><div class="rs" id="ftt"></div><p class="note" id="fte" style="color:var(--bad)" aria-live="polite"></p>
+<p class="note">How often</p><div class="rs" id="ftk"></div><div class="rs" id="ftt"></div><p class="note">Your shifts</p><label style="display:flex;gap:10px;align-items:flex-start;cursor:pointer;line-height:1.4"><input type="checkbox" id="fthk" checked style="width:20px;height:20px;flex:none;margin-top:1px"><span id="ftho"></span></label><p class="note" id="fte" style="color:var(--bad)" aria-live="polite"></p>
 <div style="display:flex;gap:8px;align-items:center"><button id="ftskip" style="background:transparent;border-color:transparent;color:var(--mut)">Skip for now</button><span style="flex:1"></span><button id="ftok" class="tpok" style="flex:none;font-size:16px;padding:8px 20px">Add task</button></div></div></div>
 <div class="toast" id="toast" hidden role="status"><span id="toastt"></span><button id="toastu">Undo</button></div>
 <div class="modal" id="cf"><div class="card" style="max-width:420px"><h2 id="cft"></h2><p id="cfm" style="margin:0 0 16px"></p><div style="display:flex;gap:8px"><button id="cfx">Cancel</button><button id="cfok" class="cfok"></button></div></div></div>
@@ -501,8 +504,8 @@ function week(){
 function fillSt(){var cur=document.documentElement.dataset.theme||'dark';
   $('stth').innerHTML=[['dark','Dark'],['light','Light']].map(function(o){return'<button data-th="'+o[0]+'" class="'+(cur===o[0]?'on':'')+'">'+o[1]+'</button>'}).join('');
   $('stid').innerHTML=[[0,'Off'],[5,'5 min'],[15,'15 min'],[30,'30 min'],[60,'1 hour'],[120,'2 hours'],[240,'4 hours'],[480,'8 hours']].map(function(o){return'<button data-idl="'+o[0]+'" class="'+(S.idle===o[0]?'on':'')+'">'+o[1]+'</button>'}).join('');
-  $('strt').textContent=fmtT(S.resetAt);$('stmsg').textContent='';$('stver').textContent='Care Board · Version '+VER;
-  $('stwk').innerHTML=[[false,'Off'],[true,'On']].map(function(o){return'<button data-wk="'+(o[0]?1:0)+'" class="'+(!!S.wake===o[0]?'on':'')+'">'+o[1]+'</button>'}).join('');$('stwkm').textContent=('wakeLock' in navigator)?(S.wake?'The iPad screen stays on while Care Board is open. It still sleeps if you leave the app.':''):'This iPad can’t keep the screen on from the app. Instead, set iPad Settings → Display & Brightness → Auto-Lock to Never.';
+  $('strt').textContent=fmtT(S.resetAt);$('stmsg').textContent='';$('stver').textContent='EZAide · Version '+VER;
+  $('stwk').innerHTML=[[false,'Off'],[true,'On']].map(function(o){return'<button data-wk="'+(o[0]?1:0)+'" class="'+(!!S.wake===o[0]?'on':'')+'">'+o[1]+'</button>'}).join('');$('stwkm').textContent=('wakeLock' in navigator)?(S.wake?'The iPad screen stays on while EZAide is open. It still sleeps if you leave the app.':''):'This iPad can’t keep the screen on from the app. Instead, set iPad Settings → Display & Brightness → Auto-Lock to Never.';
   $('stsv').textContent=saved?'Saved on this device'+(lastSave?' at '+fmt(lastSave):'')+'. Last backup: '+(S.lastBackup?new Date(S.lastBackup).toLocaleDateString([],{month:'short',day:'numeric'}):'never')+'.':'Not saving on this device (private browsing or storage blocked). Download a backup to keep your data.'}
 var fresh=false;
 function bizDay(d){var x=new Date((d||new Date()).getTime()-mins(S.resetAt)*60000);return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0')}
@@ -614,7 +617,9 @@ document.addEventListener('click',function(e){
   if(b.dataset.ftk){FT.k=b.dataset.ftk;drawFT();return}
   if(b.id==='fttime'){openTP({title:'Time for this task',sub:$('ftn').value.trim(),val:FT.time||null,ok:function(v){FT.time=v;drawFT()}});return}
   if(b.id==='ftok'){saveFT();return}
-  if(b.id==='ftskip'){S.firstRun=false;$('ft').classList.remove('show');S.tab='menu';render();return}
+  if(b.id==='dcok'){acceptDC();return}
+  if(b.id==='abt'){$('st').classList.remove('show');openAbout();return}
+  if(b.id==='ftskip'){if($('fthk').checked)S.setupHours=true;S.firstRun=false;$('ft').classList.remove('show');S.tab='menu';render();return}
   if(b.id==='frrs'){$('rsf').value='';$('rsf').click();return}
   if(b.id==='tournext'){if(TOUR.i<TOUR.c.length-1){TOUR.i++;drawTour()}else endTour();return}
   if(b.id==='tourback'){if(TOUR.i>0){TOUR.i--;drawTour()}return}
@@ -689,7 +694,7 @@ document.addEventListener('input',function(e){if(e.target.id==='tfind')applyFind
 document.addEventListener('keydown',function(e){if(e.key!=='Enter')return;var id=e.target.id;if(id==='qcv'){e.preventDefault();saveQC()}else if(id==='rck'){e.preventDefault();checkRC()}else if(id==='rcn2'){e.preventDefault();saveRC()}});
 document.addEventListener('change',function(e){
   if(e.target.id==='rsf'){var f=e.target.files&&e.target.files[0];if(!f)return;var fr=new FileReader();fr.onload=function(){var ok=false;try{ok=applySnap(JSON.parse(fr.result))}catch(x){}
-    if(ok){S.last=Date.now();maybeReset();save();fillSt();$('stmsg').textContent='Restored. Sign in again from the Who’s here menu.';$('fr').classList.remove('show');render();if(S.people.length)needWho();else openFR()}else $('stmsg').textContent='That file is not a Care Board backup. Nothing was changed.'};fr.readAsText(f);return}
+    if(ok){S.last=Date.now();maybeReset();save();fillSt();$('stmsg').textContent='Restored. Sign in again from the Who’s here menu.';$('fr').classList.remove('show');render();if(S.people.length)needWho();else openFR()}else $('stmsg').textContent='That file is not an EZAide backup. Nothing was changed.'};fr.readAsText(f);return}
   if(e.target.id==='whosel'){var wv=e.target.value;e.target.value=S.who;if(!wv)return;if(wv==='__new')openNew();else openPin(wv);return}
   var d=e.target.dataset;
   if(d.lf!==undefined){S.logf=e.target.value;render();return}
@@ -734,6 +739,22 @@ document.addEventListener('pointermove',function(e){if(lp.t&&(Math.abs(e.clientX
 document.addEventListener('contextmenu',function(e){if(e.target.closest('.task'))e.preventDefault()});
 document.addEventListener('click',function(e){if(lp.fired){lp.fired=false;e.stopImmediatePropagation();e.preventDefault()}},true);
 ['pointerdown','keydown','input'].forEach(function(n){document.addEventListener(n,function(){S.last=Date.now()},true)});
+
+/* ---- store: disclaimer, about, checklist groups, first-run order ---- */
+var DCNEXT=null;
+function openDC(next){DCNEXT=next||null;$('dcck').checked=false;$('dcok').disabled=true;$('dc').classList.add('show')}
+function acceptDC(){if(!$('dcck').checked)return;S.disc={by:S.who||'',at:Date.now()};lg('Changed','Disclaimer accepted'+(S.who?' by '+S.who:''));$('dc').classList.remove('show');save();var f=DCNEXT;DCNEXT=null;if(f)f();else render()}
+document.addEventListener('change',function(e){if(e.target&&e.target.id==='dcck')$('dcok').disabled=!e.target.checked});
+function firstRunNext(){var p=S.people.filter(function(x){return x.name===S.who})[0];if(p)p.toured=true;save();if(!S.tasks.length)openFT();else render()}
+function openAbout(){var P=['EZAide is a general-purpose organizational tool for families and caregivers to record and track routine care tasks. It is not a medical device and is not intended to diagnose, treat, cure, monitor, or prevent any disease or condition.',
+  'Task names, times, doses, and instructions are entered by the people using the app. EZAide does not check them for accuracy. You are responsible for confirming that all information matches the instructions from your care team and the labels on medications and supplies.',
+  'Reminders and “due” indicators depend on the device being on, charged, and allowed to send notifications. They may be delayed or missed. Don’t use EZAide as the only way to make sure a medication, feed, or treatment happens on time.',
+  'All information is stored only on this device and is not sent to us. If the device is lost, reset, or damaged without a backup, your information can’t be recovered.',
+  'EZAide does not replace the judgment of caregivers, nurses, or doctors. In an emergency, call 911 or your local emergency number.'];
+  var acc=S.disc&&S.disc.at?'<p class="note">Accepted'+(S.disc.by?' by '+esc(S.disc.by):'')+' on '+new Date(S.disc.at).toLocaleDateString()+'.</p>':'';
+  showSheet('About & disclaimer',P.map(function(x){return'<p style="line-height:1.45;margin:0 0 10px">'+x+'</p>'}).join('')+acc+'<p class="note">EZAide · Version '+VER+'</p>')}
+function sgroup(it,f){var E=['code','people','tasks','emer'],a=it.filter(function(x){return E.indexOf(x[0])>-1}),b=it.filter(function(x){return E.indexOf(x[0])<0});
+  return'<p class="note" style="margin:4px 0 2px">Essentials</p>'+a.map(f).join('')+(b.length?'<p class="note" style="margin:14px 0 2px">When you have a minute</p>'+b.map(f).join(''):'')}
 /* ---- 1.8: admin recovery key + first task ---- */
 var RKA='ABCDEFGHJKMNPQRSTUVWXYZ23456789';
 function newKey(){var a=new Uint32Array(12),k='';try{crypto.getRandomValues(a)}catch(e){for(var i=0;i<12;i++)a[i]=Math.floor(Math.random()*1e9)}for(var j=0;j<12;j++){k+=RKA[a[j]%RKA.length];if(j===3||j===7)k+='-'}return k}
@@ -752,14 +773,14 @@ function saveRC(){var a=$('rcn').value.trim(),b=$('rcn2').value.trim();if(!/^\d{
   if(hintBad($('rch').value,a)){$('rce').textContent='The hint can’t include the admin code itself.';return}S.ahint=$('rch').value.trim();
   S.adminPin=a;S.adminSet=true;lg('Changed','Admin code reset with the recovery key');$('rc').classList.remove('show');S.adminOk=true;S.tab='menu';render();showKey()}
 var FT=null;
-function openFT(){FT={k:'clock',time:''};$('ftn').value='';$('fte').textContent='';drawFT();$('ft').classList.add('show')}
+function openFT(){FT={k:'clock',time:''};$('ftn').value='';$('fte').textContent='';$('fthk').checked=true;$('ftho').innerHTML=esc(S.periods.map(function(x){return x.name+' '+fmtT(x.start)+' to '+fmtT(x.end)}).join(' · '))+'<span class="meta" style="display:block">These hours are right. You can change them later in Menu → Times of day.</span>';drawFT();$('ft').classList.add('show')}
 function drawFT(){$('ftk').innerHTML=[['clock','At a set time'],['period','Each time of day'],['prn','As needed'],['once','Just once today']].map(function(o){return'<button data-ftk="'+o[0]+'" class="'+(FT.k===o[0]?'on':'')+'">'+o[1]+'</button>'}).join('');
   $('ftt').hidden=FT.k!=='clock';$('ftt').innerHTML='<button id="fttime" class="tchip">'+(FT.time?fmtT(FT.time):'Pick a time')+'</button>'}
 function saveFT(){var n=$('ftn').value.trim();if(!n){$('fte').textContent='Type a task name, or tap one of the examples.';$('ftn').focus();return}
   if(FT.k==='clock'&&!FT.time){$('fte').textContent='Pick a time for this task.';return}
   var t={id:S.nid++,name:n,periods:[],every:0,n:3,times:0,prn:false,last:0,needs:[]};S.tasks.push(t);
   if(FT.k==='once'){t.once=true;t.date=bizDay();t.time=''}else setFreq(t.id,FT.k);if(FT.k==='clock')t.at=[FT.time];
-  lg('Added task',n+' (first task)');S.firstRun=false;$('ft').classList.remove('show');S.tab='today';S.viewP=null;
+  lg('Added task',n+' (first task)');if($('fthk').checked)S.setupHours=true;S.firstRun=false;$('ft').classList.remove('show');S.tab='today';S.viewP=null;
   if(FT.k==='clock'){var mm=mins(FT.time),own=S.periods.filter(function(q){return inP(q,mm)})[0];if(own&&own.id!==nowP().id){S.viewP=own.id;S.viewFrom=nowP().id}}
   render();var el=document.querySelector('[data-k^="'+t.id+'|"],[data-ct^="'+t.id+'@"],[data-pr="'+t.id+'"],[data-o="'+t.id+'"]');
   if(el){el.classList.add('flashtile');try{el.scrollIntoView({block:'center',behavior:'smooth'})}catch(x){}}
@@ -773,7 +794,7 @@ function openFR(){['frn','frp','fra','frh'].forEach(function(id){$(id).value=''}
 function saveFR(){var n=$('frn').value.trim(),pc=$('frp').value.trim(),ac=$('fra').value.trim(),er='';
   if(!n)er='Enter your name.';else if(!/^\d{4}$/.test(pc))er='Your sign-in code needs to be 4 digits.';else if(!/^\d{4}$/.test(ac))er='The admin code needs to be 4 digits.';else if(pc===ac)er='Use a different admin code from your sign-in code.';else if(hintBad($('frh').value,ac))er='The hint can’t include the admin code itself.';
   if(er){$('fre').textContent=er;return}
-  S.people=[{name:n,pin:pc}];S.adminPin=ac;S.adminSet=true;S.ahint=$('frh').value.trim();S.who=n;S.adminOk=true;S.last=Date.now();S.tab='menu';S.firstRun=true;$('fr').classList.remove('show');save();render();showKey(maybeTour)}
+  S.people=[{name:n,pin:pc}];S.adminPin=ac;S.adminSet=true;S.ahint=$('frh').value.trim();S.who=n;S.adminOk=true;S.last=Date.now();S.tab='menu';S.firstRun=true;$('fr').classList.remove('show');save();render();openDC(function(){showKey(firstRunNext)})}
 /* ---- 1.7: welcome tour + setup checklist ---- */
 var TOUR=null;
 function tourCards(n){var tile=function(name,meta,tag,done,extra){return'<div class="trow" style="margin:0"><div class="task'+(done?' done':'')+'" style="cursor:default"><span class="box">'+(done?'✓':'')+'</span><span class="nm">'+name+'<span class="meta">'+meta+'</span></span>'+(tag||'')+'</div>'+(extra||'')+'</div>'};
@@ -783,6 +804,7 @@ function tourCards(n){var tile=function(name,meta,tag,done,extra){return'<div cl
   {t:'Hold if it has to wait',b:'Press and hold a task to move it later today, to the other shift, or to tomorrow. You can add a reason, like “Sleeping.”',v:tile('Check supply cart','Tap to finish, hold for options','')},
   {t:'Watch the tags',b:'Feeds and meds show their time until it comes up, then <b>Due now</b>, then <b>Overdue</b> if they’re missed.',v:'<div class="rs" style="margin:0"><span class="tag ok">2 PM</span><span class="tag" style="font-weight:600">Due now</span><span class="tag" style="background:#4a1f1b;color:#ffd9d4">Overdue</span></div>'},
   {t:'How-to and supplies',b:'A <b>How-to</b> or <b>Supplies</b> button next to a task shows the steps and what you’ll need. Count supplies in the <b>Inventory</b> tab with − and +, or tap the number to type a count.',v:tile('Change dressing','Every 3 days','<span class="tag">Due today</span>',false,'<span class="push infob" style="display:grid;place-items:center">How-to</span>')},
+  {t:'A quick note',b:'EZAide helps the team keep track of care tasks, but it’s not medical advice. Always follow the care plan and medication labels. If something here doesn’t match them, follow the care plan and let the family know.',v:'<p class="note" style="margin:0;text-align:center">A tracking aid, not a medical device.</p>'},
   {t:'In an emergency',b:'The red <b>Emergency</b> button at the top is always there, with phone numbers, what to tell 911, and the plan. You can replay this tour any time from ⚙ Settings.',v:'<div style="display:flex;justify-content:center"><span class="sos" style="display:inline-block;padding:8px 16px;border-radius:10px;border:1px solid #7a3028">Emergency</span></div>'}]}
 function maybeTour(){var p=S.people.filter(function(x){return x.name===S.who})[0];if(p&&!p.toured)openTour()}
 function openTour(){TOUR={i:0,c:tourCards(S.who||'there')};drawTour();$('tour').classList.add('show')}
@@ -801,9 +823,9 @@ function setupItems(){var e=S.emer||{contacts:[]};return[
   ['bkp','Save your first backup','The iPad holds the only copy of your data',!!S.lastBackup,'bkp']]}
 function setupCard(full){var it=setupItems(),done=it.filter(function(x){return x[3]}).length;if(done===it.length){S.setup=false;return''}
   if(!full)return'<div class="vb" style="background:var(--panel2);color:var(--tx);border:1px solid var(--acc)"><span>Finish setting up the board · <b>'+done+' of '+it.length+'</b> done</span><button data-t="menu" style="background:var(--acc);color:#0c1420">Open checklist</button></div>';
-  return'<div class="col" style="margin-bottom:12px;border-color:var(--acc)"><div class="ch"><b>Set up the board</b><small>'+done+' of '+it.length+' done</small></div><div class="elist">'+it.map(function(x){return'<div class="srow"><span class="box" style="width:26px;height:26px;border-radius:8px;'+(x[3]?'background:var(--ok);border-color:var(--ok);color:#06231c':'')+'">'+(x[3]?'✓':'')+'</span><span class="sname"'+(x[3]?' style="color:var(--mut);text-decoration:line-through"':'')+'>'+x[1]+'<span class="meta" style="text-decoration:none">'+x[2]+'</span></span>'+(x[3]?'':(x[0]==='hours'?'<button data-sgo="periods">Check hours</button><button data-sok="hours">They’re right</button>':'<button data-sgo="'+x[4]+'">'+(x[0]==='bkp'?'Save backup':'Go')+'</button>'))+'</div>'}).join('')+'</div><button data-shide="1" style="margin-top:10px;background:transparent;border-color:transparent;color:var(--mut);padding-left:0">Hide this checklist</button></div>'}
+  return'<div class="col" style="margin-bottom:12px;border-color:var(--acc)"><div class="ch"><b>Set up the board</b><small>'+done+' of '+it.length+' done</small></div><div class="elist">'+sgroup(it,function(x){return'<div class="srow"><span class="box" style="width:26px;height:26px;border-radius:8px;'+(x[3]?'background:var(--ok);border-color:var(--ok);color:#06231c':'')+'">'+(x[3]?'✓':'')+'</span><span class="sname"'+(x[3]?' style="color:var(--mut);text-decoration:line-through"':'')+'>'+x[1]+'<span class="meta" style="text-decoration:none">'+x[2]+'</span></span>'+(x[3]?'':(x[0]==='hours'?'<button data-sgo="periods">Check hours</button><button data-sok="hours">They’re right</button>':'<button data-sgo="'+x[4]+'">'+(x[0]==='bkp'?'Save backup':'Go')+'</button>'))+'</div>'})+'</div><button data-shide="1" style="margin-top:10px;background:transparent;border-color:transparent;color:var(--mut);padding-left:0">Hide this checklist</button></div>'}
 /* ---- 1.6: tap outside a pop-up to close it ---- */
-var MDOWN=null,KEEP=['emed','ge','tour','fr','rk','ft'];
+var MDOWN=null,KEEP=['emed','ge','tour','fr','rk','ft','dc'];
 document.addEventListener('pointerdown',function(e){MDOWN=e.target},true);
 document.addEventListener('click',function(e){var m=e.target;if(!m.classList||!m.classList.contains('modal')||!m.classList.contains('show')||MDOWN!==m)return;
   if(KEEP.indexOf(m.id)>-1)return;
@@ -960,12 +982,13 @@ var loaded=load();if(!S.since)S.since=Date.now();
 if(!loaded){blankState()}
 else{S.who='';S.last=Date.now();maybeReset()}
 migrate15();
+if(S.people.length&&!S.disc)setTimeout(function(){openDC()},400);
 ['click','change','pointerup','keyup'].forEach(function(n){document.addEventListener(n,function(){setTimeout(save,0)})});
 setInterval(save,5000);document.addEventListener('visibilitychange',function(){if(document.hidden)save()});window.addEventListener('pagehide',save);
 try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
 /* ---- install, offline, and updates ---- */
 var REG=null,RELOADING=false;
-function showUpd(){$('updt').textContent='A new version of the Care Board is ready. Your data stays on this iPad.';$('upd').hidden=false}
+function showUpd(){$('updt').textContent='A new version of EZAide is ready. Your data stays on this iPad.';$('upd').hidden=false}
 function applyUpdate(){save();var w=REG&&REG.waiting;if(w){w.postMessage('skipWaiting')}else location.reload()}
 function checkUpdate(manual){if(!REG){if(manual)$('stmsg').textContent='Updates only work in the installed app (opened from the Home Screen icon).';return}
   if(manual)$('stmsg').textContent='Checking…';
@@ -981,7 +1004,7 @@ function saveBackup(){save();var dn=new Date(),name='ezaide-backup-'+dn.getFullY
   var done=function(){S.lastBackup=Date.now();S.bkSnooze=0;save();if(S.tab==='today')render();$('stmsg').textContent='Backup ready. Choose Save to Files and keep it somewhere other than this iPad too (iCloud Drive or email it to yourself).'};
   var dl=function(){var bl=new Blob([txt],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(bl);a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},4000);done()};
   try{f=new File([txt],name,{type:'application/json'})}catch(x){}
-  if(f&&navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f],title:'Care Board backup'}).then(done).catch(function(e){if(!e||e.name!=='AbortError')dl()});return}
+  if(f&&navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f],title:'EZAide backup'}).then(done).catch(function(e){if(!e||e.name!=='AbortError')dl()});return}
   dl()}
 
 if(!S.people.length)setTimeout(openFR,0);
