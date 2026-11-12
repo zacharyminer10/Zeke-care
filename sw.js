@@ -1,5 +1,5 @@
 // Zeke Care Board service worker. Bump VERSION with every release so the iPad sees an update.
-const VERSION = '1.12';
+const VERSION = '1.13';
 const CACHE = 'zeke-care-' + VERSION;
 const FILES = ['./', './index.html', './manifest.webmanifest', './icon-180.png', './icon-192.png', './icon-512.png'];
 

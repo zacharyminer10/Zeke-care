@@ -154,6 +154,12 @@ b,strong,.ch b,.panel .ch b,.sh .shn,.tpv,.emal,.emr b{font-weight:500}
 nav button,nav button.on,.pill,.tag,.sec,.who button.on,.rs button.on,.tchip,.upd,.toast{font-weight:500}
 .tpok,.toast button,.vb button,.upd button,.cfok,.pad button{font-weight:600}
 .task .box{font-weight:600}
+/* 1.13 shifts step */
+.sfn{background:var(--dubg);color:var(--due);border:1px solid var(--due);border-radius:12px;padding:10px 14px;margin:0 0 12px;line-height:1.45;font-size:15px}.sfn b{font-weight:600}
+.shopt{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.shopt button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-height:84px;padding:14px 16px;text-align:left}
+.shopt b{font-size:22px;font-weight:600}.shopt span{color:var(--mut);font-size:14px}
+.shrow{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:17px}
 /* 1.12 slimmer tiles */
 .tiles>.trow,.trow{min-width:0}.trow .task{min-width:0;overflow:hidden}
 .trow .task .tag{flex:none}
@@ -266,7 +272,7 @@ nav{flex-wrap:wrap}nav button{white-space:nowrap}
 <div class="modal" id="te"><div class="card" style="max-width:560px"><h2 id="tet"></h2><div id="teb"></div><div style="display:flex;gap:8px;margin-top:18px;align-items:center"><button id="tedel" data-del="" style="color:var(--bad)">Remove task</button><span style="flex:1"></span><button data-cl="te" class="tpok" style="flex:none;font-size:16px;padding:8px 26px">Done</button></div></div></div>
 <div class="modal" id="qc"><div class="card" style="max-width:360px"><h2 id="qct"></h2><p class="note" style="margin-top:0">How many are on hand right now?</p><input type="number" id="qcv" inputmode="numeric" min="0" aria-label="Count on hand" style="width:100%;font-size:28px;text-align:center"><p class="note" id="qce" style="color:var(--bad)" aria-live="polite"></p><div style="display:flex;gap:8px"><button data-cl="qc">Cancel</button><button id="qcok" class="tpok" style="font-size:18px">Save count</button></div></div></div>
 <div class="modal" id="tour"><div class="card" style="max-width:460px"><div id="tourb"></div><div id="tourd" class="tdots"></div><div style="display:flex;gap:8px;align-items:center"><button id="tourskip" style="background:transparent;border-color:transparent;color:var(--mut)">Skip</button><span style="flex:1"></span><button id="tourback">Back</button><button id="tournext" class="tpok" style="flex:none;font-size:16px;padding:8px 22px">Next</button></div></div></div>
-<div class="modal" id="fr"><div class="card" style="max-width:460px"><h2>Welcome to Care Board</h2><p style="margin:0 0 14px;line-height:1.45">Let’s set up this device. You’ll be the first person on the board and its owner. You can add everyone else after.</p>
+<div class="modal" id="fr"><div class="card" style="max-width:460px"><h2>Welcome to Care Board</h2><div id="frsf"></div><p style="margin:0 0 14px;line-height:1.45">Let’s set up this device. You’ll be the first person on the board and its owner. You can add everyone else after.</p>
 <p class="note">Your name</p><input type="text" id="frn" maxlength="24" placeholder="Your first name" autocomplete="off" aria-label="Your name" style="width:100%">
 <p class="note">Your 4-digit sign-in code</p><input type="text" id="frp" class="pinin" inputmode="numeric" maxlength="4" autocomplete="off" aria-label="Your sign-in code" style="width:100%">
 
@@ -295,9 +301,10 @@ nav{flex-wrap:wrap}nav button{white-space:nowrap}
 <div class="modal" id="ns"><div class="card" style="max-width:400px"><h2>New supply</h2><p class="note" style="margin-top:0" id="nsfor"></p><input type="text" id="nsn" maxlength="60" placeholder="Supply name" aria-label="Supply name" style="width:100%"><div class="row" style="border:0;padding:10px 0 0"><label class="c">On hand now <input type="number" id="nsq" min="0" value="10" style="width:80px"></label><label class="c">Reorder at <input type="number" id="nsl" min="0" value="2" style="width:70px"></label></div><p class="note" id="nse" style="color:var(--bad)" aria-live="polite"></p><div style="display:flex;gap:8px"><button data-cl="ns">Cancel</button><button id="nsok" class="tpok" style="font-size:17px">Add and link</button></div></div></div>
 <div class="modal" id="ah"><div class="card" style="max-width:420px"><h2 id="ahq">Still here?</h2><p id="ahm" style="margin:0 0 16px;line-height:1.45"></p><div style="display:flex;gap:8px"><button id="ahs">Switch person</button><button id="ahy" class="tpok" style="font-size:17px">Yes, it’s me</button></div></div></div>
 <div class="modal" id="due"><div class="card" style="max-width:520px;border-color:var(--due);box-shadow:0 0 0 2px var(--due)"><p class="note" style="margin:0 0 2px;color:var(--due)">Reminder</p><h2 id="dueh">Due now</h2><div class="elist" id="duel" style="margin:8px 0 14px"></div><button id="dueok" style="width:100%">OK, I’ve seen it</button></div></div>
+<div class="modal" id="sh"><div class="card" style="max-width:460px" id="shb"></div></div>
 <div class="modal" id="tp"><div class="card" style="max-width:380px"><h2 id="tpt">Pick a time</h2><p class="note" id="tps" style="margin:0 0 4px"></p><p class="tpv" id="tpv" aria-live="polite"></p><div class="tpw"><div class="tpc" id="tph" aria-label="Hour"></div><div class="tpc" id="tpm" aria-label="Minute"></div><div class="tpc" id="tpa" aria-label="AM or PM"></div></div><p class="note" style="text-align:center;margin:4px 0 10px">Scroll to the time, then tap ✓ to save it.</p><p class="note" id="tpe" style="color:var(--bad);text-align:center" aria-live="polite"></p><div style="display:flex;gap:8px"><button id="tpx">Cancel</button><button id="tpok" class="tpok" aria-label="Save this time">✓</button></div></div></div>
 <script>
-var VER='1.12';
+var VER='1.13';
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
 var S={
   tab:'today',who:'',people:[{name:'Zach',pin:'1111'},{name:'Wife',pin:'2222'},{name:'Nurse',pin:'3333'}],pend:null,pin:{for:'',buf:''},reason:'',
@@ -380,12 +387,12 @@ function stats(m){var open=0,over=0,p=m.p;
   return{open:open,over:over}}
 function grp(title,tiles){return tiles?'<p class="sec">'+title+'</p><div class="tiles">'+tiles+'</div>':''}
 function today(){
-  var cur=nowP(),h=(S.setup&&can('owner')?setupCard(false):'')+bkBanner();var lowi=S.stock.filter(function(i){return i.qty<=i.low});h+='<div class="topbar"><span class="note" style="margin:0;flex:1;min-width:200px;color:var(--due)">'+(lowi.length?'Low on supplies: '+lowi.map(function(i){return esc(i.name)}).join(', '):'')+'</span><button id="otadd">+ Add a one-time task</button></div>';
+  var cur=nowP(),h=safariNote('board')+(S.setup&&can('owner')?setupCard(false):'')+bkBanner();var lowi=S.stock.filter(function(i){return i.qty<=i.low});h+='<div class="topbar"><span class="note" style="margin:0;flex:1;min-width:200px;color:var(--due)">'+(lowi.length?'Low on supplies: '+lowi.map(function(i){return esc(i.name)}).join(', '):'')+'</span><button id="otadd">+ Add a one-time task</button></div>';
   if(S.viewP&&(S.viewFrom!==cur.id||!S.periods.some(function(q){return q.id===S.viewP})))S.viewP=null;
   var models=S.periods.map(function(q){return periodModel(q,cur)}),view=models.filter(function(m){return m.p.id===(S.viewP||cur.id)})[0]||models[0];
   h+='<div class="shifts" role="group" aria-label="Shift">'+models.map(function(m){var st=stats(m),on=m===view;
     var bd=st.open===0?'<span class="tag ok">All done</span>':'<span class="tag">'+st.open+' left</span>'+(st.over?'<span class="tag" style="background:#4a1f1b;color:#ffd9d4">'+st.over+' overdue</span>':'');
-    return'<button class="sh'+(on?' on':'')+'" data-sh="'+m.p.id+'" aria-pressed="'+on+'"><span class="shn">'+esc(m.p.name)+(m.isNow?'<span class="pill">Now</span>':'')+'</span><span class="shh">'+fmtT(m.p.start)+' to '+fmtT(m.p.end)+'</span><span class="shb">'+bd+'</span></button>'}).join('')+'</div>';
+    return'<button class="sh'+(on?' on':'')+'" data-sh="'+m.p.id+'" aria-pressed="'+on+'"><span class="shn">'+esc(m.p.name)+(m.isNow?(inP(m.p,new Date().getHours()*60+new Date().getMinutes())?'<span class="pill">Now</span>':'<span class="pill" style="background:var(--panel2);color:var(--mut);border:1px solid var(--line)">After hours</span>'):'')+'</span><span class="shh">'+fmtT(m.p.start)+' to '+fmtT(m.p.end)+'</span><span class="shb">'+bd+'</span></button>'}).join('')+'</div>';
   if(!view.isNow){var cp=models.filter(function(m){return m.isNow})[0];h+='<div class="vb"><span>Viewing <b>'+esc(view.p.name)+'</b>, which is not the active shift.</span><button data-sh="'+cp.p.id+'">Back to '+esc(cp.p.name)+'</button></div>'}
   var due=view.dueIv.map(ivTile).join('')+view.onceU.map(onceTile).join('');
   var clock=view.sls.map(function(x){return slotTile(x,view.p)}).join('');
@@ -672,6 +679,9 @@ document.addEventListener('click',function(e){
   if(b.dataset.o){var to0=T(b.dataset.o);if(to0&&to0.done){openDone('o',b.dataset.o);return}togO(b.dataset.o,true);return}
   if(b.dataset.ct){if(S.cdone[b.dataset.ct]){openDone('ct',b.dataset.ct);return}togCt(b.dataset.ct,true);return}
   if(b.dataset.undoco){undoCheck(b.dataset.undoco);return}
+  if(b.dataset.shn!==undefined){SH.n=+b.dataset.shn;if(SH.n===1&&SH.b==='21:00')SH.b='21:00';drawShifts();return}
+  if(b.dataset.shp){var k=b.dataset.shp;openTP({title:k==='a'?'Day starts at':SH.n===2?'Night starts at':'Day ends at',val:SH[k],ok:function(v){SH[k]=v;drawShifts()}});return}
+  if(b.id==='shok'){saveShifts();return}
   if(b.dataset.exa){addExtra(+b.dataset.exa,$('exn').value);setTimeout(function(){try{$('exn').focus()}catch(x){}},30);return}
   if(b.dataset.exd){var xd=b.dataset.exd.split('|');delExtra(+xd[0],+xd[1]);return}
   if(b.dataset.okind!==undefined){var ok=b.dataset.okind.split('|');setOrder(+ok[0],'kind',ok[1]);return}
@@ -786,6 +796,32 @@ document.addEventListener('pointermove',function(e){if(lp.t&&(Math.abs(e.clientX
 document.addEventListener('contextmenu',function(e){if(e.target.closest('.task'))e.preventDefault()});
 document.addEventListener('click',function(e){if(lp.fired){lp.fired=false;e.stopImmediatePropagation();e.preventDefault()}},true);
 ['pointerdown','keydown','input'].forEach(function(n){document.addEventListener(n,function(){S.last=Date.now()},true)});
+/* ---- 1.13: opened in Safari instead of the Home Screen app ---- */
+function inSafariTab(){try{var ios=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  var standalone=navigator.standalone===true||(window.matchMedia&&matchMedia('(display-mode: standalone)').matches);
+  return ios&&!standalone&&!window.Capacitor&&/^https?:$/.test(location.protocol)&&!/claude\.ai|claudeusercontent/.test(location.hostname)}catch(e){return false}}
+function safariNote(where){if(!inSafariTab())return'';
+  return where==='fr'?'<div class="sfn"><b>Install it first.</b> You’re in Safari. Tap Share <span aria-hidden="true">⎋</span> → <b>Add to Home Screen</b> (keep “Open as Web App” on), then open Care Board from the icon and set it up there. Anything set up in Safari stays in Safari and won’t show up in the app.</div>'
+    :'<div class="sfn"><b>You’re in Safari, not the Care Board app.</b> Data here is separate from the Home Screen app. Open Care Board from its icon instead.</div>'}
+/* ---- 1.13: shifts step in onboarding ---- */
+var SH={n:2,a:'07:00',b:'21:00',next:null};
+function openShifts(next){SH={n:0,a:'07:00',b:'21:00',next:next||null};drawShifts();$('sh').classList.add('show')}
+function drawShifts(){var h;
+  if(!SH.n){h='<p class="note" style="margin:0 0 4px">Set up your shifts</p><h2>Do you need to complete tasks overnight?</h2><p style="margin:0 0 16px;line-height:1.45">This sets up the board’s shifts. You can change them later in Menu → Times of day.</p>'+
+    '<div class="shopt"><button data-shn="2"><b>Yes</b><span>Day and Night shifts</span></button><button data-shn="1"><b>No</b><span>One Day shift</span></button></div>'}
+  else{var two=SH.n===2;h='<p class="note" style="margin:0 0 4px">Set up your shifts</p><h2>'+(two?'When do your shifts start?':'When does your day start and end?')+'</h2>'+
+    '<p style="margin:0 0 14px;line-height:1.45">'+(two?'Each shift ends when the other begins, so every hour is covered.':'Tasks show on the board during these hours.')+'</p>'+
+    '<div class="shrow"><span>Day '+(two?'starts':'starts')+'</span><button class="tchip" data-shp="a">'+fmtT(SH.a)+'</button></div>'+
+    '<div class="shrow"><span>'+(two?'Night starts':'Day ends')+'</span><button class="tchip" data-shp="b">'+fmtT(SH.b)+'</button></div>'+
+    (two?'<p class="note" style="margin-top:4px">Day: '+fmtT(SH.a)+' to '+fmtT(SH.b)+' · Night: '+fmtT(SH.b)+' to '+fmtT(SH.a)+'</p>':'')+
+    '<p class="note" id="she" style="color:var(--bad)" aria-live="polite"></p>'+
+    '<div style="display:flex;gap:8px;margin-top:6px"><button data-shn="0">Back</button><button id="shok" class="tpok" style="font-size:17px">Continue</button></div>'}
+  $('shb').innerHTML=h}
+function saveShifts(){if(SH.a===SH.b){$('she').textContent=SH.n===2?'Day and Night can’t start at the same time.':'The start and end can’t be the same time.';return}
+  S.periods=SH.n===2?[{id:'day',name:'Day',start:SH.a,end:SH.b},{id:'night',name:'Night',start:SH.b,end:SH.a}]:[{id:'day',name:'Day',start:SH.a,end:SH.b}];
+  S.resetAt=SH.a;S.dayKey=bizDay();S.setupHours=true;S.tasks.forEach(function(t){t.periods=(t.periods||[]).filter(function(p){return S.periods.some(function(q){return q.id===p})})});
+  lg('Changed',SH.n===2?'Shifts set: Day '+fmtT(SH.a)+' to '+fmtT(SH.b)+', Night '+fmtT(SH.b)+' to '+fmtT(SH.a):'Shift set: Day '+fmtT(SH.a)+' to '+fmtT(SH.b));
+  $('sh').classList.remove('show');save();render();var f=SH.next;SH.next=null;if(f)f()}
 /* ---- 1.12: orders (amount, how given, instructions) ---- */
 var OKIND=[['','None'],['med','Medication'],['feed','Feeding'],['other','Other measured']];
 var OROUTE=['','By mouth','G-tube','J-tube','NG tube','Inhaled','On skin','Other'];
@@ -1059,11 +1095,11 @@ function showHint(msg){clearTimeout(UNDO.t);UNDO.fn=null;$('toastt').textContent
 function blankState(){S.tasks=[];S.stock=[];S.guides=[];S.people=[];S.log=[];LREPL=true;S.keepDays=182;S.moves=[];S.done={};S.cdone={};S.cnt={};
   S.emer={alert:'Call 911 first if he is in distress.',contacts:[{n:'Emergency',p:'911'}],tell:'',plan:''};
   S.who='';S.adminOk=false;S.adminPin='1234';S.adminSet=false;S.rkey='';S.ahint='';S.firstRun=false;S.setup=true;S.setupHours=false;S.lastBackup=0;S.bkSnooze=0;S.since=Date.now();S.nid=20;S.dayKey=bizDay();S.tab='today';S.viewP=null}
-function openFR(){['frn','frp','frh'].forEach(function(id){$(id).value=''});$('fre').textContent='';$('fr').classList.add('show');setTimeout(function(){try{$('frn').focus()}catch(x){}},80)}
+function openFR(){var sn=$('frsf');if(sn)sn.innerHTML=safariNote('fr');['frn','frp','frh'].forEach(function(id){$(id).value=''});$('fre').textContent='';$('fr').classList.add('show');setTimeout(function(){try{$('frn').focus()}catch(x){}},80)}
 function saveFR(){var n=$('frn').value.trim(),pc=$('frp').value.trim(),hv=$('frh').value.trim(),er='';
   if(!n)er='Enter your name.';else if(!/^\d{4}$/.test(pc))er='Your code needs to be 4 digits.';else if(hintBad(hv,pc))er='The hint can’t include your code.';
   if(er){$('fre').textContent=er;return}
-  S.people=[{name:n,pin:pc,role:'owner',hint:hv}];S.who=n;S.adminOk=true;S.last=Date.now();S.tab='menu';S.firstRun=true;$('fr').classList.remove('show');save();render();showKey(maybeTour)}
+  S.people=[{name:n,pin:pc,role:'owner',hint:hv}];S.who=n;S.adminOk=true;S.last=Date.now();S.tab='menu';S.firstRun=true;$('fr').classList.remove('show');save();render();openShifts(function(){showKey(maybeTour)})}
 /* ---- 1.7: welcome tour + setup checklist ---- */
 var TOUR=null;
 function tourCards(n){var tile=function(name,meta,tag,done,extra){return'<div class="trow" style="margin:0"><div class="task'+(done?' done':'')+'" style="cursor:default"><span class="box">'+(done?'✓':'')+'</span><span class="nm">'+name+'<span class="meta">'+meta+'</span></span>'+(tag||'')+'</div>'+(extra||'')+'</div>'};
@@ -1093,7 +1129,7 @@ function setupCard(full){var it=setupItems(),done=it.filter(function(x){return x
   if(!full)return'<div class="vb" style="background:var(--panel2);color:var(--tx);border:1px solid var(--acc)"><span>Finish setting up the board · <b>'+done+' of '+it.length+'</b> done</span><button data-t="menu" style="background:var(--acc);color:#0c1420">Open checklist</button></div>';
   return'<div class="col" style="margin-bottom:12px;border-color:var(--acc)"><div class="ch"><b>Set up the board</b><small>'+done+' of '+it.length+' done</small></div><div class="elist">'+it.map(function(x){return'<div class="srow"><span class="box" style="width:26px;height:26px;border-radius:8px;'+(x[3]?'background:var(--ok);border-color:var(--ok);color:#06231c':'')+'">'+(x[3]?'✓':'')+'</span><span class="sname"'+(x[3]?' style="color:var(--mut);text-decoration:line-through"':'')+'>'+x[1]+'<span class="meta" style="text-decoration:none">'+x[2]+'</span></span>'+(x[3]?'':(x[0]==='hours'?'<button data-sgo="periods">Check hours</button><button data-sok="hours">They’re right</button>':'<button data-sgo="'+x[4]+'">'+(x[0]==='bkp'?'Save backup':'Go')+'</button>'))+'</div>'}).join('')+'</div><button data-shide="1" style="margin-top:10px;background:transparent;border-color:transparent;color:var(--mut);padding-left:0">Hide this checklist</button></div>'}
 /* ---- 1.6: tap outside a pop-up to close it ---- */
-var MDOWN=null,KEEP=['emed','ge','tour','fr','rk','ft','ah'];
+var MDOWN=null,KEEP=['emed','ge','tour','fr','rk','ft','ah','sh'];
 document.addEventListener('pointerdown',function(e){MDOWN=e.target},true);
 document.addEventListener('click',function(e){var m=e.target;if(!m.classList||!m.classList.contains('modal')||!m.classList.contains('show')||MDOWN!==m)return;
   if(KEEP.indexOf(m.id)>-1)return;
@@ -1256,7 +1292,7 @@ migrate15();if(S.keepDays==null)S.keepDays=182;if(!S.dueMode)S.dueMode='sound';i
 setInterval(save,5000);document.addEventListener('visibilitychange',function(){if(document.hidden)save()});window.addEventListener('pagehide',save);
 try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
 /* ---- install, offline, and updates ---- */
-var REG=null,RELOADING=false;
+var REG=null,RELOADING=false,HADCTRL=!!(window.navigator&&navigator.serviceWorker&&navigator.serviceWorker.controller);
 function showUpd(){$('updt').textContent='A new version of the Care Board is ready. Your data stays on this iPad.';$('upd').hidden=false}
 function applyUpdate(){save();var w=REG&&REG.waiting;if(w){w.postMessage('skipWaiting')}else location.reload()}
 function checkUpdate(manual){if(!REG){if(manual)$('stmsg').textContent='Updates only work in the installed app (opened from the Home Screen icon).';return}
@@ -1267,7 +1303,7 @@ try{if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)&&!/clau
     if(r.waiting&&navigator.serviceWorker.controller)showUpd();
     r.addEventListener('updatefound',function(){var n=r.installing;if(!n)return;n.addEventListener('statechange',function(){if(n.state==='installed'&&navigator.serviceWorker.controller)showUpd()})});
     setInterval(function(){checkUpdate(false)},30*60000)}).catch(function(){});
-  navigator.serviceWorker.addEventListener('controllerchange',function(){if(RELOADING)return;RELOADING=true;save();location.reload()});
+  navigator.serviceWorker.addEventListener('controllerchange',function(){if(!HADCTRL){HADCTRL=true;return}if(RELOADING)return;RELOADING=true;save();location.reload()});
   document.addEventListener('visibilitychange',function(){if(!document.hidden)checkUpdate(false)})}}catch(e){}
 function saveBackup(){save();var dn=new Date(),name='zeke-care-backup-'+dn.getFullYear()+'-'+String(dn.getMonth()+1).padStart(2,'0')+'-'+String(dn.getDate()).padStart(2,'0')+'.json',txt=JSON.stringify(snap(true),null,1),f=null;
   var done=function(){S.lastBackup=Date.now();S.bkSnooze=0;save();if(S.tab==='today')render();$('stmsg').textContent='Backup ready. Choose Save to Files and keep it somewhere other than this iPad too (iCloud Drive or email it to yourself).'};
