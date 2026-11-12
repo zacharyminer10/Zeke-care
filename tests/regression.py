@@ -104,6 +104,15 @@ def main():
         code(pg, '1111'); clear(pg)
         check('E2 correct code works after the pause', pg.evaluate("S.who==='Owner'&&S.pinFail.n===0"))
 
+        # N. owners/managers go straight into the Menu after signing in
+        pg.evaluate("S.who='';S.adminOk=false;render()")
+        pg.select_option('#whosel', 'Owner'); code(pg, '1111'); clear(pg)
+        pg.click('#nav [data-t="menu"]')
+        check('N1 owner opens Menu without retyping a code', not pg.is_visible('#pin') and pg.evaluate("S.tab")=='menu')
+        pg.click('[data-lock]'); pg.click('#nav [data-t="menu"]')
+        check('N2 after tapping Lock, the Menu asks for the code', pg.is_visible('#pin'))
+        code(pg, '1111')
+
         # F. idle asks, never signs out
         pg.evaluate('S.idle=60;S.last=Date.now()-61*60000;idleCheck()')
         check('F1 idle shows Still here? and keeps person', pg.is_visible('#ah') and pg.evaluate("S.who==='Owner'"))
