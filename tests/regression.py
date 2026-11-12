@@ -137,6 +137,13 @@ def main():
         pg.evaluate("S.adminOk=false;setOrder(801,'amt','999 mL')")
         check('L4 only people who can edit tasks can change an order', pg.evaluate("T(801).order.amt==='140 mL'"))
 
+        # M. "also have ready" items are listed but never counted
+        pg.evaluate("S.adminOk=true;S.last=Date.now();var n=S.stock.length;addExtra(801,'Wet washcloth');addExtra(801,'wet washcloth');window._n=n")
+        check('M1 also-have-ready adds once and creates no inventory', pg.evaluate("T(801).extras.length===1&&S.stock.length===window._n"))
+        pg.evaluate("S.tab='today';render()"); pg.click('[data-ti="801"]')
+        check('M2 shows on the task card as not counted', 'Wet washcloth' in pg.inner_text('#tib') and 'Not counted' in pg.inner_text('#tib'))
+        pg.click('[data-cl="ti"]')
+
         # H. inventory + log database persistence
         pg.evaluate("S.stock.push({id:601,name:'Gauze',qty:10,low:2});S.tab='stock';render()")
         pg.click('[data-sq="601|-1"]'); pg.wait_for_timeout(300)
