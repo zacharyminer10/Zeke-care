@@ -182,7 +182,7 @@ nav button,nav button.on,.pill,.tag,.sec,.who button.on,.rs button.on,.tchip,.up
 .sadm{display:flex;flex-wrap:wrap;gap:6px;align-items:center;width:100%;padding-top:4px;border-top:1px dashed var(--line)}
 /* 1.8 inventory sort + low highlight */
 .sortbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 8px}
-.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg{display:inline-flex;flex-wrap:wrap;max-width:100%;border:1px solid var(--line);border-radius:10px;overflow:hidden}
 .seg button{border:0;border-radius:0;min-height:34px;padding:4px 14px;font-size:14px;background:var(--panel2)}
 .seg button+button{border-left:1px solid var(--line)}.seg button.on{background:var(--tx);color:var(--bg);font-weight:500}
 .srow.low{box-shadow:inset 0 0 0 2px var(--bad);background:color-mix(in srgb,var(--bad) 9%,var(--panel2))}
@@ -226,7 +226,7 @@ nav{flex-wrap:wrap}nav button{white-space:nowrap}
 <nav id="nav"></nav>
 <main id="main"></main>
 <div class="modal" id="st"><div class="card"><h2>Settings</h2><p class="note">Appearance</p><div class="rs" id="stth"></div><p class="note">Sign out automatically after no activity for</p><div class="rs" id="stid"></div><p class="note">Keep the screen on while the app is open</p><div class="rs" id="stwk"></div><p class="note" id="stwkm" style="margin-top:-6px"></p><p class="note">New day starts at (check-offs and counters reset then)</p><div class="rs"><button class="tchip" id="strt"></button></div>
-<p class="note">Your data (saved on this device)</p><p class="note" id="stsv" style="margin-top:-4px"></p>
+<p class="note">Your data (saved on this device)</p><p class="note" id="stsv" style="margin-top:-4px"></p><p class="note" id="stsz" style="margin-top:-6px"></p>
 <div class="rs" id="stdt"><button id="bkp">Save a backup</button><button id="rst">Restore from backup</button></div>
 <input type="file" id="rsf" accept=".json,application/json" style="display:none">
 <p class="note" id="stmsg" aria-live="polite"></p>
@@ -275,7 +275,7 @@ nav{flex-wrap:wrap}nav button{white-space:nowrap}
 <div class="modal" id="ns"><div class="card" style="max-width:400px"><h2>New supply</h2><p class="note" style="margin-top:0" id="nsfor"></p><input type="text" id="nsn" maxlength="60" placeholder="Supply name" aria-label="Supply name" style="width:100%"><div class="row" style="border:0;padding:10px 0 0"><label class="c">On hand now <input type="number" id="nsq" min="0" value="10" style="width:80px"></label><label class="c">Reorder at <input type="number" id="nsl" min="0" value="2" style="width:70px"></label></div><p class="note" id="nse" style="color:var(--bad)" aria-live="polite"></p><div style="display:flex;gap:8px"><button data-cl="ns">Cancel</button><button id="nsok" class="tpok" style="font-size:17px">Add and link</button></div></div></div>
 <div class="modal" id="tp"><div class="card" style="max-width:380px"><h2 id="tpt">Pick a time</h2><p class="note" id="tps" style="margin:0 0 4px"></p><p class="tpv" id="tpv" aria-live="polite"></p><div class="tpw"><div class="tpc" id="tph" aria-label="Hour"></div><div class="tpc" id="tpm" aria-label="Minute"></div><div class="tpc" id="tpa" aria-label="AM or PM"></div></div><p class="note" style="text-align:center;margin:4px 0 10px">Scroll to the time, then tap ✓ to save it.</p><p class="note" id="tpe" style="color:var(--bad);text-align:center" aria-live="polite"></p><div style="display:flex;gap:8px"><button id="tpx">Cancel</button><button id="tpok" class="tpok" aria-label="Save this time">✓</button></div></div></div>
 <script>
-var VER='1.9.1';
+var VER='1.10';
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
 var S={
   tab:'today',who:'',people:[],pend:null,pin:{for:'',buf:''},reason:'',
@@ -476,7 +476,7 @@ function stock(){var ad=can('stock'),srt=S.ssort==='qty'?'qty':'az',items=S.stoc
   return h+'</div>'}
 function setQty(id,q){var it=S.stock.filter(function(x){return x.id==id})[0];if(!it)return;q=Math.max(0,Math.round(q)||0);if(q===it.qty)return;var from=it.qty;it.qty=q;
   var r=S.log[0],now=Date.now();
-  if(r&&r.a==='Inventory'&&r.sid===it.id&&r.who===S.who&&now-new Date(r.ts).getTime()<120000){r.to=q;r.d=it.name+': '+r.from+' → '+q;r.ts=new Date()}
+  if(r&&r.a==='Inventory'&&r.sid===it.id&&r.who===S.who&&now-new Date(r.ts).getTime()<120000){r.to=q;r.d=it.name+': '+r.from+' → '+q;r.ts=new Date();r._s=false}
   else S.log.unshift({ts:new Date(),who:S.who,a:'Inventory',d:it.name+': '+from+' → '+q,sid:it.id,from:from,to:q})}
 var QC=null;
 function openQC(id){var it=S.stock.filter(function(x){return x.id==id})[0];if(!it)return;QC=it.id;$('qct').textContent=it.name;$('qcv').value=it.qty;$('qce').textContent='';$('qc').classList.add('show');setTimeout(function(){try{$('qcv').focus();$('qcv').select()}catch(x){}},60)}
@@ -510,7 +510,7 @@ function week(){
   }
   return h+'</div><p class="note">Shows today plus the next six days. Repeating changes are projected from when they were last done.</p>';
 }
-function fillSt(){var cur=document.documentElement.dataset.theme||'dark';
+function fillSt(){storageLine();var cur=document.documentElement.dataset.theme||'dark';
   $('stth').innerHTML=[['dark','Dark'],['light','Light']].map(function(o){return'<button data-th="'+o[0]+'" class="'+(cur===o[0]?'on':'')+'">'+o[1]+'</button>'}).join('');
   $('stid').innerHTML=[[0,'Off'],[5,'5 min'],[15,'15 min'],[30,'30 min'],[60,'1 hour'],[120,'2 hours'],[240,'4 hours'],[480,'8 hours']].map(function(o){return'<button data-idl="'+o[0]+'" class="'+(S.idle===o[0]?'on':'')+'">'+o[1]+'</button>'}).join('');
   $('strt').textContent=fmtT(S.resetAt);$('stmsg').textContent='';$('stver').textContent='EZAide · Version '+VER;
@@ -544,6 +544,7 @@ function admin(){fresh=false;
   h+='<div class="row"><span style="flex:1;min-width:200px"><b>Recovery key</b><span class="meta">'+(S.rkey?'Set. It resets an owner’s code. Making a new key replaces the old one.':'Not set. Without it, a forgotten owner code can’t be reset.')+'</span></span><button id="rknew">'+(S.rkey?'Make a new key':'Create recovery key')+'</button></div>';
   h+='<div class="row"><span style="flex:1;min-width:200px"><b>Your code hint</b><span class="meta">Shown when you tap “Forgot your code?” Don’t type the code itself.</span></span><input type="text" data-ahint="1" maxlength="60" value="'+esc((me()||{}).hint||'')+'" placeholder="No hint" aria-label="Your code hint" style="flex:1;min-width:200px"></div>';
   h+='<div class="row"><span style="flex:1;min-width:200px"><b>Emergency info</b><span class="meta">Numbers, what to tell 911, and the plan shown on the Emergency button</span></span><button id="emedit">Edit emergency info</button></div>';
+  h+='<div class="row"><span style="flex:1;min-width:200px"><b>Keep the log for</b><span class="meta">Older entries are hidden, and the Log tab offers to save them to a file before removing them.</span></span><span class="seg" role="group" aria-label="Keep the log for">'+KEEPOPT.map(function(k){return'<button data-keep="'+k[0]+'" class="'+((S.keepDays||0)===k[0]?'on':'')+'">'+k[1]+'</button>'}).join('')+'</span></div>';
   h+='<div class="row"><span style="flex:1;min-width:200px"><b>Setup checklist</b><span class="meta">Show the step-by-step setup list in the Menu again</span></span><button id="setupre">Show checklist</button></div>';
   h+='<div class="row"><span style="flex:1;min-width:200px"><b>Start fresh</b><span class="meta">Erases all tasks, supplies, people, and the log on this iPad. Download a backup first.</span></span><button id="fresh" style="color:var(--bad)">Start fresh</button></div>';
   return h+'<p class="note" id="admmsg" aria-live="polite"></p></div>'}
@@ -657,7 +658,12 @@ document.addEventListener('click',function(e){
   if(b.dataset.prs){if(!can('owner'))return;var _q=S.people[+b.dataset.prs];if(!_q)return;askConfirm('Reset '+_q.name+'’s code?','Their current code stops working. They’ll choose a new one the next time they sign in.','Reset code',function(){_q.pin=null;_q.mustReset=true;lg('Changed',_q.name+'’s code was reset');render()},true);return}
   if(b.dataset.pmy){setCodePad(S.who,true,'Choose a new code, '+S.who);return}
   if(b.dataset.own){pickOwner(b.dataset.own);return}
-  if(b.dataset.lclr){S.logf='';S.logt='';S.logi='';S.logq='';render();return}
+  if(b.dataset.lclr){S.logf='';S.logt='';S.logi='';S.logq='';S.logCap=300;render();return}
+  if(b.id==='logmore'){if(S.logf||S.logt||S.logi||(S.logq||'').trim())S.logCap=(S.logCap||300)+300;else S.logSpan=(S.logSpan||7)+30;render();return}
+  if(b.id==='logcsv'){exportLog();return}
+  if(b.id==='arcgo'){archiveOld();return}
+  if(b.id==='arclater'){S.arcSnooze=Date.now()+7*864e5;render();return}
+  if(b.dataset.keep!==undefined){if(!can('owner'))return;S.keepDays=+b.dataset.keep;lg('Changed','Log keeps '+keepName(S.keepDays).toLowerCase());render();return}
   if(b.id==='addpp'){if(!can('owner'))return;addPerson();return}
   if(b.dataset.del){var _b=b;askConfirm('Remove this task?','“'+tn(b.dataset.del)+'” and its schedule will be removed. This can’t be undone.','Remove task',function(){var b=_b;lg('Removed task',tn(b.dataset.del),{tid:b.dataset.del});S.tasks=S.tasks.filter(function(x){return x.id!=b.dataset.del});render();});return}
   if(b.dataset.pd){var _b=b;askConfirm('Remove this time of day?','“'+((S.periods.filter(function(x){return x.id===b.dataset.pd})[0])||{}).name+'” will be removed, and its routine tasks will lose this time of day.','Remove',function(){var b=_b;var id=b.dataset.pd;S.periods=S.periods.filter(function(p){return p.id!==id});S.tasks.forEach(function(t){t.periods=t.periods.filter(function(x){return x!==id})});render();});return}
@@ -677,11 +683,11 @@ document.addEventListener('click',function(e){
   if(b.id==='fresh'){if(!can('owner'))return;if(!fresh){fresh=true;b.textContent='Tap again to erase everything';return}
     blankState();save();render();openFR();return}
 });
-document.addEventListener('input',function(e){if(e.target.id==='tfind')applyFind();if(e.target.id==='logq')applyLogQ()});
+document.addEventListener('input',function(e){if(e.target.id==='tfind')applyFind();if(e.target.id==='logq'){var lv=e.target.value;clearTimeout(window._lqt);window._lqt=setTimeout(function(){S.logq=lv;S.logCap=300;S._lqf=true;render()},250)}});
 document.addEventListener('keydown',function(e){if(e.key!=='Enter')return;var id=e.target.id;if(id==='qcv'){e.preventDefault();saveQC()}else if(id==='rck'){e.preventDefault();checkRC()}else if(id==='rcn2'){e.preventDefault();saveRC()}});
 document.addEventListener('change',function(e){
   if(e.target.id==='rsf'){var f=e.target.files&&e.target.files[0];if(!f)return;var fr=new FileReader();fr.onload=function(){var ok=false;try{ok=applySnap(JSON.parse(fr.result))}catch(x){}
-    if(ok){S.last=Date.now();maybeReset();save();fillSt();$('stmsg').textContent='Restored. Sign in again from the Who’s here menu.';$('fr').classList.remove('show');render();if(S.people.length)needWho();else openFR()}else $('stmsg').textContent='That file is not an EZAide backup. Nothing was changed.'};fr.readAsText(f);return}
+    if(ok){LREPL=true;S.last=Date.now();maybeReset();save();fillSt();$('stmsg').textContent='Restored. Sign in again from the Who’s here menu.';$('fr').classList.remove('show');render();if(S.people.length)needWho();else openFR()}else $('stmsg').textContent='That file is not an EZAide backup. Nothing was changed.'};fr.readAsText(f);return}
   if(e.target.id==='whosel'){var wv=e.target.value;e.target.value=S.who;if(!wv)return;if(wv==='__new')openNew();else openPin(wv);return}
   var d=e.target.dataset;
   if(d.tna){var ta=T(d.tna),v2=e.target.value;if(!ta||!can('sched'))return;if(v2==='__new'){if(!can('stock'))return;NST=ta.id;$('nsn').value='';$('nsq').value=10;$('nsl').value=2;$('nse').textContent='';$('nsfor').textContent='It will be linked to “'+ta.name+'”.';$('ns').classList.add('show');setTimeout(function(){try{$('nsn').focus()}catch(x){}},60);e.target.value='';return}
@@ -690,9 +696,9 @@ document.addEventListener('change',function(e){
   if(d.tg){var tg=T(d.tg),gv=e.target.value;if(!tg||!can('sched'))return;if(gv==='__new'){if(!can('guides'))return;e.target.value=tg.guide||'';openGE(null,tg.id);$('gtt').value=tg.name;return}if(gv)tg.guide=gv;else delete tg.guide;lgc(tg.name+': '+(gv?'guide set to “'+guideOf(tg).title+'”':'guide removed'),tg.id);render();return}
   if(d.prl!==undefined){if(!can('owner'))return;setRole(+d.prl,e.target.value,e.target);return}
   if(d.pperm){if(!can('owner'))return;var pq=d.pperm.split('|'),pp2=S.people[+pq[0]];if(!pp2)return;pp2.perms=pp2.perms||{};pp2.perms[pq[1]]=e.target.checked;lg('Changed',pp2.name+(e.target.checked?' can now: ':' can no longer: ')+PERMS.filter(function(k){return k[0]===pq[1]})[0][1].toLowerCase());return}
-  if(d.li!==undefined){S.logi=e.target.value;render();return}
-  if(d.lf!==undefined){S.logf=e.target.value;render();return}
-  if(d.lt!==undefined){S.logt=e.target.value;render();return}
+  if(d.li!==undefined){S.logi=e.target.value;S.logCap=300;render();return}
+  if(d.lf!==undefined){S.logf=e.target.value;S.logCap=300;render();return}
+  if(d.lt!==undefined){S.logt=e.target.value;S.logCap=300;render();return}
   if(d.at){var y=d.at.split('|'),ty=S.tasks.filter(function(x){return x.id==y[0]})[0];ty.at[+y[1]]=e.target.value||'12:00';ty.at.sort();render();return}
   if(d.od!==undefined){S.tasks.filter(function(t){return t.id==d.od})[0].date=e.target.value||bizDay();return}
   if(d.ot!==undefined){S.tasks.filter(function(t){return t.id==d.ot})[0].time=e.target.value||'';return}
@@ -766,6 +772,52 @@ function openAbout(){var P=['EZAide is a general-purpose organizational tool for
   showSheet('About & disclaimer',P.map(function(x){return'<p style="line-height:1.45;margin:0 0 10px">'+x+'</p>'}).join('')+acc+'<p class="note">EZAide · Version '+VER+'</p>')}
 function sgroup(it,f){var E=['code','people','tasks','emer'],a=it.filter(function(x){return E.indexOf(x[0])>-1}),b=it.filter(function(x){return E.indexOf(x[0])<0});
   return'<p class="note" style="margin:4px 0 2px">Essentials</p>'+a.map(f).join('')+(b.length?'<p class="note" style="margin:14px 0 2px">When you have a minute</p>'+b.map(f).join(''):'')}
+/* ---- 1.10: log storage (IndexedDB), paging, retention, CSV, storage use ---- */
+var LDB=null,LDBOK=false,LREPL=false,LTRY=false;
+function cleanLog(a){return(a||[]).map(function(r){var o={ts:r.ts,who:r.who,a:r.a,d:r.d};if(r.tid!=null)o.tid=r.tid;if(r.sid!=null)o.sid=r.sid;if(r.from!=null){o.from=r.from;o.to=r.to}return o})}
+function ldbOpen(cb){LTRY=true;try{if(!window.indexedDB){cb(false);return}var rq=indexedDB.open(KEY+'-log',1),done=false,fin=function(v){if(!done){done=true;cb(v)}};
+  rq.onupgradeneeded=function(){var db=rq.result;if(!db.objectStoreNames.contains('log'))db.createObjectStore('log',{keyPath:'k',autoIncrement:true})};
+  rq.onsuccess=function(){LDB=rq.result;LDBOK=true;fin(true)};rq.onerror=function(){fin(false)};rq.onblocked=function(){fin(false)};setTimeout(function(){fin(LDBOK)},4000)}catch(e){cb(false)}}
+function ldbLoad(cb){try{var out=[],tx=LDB.transaction('log','readonly');tx.objectStore('log').openCursor().onsuccess=function(e){var c=e.target.result;if(c){var r=c.value;r.ts=new Date(r.ts);r._s=true;out.push(r);c.continue()}else cb(out)};tx.onerror=function(){cb(null)}}catch(e){cb(null)}}
+function ldbFlush(){if(!LDBOK)return;try{var tx=LDB.transaction('log','readwrite'),st=tx.objectStore('log');
+  if(LREPL){LREPL=false;st.clear();S.log.forEach(function(r){delete r.k;r._s=false;r._p=false})}
+  S.log.forEach(function(r){if(r._s||r._p)return;r._p=true;var v=cleanLog([r])[0];if(r.k!=null)v.k=r.k;var q=st.put(v);q.onsuccess=function(){r.k=q.result;r._s=true;r._p=false};q.onerror=function(){r._p=false}})}catch(e){}}
+function ldbDelete(keys){if(!LDBOK||!keys.length)return;try{var st=LDB.transaction('log','readwrite').objectStore('log');keys.forEach(function(k){st.delete(k)})}catch(e){}}
+function logSig(r){return new Date(r.ts).getTime()+'|'+r.who+'|'+r.a+'|'+r.d}
+function logInit(){ldbOpen(function(ok){if(!ok){render();return}
+  ldbLoad(function(rows){if(!rows){LDBOK=false;return}var seen={},mem=S.log.filter(function(r){return !r._s}),all=[];
+    rows.concat(mem).forEach(function(r){var k=logSig(r);if(seen[k])return;seen[k]=1;all.push(r)});
+    all.sort(function(a,b){return new Date(b.ts)-new Date(a.ts)});S.log=all;ldbFlush();save();if(S.tab==='log')render()})})}
+function keepCut(){return S.keepDays?Date.now()-S.keepDays*864e5:0}
+function oldLog(){var c=keepCut();return c?S.log.filter(function(r){return new Date(r.ts).getTime()<c}):[]}
+var KEEPOPT=[[90,'3 months'],[182,'6 months'],[365,'1 year'],[730,'2 years'],[0,'Keep everything']];
+function keepName(d){return(KEEPOPT.filter(function(x){return x[0]===d})[0]||[0,d+' days'])[1]}
+function csvCell(v){v=String(v==null?'':v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}
+function logCSV(rows){var head=['Date','Time','Person','Action','Details','Task or supply'];
+  return head.join(',')+'\n'+rows.slice().reverse().map(function(r){var d=new Date(r.ts),it=r.tid!=null?tn(r.tid):r.sid!=null?((S.stock.filter(function(x){return x.id===r.sid})[0]||{}).name||''):'';
+    return[d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'),fmt(d),r.who,r.a,r.d,it].map(csvCell).join(',')}).join('\n')+'\n'}
+function fileTag(){return KEY.split('.')[0].replace('-board','')}
+function today8(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function shareFile(name,text,type,done,fail){var f=null;
+  var dl=function(){try{var bl=new Blob([text],{type:type}),a=document.createElement('a');a.href=URL.createObjectURL(bl);a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},4000);done()}catch(e){if(fail)fail()}};
+  try{f=new File([text],name,{type:type})}catch(x){}
+  if(f&&navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f],title:name}).then(done).catch(function(e){if(e&&e.name==='AbortError'){if(fail)fail()}else dl()});return}
+  dl()}
+function exportLog(){var rows=logRows(true);if(!rows.length){showHint('Nothing to export with these filters.');return}
+  shareFile(fileTag()+'-log-'+today8()+'.csv',logCSV(rows),'text/csv',function(){showHint('Exported '+rows.length+' entries. Save the file to Files or send it to yourself.')})}
+function archiveOld(){if(!can('owner')){unlock('log');return}var old=oldLog();if(!old.length)return;
+  shareFile(fileTag()+'-log-archive-'+today8()+'.csv',logCSV(old),'text/csv',function(){
+    var keys=old.filter(function(r){return r.k!=null}).map(function(r){return r.k});S.log=S.log.filter(function(r){return old.indexOf(r)<0});ldbDelete(keys);
+    lg('Changed','Archived '+old.length+' log entries older than '+keepName(S.keepDays).toLowerCase());S.arcSnooze=0;save();render();showHint('Saved and removed '+old.length+' old entries.')},
+    function(){showHint('Nothing was removed. Save the file to finish archiving.')})}
+function logRows(all){var who=S.logf,tp=S.logt,sel=S.logi||'',q=(S.logq||'').trim().toLowerCase(),cut=keepCut();
+  var rows=S.log.filter(function(r){var t=new Date(r.ts).getTime();return(!cut||t>=cut)&&(!who||r.who===who)&&(!tp||(tp==='missed'?r.a==='Missed':tp==='inv'?r.a==='Inventory':CHG.indexOf(r.a)>-1))&&logMatch(r,sel)&&(!q||(r.who+' '+r.a+' '+r.d).toLowerCase().indexOf(q)>-1)});
+  return rows}
+function storageLine(){var n=S.log.length,kb=Math.round(JSON.stringify(cleanLog(S.log)).length/1024);
+  var t='Log: '+n.toLocaleString()+' entr'+(n===1?'y':'ies')+' (about '+(kb<1024?kb+' KB':(kb/1024).toFixed(1)+' MB')+')'+(LDBOK?', kept in the device database.':', kept with the rest of your data.');
+  $('stsz').textContent=t;
+  try{if(navigator.storage&&navigator.storage.estimate)navigator.storage.estimate().then(function(e){if(!e||!e.usage)return;var u=e.usage/1048576,q=e.quota/1048576;
+    $('stsz').textContent=t+' Care data on this device: '+(u<1?Math.max(1,Math.round(u*1024))+' KB':u.toFixed(1)+' MB')+(q?' of about '+(q>=1024?(q/1024).toFixed(0)+' GB':Math.round(q)+' MB')+' available.':'.')})}catch(e){}}
 /* ---- 1.9: roles and permissions ---- */
 var PERMS=[['sched','Edit tasks and schedules'],['stock','Manage supplies (add, remove, link)'],['guides','Write and edit how-to guides'],['emer','Edit emergency info']];
 var ROLES=[['owner','Owner'],['manager','Manager'],['caregiver','Caregiver']];
@@ -862,22 +914,23 @@ function logMatch(r,sel){if(!sel)return true;var k=sel.charAt(0),id=+sel.slice(2
   if(k==='t'){if(r.tid!=null)return r.tid===id;var t=T(id);return !r.sid&&!!t&&r.d.toLowerCase().indexOf(t.name.toLowerCase())>-1}
   if(r.sid!=null)return r.sid===id;var it=S.stock.filter(function(x){return x.id===id})[0];return !r.tid&&!!it&&r.d.toLowerCase().indexOf(it.name.toLowerCase())>-1}
 function logv(){
-  var who=S.logf,tp=S.logt,sel=S.logi||'',rows=S.log.filter(function(r){return(!who||r.who===who)&&(!tp||(tp==='missed'?r.a==='Missed':tp==='inv'?r.a==='Inventory':CHG.indexOf(r.a)>-1))&&logMatch(r,sel)});
-  var ts=S.tasks.slice().sort(function(a,b){return a.name.localeCompare(b.name)}),ss=S.stock.slice().sort(function(a,b){return a.name.localeCompare(b.name)});
-  var h='<div class="col"><div class="ch"><b>Change log</b><small>'+rows.length+' entr'+(rows.length===1?'y':'ies')+'</small></div>';
-  h+='<input type="search" id="logq" placeholder="Search the log" aria-label="Search the log" value="'+esc(S.logq||'')+'" style="width:100%;margin-bottom:8px">';
+  var who=S.logf,tp=S.logt,sel=S.logi||'',filt=!!(who||tp||sel||(S.logq||'').trim()),all=logRows(),span=S.logSpan||7,cap=S.logCap||300,since=Date.now()-span*864e5;
+  var rows=filt?all.slice(0,cap):all.filter(function(r){return new Date(r.ts).getTime()>=since}),more=filt?all.length>rows.length:all.length>rows.length;
+  var ts=S.tasks.slice().sort(function(a,b){return a.name.localeCompare(b.name)}),ss=S.stock.slice().sort(function(a,b){return a.name.localeCompare(b.name)}),old=oldLog();
+  var h='';
+  if(old.length&&isOwner()&&!(S.arcSnooze&&Date.now()<S.arcSnooze))h+='<div class="vb"><span>'+old.length.toLocaleString()+' entr'+(old.length===1?'y is':'ies are')+' older than '+keepName(S.keepDays).toLowerCase()+'. Save them to a file and they’ll be removed from this device.</span><span style="display:flex;gap:8px;flex-wrap:wrap"><button id="arclater" style="background:transparent;color:var(--due);border-color:var(--due)">Later</button><button id="arcgo">Save archive</button></span></div>';
+  h+='<div class="col"><div class="ch"><b>Change log</b><small>'+(filt?all.length.toLocaleString()+' match'+(all.length===1?'':'es'):'Last '+(span===7?'7 days':span+' days'))+(S.keepDays?' · keeps '+keepName(S.keepDays).toLowerCase():'')+'</small></div>';
+  h+='<div class="addrow" style="margin-bottom:8px"><input type="search" id="logq" placeholder="Search the log" aria-label="Search the log" value="'+esc(S.logq||'')+'"><button id="logcsv" style="flex:none">Download CSV</button></div>';
   h+='<div class="row" style="padding-top:0"><label class="c">Task or supply <select data-li="1" style="max-width:240px"><option value="">All</option>'+(ts.length?'<optgroup label="Tasks">'+ts.map(function(t){return'<option value="t:'+t.id+'"'+(sel==='t:'+t.id?' selected':'')+'>'+esc(t.name)+'</option>'}).join('')+'</optgroup>':'')+(ss.length?'<optgroup label="Supplies">'+ss.map(function(i){return'<option value="s:'+i.id+'"'+(sel==='s:'+i.id?' selected':'')+'>'+esc(i.name)+'</option>'}).join('')+'</optgroup>':'')+'</select></label>';
-  h+='<label class="c">Person <select data-lf="1"><option value="">Everyone</option>'+S.people.map(function(p){return'<option'+(p.name===who?' selected':'')+'>'+esc(p.name)+'</option>'}).join('')+'<option'+(who==='System'?' selected':'')+'>System</option></select></label><label class="c">Show <select data-lt="1"><option value="">Everything</option><option value="missed"'+(tp==='missed'?' selected':'')+'>Missed only</option><option value="changes"'+(tp==='changes'?' selected':'')+'>Schedule changes</option><option value="inv"'+(tp==='inv'?' selected':'')+'>Inventory counts</option></select></label>'+(who||tp||sel||S.logq?'<button data-lclr="1">Clear filters</button>':'')+'</div>';
-  if(!rows.length)h+='<p class="note">'+(sel||who||tp?'Nothing matches these filters.':'Nothing here yet. Every task check-off and undo shows up with who did it and when.')+'</p>';
+  h+='<label class="c">Person <select data-lf="1"><option value="">Everyone</option>'+S.people.map(function(p){return'<option'+(p.name===who?' selected':'')+'>'+esc(p.name)+'</option>'}).join('')+'<option'+(who==='System'?' selected':'')+'>System</option></select></label><label class="c">Show <select data-lt="1"><option value="">Everything</option><option value="missed"'+(tp==='missed'?' selected':'')+'>Missed only</option><option value="changes"'+(tp==='changes'?' selected':'')+'>Schedule changes</option><option value="inv"'+(tp==='inv'?' selected':'')+'>Inventory counts</option></select></label>'+(filt?'<button data-lclr="1">Clear filters</button>':'')+'</div>';
+  if(!rows.length)h+='<p class="note">'+(filt?'Nothing matches these filters.':all.length?'Nothing in the last '+span+' days.':'Nothing here yet. Every task check-off and undo shows up with who did it and when.')+'</p>';
   var day='';
-  rows.forEach(function(r){var dd=r.ts.toLocaleDateString([],{weekday:'long',month:'short',day:'numeric'});if(dd!==day){day=dd;h+='<p class="note lday" style="margin:14px 0 4px"><b>'+dd+'</b></p>'}
+  rows.forEach(function(r){var dd=new Date(r.ts).toLocaleDateString([],{weekday:'long',month:'short',day:'numeric'});if(dd!==day){day=dd;h+='<p class="note lday" style="margin:14px 0 4px"><b>'+dd+'</b></p>'}
     var ms=r.a==='Missed',cg=CHG.indexOf(r.a)>-1;
-    h+='<div class="row lrow" data-q="'+esc((r.who+' '+r.a+' '+r.d).toLowerCase())+'"><span style="min-width:74px;color:var(--mut)">'+fmt(r.ts)+'</span><span class="tag'+(ms?'':' ok')+'" style="min-width:56px;text-align:center">'+esc(r.who)+'</span><span style="flex:1;min-width:180px"><b'+(ms?' style="color:var(--due)"':cg?' style="color:var(--acc)"':'')+'>'+esc(r.a)+'</b> '+esc(r.d)+'</span></div>'});
-  return h+'<p class="note" id="lnone" hidden>No entries match your search.</p></div>'}
-function applyLogQ(){var q=$('logq');if(!q)return;var v=q.value.trim().toLowerCase(),any=false;S.logq=q.value;
-  var kids=[].slice.call(document.querySelectorAll('main .lrow, main .lday')),cur=null,vis=0;
-  kids.forEach(function(el){if(el.classList.contains('lday')){if(cur)cur.hidden=!vis;cur=el;vis=0;return}var on=!v||el.dataset.q.indexOf(v)>-1;el.hidden=!on;if(on){vis++;any=true}});if(cur)cur.hidden=!vis;
-  $('lnone').hidden=any||!kids.length}
+    h+='<div class="row lrow"><span style="min-width:74px;color:var(--mut)">'+fmt(new Date(r.ts))+'</span><span class="tag'+(ms?'':' ok')+'" style="min-width:56px;text-align:center">'+esc(r.who)+'</span><span style="flex:1;min-width:180px"><b'+(ms?' style="color:var(--due)"':cg?' style="color:var(--acc)"':'')+'>'+esc(r.a)+'</b> '+esc(r.d)+'</span></div>'});
+  if(more)h+='<button id="logmore" style="margin-top:12px">'+(filt?'Show more':'Show older entries (30 more days)')+'</button>';
+  return h+'</div>'}
+function applyLogQ(){if(!S._lqf)return;S._lqf=false;var q=$('logq');if(!q)return;q.focus();var n=q.value.length;try{q.setSelectionRange(n,n)}catch(e){}}
 /* ---- 1.8: admin recovery key + first task ---- */
 var RKA='ABCDEFGHJKMNPQRSTUVWXYZ23456789';
 function newKey(){var a=new Uint32Array(12),k='';try{crypto.getRandomValues(a)}catch(e){for(var i=0;i<12;i++)a[i]=Math.floor(Math.random()*1e9)}for(var j=0;j<12;j++){k+=RKA[a[j]%RKA.length];if(j===3||j===7)k+='-'}return k}
@@ -903,7 +956,7 @@ function saveFT(){var n=$('ftn').value.trim();if(!n){$('fte').textContent='Type 
   showHint('That’s your task. Tap it when it’s done; hold it for more options.')}
 function showHint(msg){clearTimeout(UNDO.t);UNDO.fn=null;$('toastt').textContent=msg;$('toastu').hidden=true;$('toast').hidden=false;UNDO.t=setTimeout(function(){hideUndo();$('toastu').hidden=false},7000)}
 /* ---- 1.7.1: empty first run ---- */
-function blankState(){S.tasks=[];S.stock=[];S.guides=[];S.people=[];S.log=[];S.moves=[];S.done={};S.cdone={};S.cnt={};
+function blankState(){S.tasks=[];S.stock=[];S.guides=[];S.people=[];S.log=[];LREPL=true;S.keepDays=182;S.moves=[];S.done={};S.cdone={};S.cnt={};
   S.emer={alert:'Call 911 first in any emergency.',contacts:[{n:'Emergency',p:'911'}],tell:'',plan:''};
   S.who='';S.adminOk=false;S.adminPin='1234';S.adminSet=false;S.rkey='';S.ahint='';S.firstRun=false;S.setup=true;S.setupHours=false;S.lastBackup=0;S.bkSnooze=0;S.since=Date.now();S.nid=20;S.dayKey=bizDay();S.tab='today';S.viewP=null}
 function openFR(){['frn','frp','frh'].forEach(function(id){$(id).value=''});$('fre').textContent='';$('fr').classList.add('show');setTimeout(function(){try{$('frn').focus()}catch(x){}},80)}
@@ -1085,19 +1138,19 @@ function drawEmEd(){var h='<p class="note" style="margin-top:0">Top message (sho
   $('emf').innerHTML=h}
 function emRead(){EM.alert=$('ema').value.trim();EM.tell=$('emt').value;EM.plan=$('empl').value;EM.contacts=EM.contacts.map(function(c,i){var a=$('emf').querySelector('[data-emn="'+i+'"]'),b=$('emf').querySelector('[data-emp="'+i+'"]');return{n:a?a.value.trim():c.n,p:b?b.value.trim():c.p}})}
 /* ---- local persistence (this device only) ---- */
-var KEY='ezaide.v1',TRANSIENT=['tab','who','pend','pin','reason','adminOk','viewP','viewFrom','logf','logt','logi','logq','flash'],saved=false,lastSave=null;
-function snap(){var o={};Object.keys(S).forEach(function(k){if(TRANSIENT.indexOf(k)<0)o[k]=S[k]});return{app:'ezaide',v:1,at:new Date().toISOString(),theme:document.documentElement.dataset.theme||'dark',state:o}}
+var KEY='ezaide.v1',TRANSIENT=['tab','who','pend','pin','reason','adminOk','viewP','viewFrom','logf','logt','logi','logq','logSpan','logCap','_lqf','flash'],saved=false,lastSave=null;
+function snap(full){var o={};Object.keys(S).forEach(function(k){if(TRANSIENT.indexOf(k)>-1)return;if(k==='log'){if(full||!LDBOK)o.log=cleanLog(S.log);return}o[k]=S[k]});return{app:'ezaide',v:1,at:new Date().toISOString(),theme:document.documentElement.dataset.theme||'dark',state:o}}
 function applySnap(d){if(!d||(d.app!=='ezaide'&&d.app!=='zeke-care-board')||!d.state||!Array.isArray(d.state.tasks)||!Array.isArray(d.state.periods)||!d.state.periods.length||!Array.isArray(d.state.people)||!d.state.people.length)return false;
   Object.keys(d.state).forEach(function(k){S[k]=d.state[k]});
   (S.log||[]).forEach(function(r){r.ts=new Date(r.ts)});
   if(d.theme)document.documentElement.dataset.theme=d.theme;
   S.who='';S.adminOk=false;S.viewP=null;S.pend=null;return true}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(snap()));lastSave=new Date();saved=true}catch(e){saved=false}}
+function save(){ldbFlush();try{localStorage.setItem(KEY,JSON.stringify(snap()));lastSave=new Date();saved=true}catch(e){saved=false}}
 function load(){try{var r=localStorage.getItem(KEY);if(!r)return false;return applySnap(JSON.parse(r))}catch(e){return false}}
 var loaded=load();if(!S.since)S.since=Date.now();
 if(!loaded){blankState()}
 else{S.who='';S.last=Date.now();maybeReset()}
-migrate15();
+migrate15();if(S.keepDays==null)S.keepDays=182;logInit();
 if(S.people.length&&!S.disc)setTimeout(function(){openDC()},400);
 ['click','change','pointerup','keyup'].forEach(function(n){document.addEventListener(n,function(){setTimeout(save,0)})});
 setInterval(save,5000);document.addEventListener('visibilitychange',function(){if(document.hidden)save()});window.addEventListener('pagehide',save);
@@ -1116,7 +1169,7 @@ try{if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)&&!/clau
     setInterval(function(){checkUpdate(false)},30*60000)}).catch(function(){});
   navigator.serviceWorker.addEventListener('controllerchange',function(){if(RELOADING)return;RELOADING=true;save();location.reload()});
   document.addEventListener('visibilitychange',function(){if(!document.hidden)checkUpdate(false)})}}catch(e){}
-function saveBackup(){save();var dn=new Date(),name='ezaide-backup-'+dn.getFullYear()+'-'+String(dn.getMonth()+1).padStart(2,'0')+'-'+String(dn.getDate()).padStart(2,'0')+'.json',txt=JSON.stringify(snap(),null,1),f=null;
+function saveBackup(){save();var dn=new Date(),name='ezaide-backup-'+dn.getFullYear()+'-'+String(dn.getMonth()+1).padStart(2,'0')+'-'+String(dn.getDate()).padStart(2,'0')+'.json',txt=JSON.stringify(snap(true),null,1),f=null;
   var done=function(){S.lastBackup=Date.now();S.bkSnooze=0;save();if(S.tab==='today')render();$('stmsg').textContent='Backup ready. Choose Save to Files and keep it somewhere other than this iPad too (iCloud Drive or email it to yourself).'};
   var dl=function(){var bl=new Blob([txt],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(bl);a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},4000);done()};
   try{f=new File([txt],name,{type:'application/json'})}catch(x){}
