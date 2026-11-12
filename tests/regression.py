@@ -29,6 +29,9 @@ def clear(pg):
     """Click through first-run pop-ups (works with or without the App Store screens)."""
     for _ in range(6):
         moved = False
+        if pg.is_visible('#sh'):
+            if pg.locator('#sh [data-shn="2"]').count(): pg.click('#sh [data-shn="2"]')
+            pg.click('#shok'); moved = True
         if pg.is_visible('#dc'): pg.check('#dcck'); pg.click('#dcok'); moved = True
         for m, b in [('#rk', '#rkok'), ('#tour', '#tourskip'), ('#ft', '#ftskip'), ('#ah', '#ahy'), ('#due', '#dueok')]:
             if pg.is_visible(m): pg.click(b); moved = True
@@ -64,6 +67,25 @@ def main():
         check('A1 new device starts empty with welcome screen', pg.is_visible('#fr') and pg.evaluate('S.tasks.length+S.stock.length+S.people.length') == 0)
         pg.fill('#frn', 'Owner'); pg.fill('#frp', '1111'); pg.click('#frok'); clear(pg)
         check('A2 first person is owner with recovery key', pg.evaluate("me().role==='owner'&&!!S.rkey"))
+
+        # O. onboarding asks about overnight tasks and sets shifts
+        po, eo = page(viewport={'width': 820, 'height': 1180})
+        po.goto(U + 'index.html'); po.wait_for_timeout(250); po.fill('#frn', 'Solo'); po.fill('#frp', '5555'); po.click('#frok')
+        check('O1 shifts question comes right after the welcome screen', po.is_visible('#sh') and 'overnight' in po.inner_text('#sh'))
+        po.click('#sh [data-shn="1"]'); po.click('#shok')
+        check('O2 "No" makes a single Day shift and sets the daily reset to its start', po.evaluate("S.periods.length===1&&S.periods[0].name==='Day'&&S.resetAt===S.periods[0].start"))
+        po2, eo2 = page(viewport={'width': 820, 'height': 1180})
+        po2.goto(U + 'index.html'); po2.wait_for_timeout(250); po2.fill('#frn', 'Duo'); po2.fill('#frp', '6666'); po2.click('#frok')
+        po2.click('#sh [data-shn="2"]'); po2.click('#shok')
+        check('O3 "Yes" makes Day and Night that cover the whole day', po2.evaluate("S.periods.length===2&&S.periods[0].end===S.periods[1].start&&S.periods[1].end===S.periods[0].start"))
+        check('O4 no script errors (onboarding)', not (eo or eo2), '; '.join((eo + eo2)[:3]))
+
+        # P. iPhone/iPad: warn when opened in a Safari tab instead of the Home Screen app
+        ps, es = page(**p.devices['iPhone 13']); ps.goto(U + 'index.html'); ps.wait_for_timeout(250)
+        check('P1 Safari tab on iPhone shows the install-first note', ps.locator('#frsf .sfn').count() == 1)
+        pa_ctx = b.new_context(**p.devices['iPhone 13']); pa_ctx.add_init_script("Object.defineProperty(navigator,'standalone',{get:()=>true})")
+        pa = pa_ctx.new_page(); pa.goto(U + 'index.html'); pa.wait_for_timeout(250)
+        check('P2 Home Screen app shows no note', pa.locator('.sfn').count() == 0)
 
         # B. roles and private codes
         pg.evaluate("S.adminOk=true;S.last=Date.now();S.tab='people';render()")
