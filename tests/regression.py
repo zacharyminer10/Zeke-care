@@ -378,6 +378,17 @@ def main():
         check('SH10 an early-morning arrival gets a hint that Day starts at the new day', pq_.is_visible('#toast') and 'when the new day begins' in pq_.inner_text('#toast'))
         check('SH7 no script errors (shift start)', not eq_, '; '.join(eq_[:3]))
 
+        # TP. times per day starts blank and must be filled in
+        pt_, et_ = page(viewport={'width': 820, 'height': 1180})
+        setup(pt_, U + 'index.html', 'Tia', '9191'); pt_.evaluate("S.people.forEach(p=>p.toured=true);S.tab='today';render()")
+        pt_.click('#otadd'); pt_.fill('#otn', 'Count TP'); pt_.click('[data-otk="times"]'); pt_.click('#otok'); pt_.wait_for_timeout(200)
+        check('TP1 times per day starts blank with a prompt', pt_.input_value('#te [data-tm]') == '' and pt_.is_visible('#te .tmerr'))
+        pt_.click('#te [data-cl="te"]'); pt_.wait_for_timeout(100)
+        check('TP2 can’t close the editor while it’s blank, and it isn’t on the board', pt_.is_visible('#te') and pt_.evaluate("!dayModels(0).some(m=>m.cnts.some(t=>t.name==='Count TP'))"))
+        pt_.fill('#te [data-tm]', '5'); pt_.click('#te [data-cl="te"]'); pt_.wait_for_timeout(150)
+        check('TP3 a number saves, closes, and puts it on the board', not pt_.is_visible('#te') and pt_.evaluate("dayModels(0).some(m=>m.cnts.some(t=>t.name==='Count TP'&&t.times===5))"))
+        check('TP4 no script errors (times per day)', not et_, '; '.join(et_[:3]))
+
         # H. inventory + log database persistence
         pg.wait_for_timeout(800); clear(pg)
         pg.evaluate("S.stock.push({id:601,name:'Gauze',qty:10,low:2});S.tab='stock';render()")
