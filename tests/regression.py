@@ -217,7 +217,7 @@ def main():
         check('S1 This week follows the board day after midnight', ps_.inner_text('[data-wday="0"] .wkh small') == 'Nov 12' and 'Pickup S' in ps_.inner_text('[data-wday="2"]'))
         ps_.clock.set_system_time(D(10, 0, 12)); ps_.evaluate("S.periods=[{id:'day',name:'Day',start:'07:00',end:'21:00'}];S.resetAt='07:00';S.tasks.push({id:904,name:'Early S',periods:[],every:0,at:['06:00'],needs:[]},{id:905,name:'Late S',periods:[],every:0,at:['23:00'],needs:[]});S.tab='today';render()")
         e1 = ps_.inner_text('[data-ct="904@06:00"]'); ps_.clock.set_system_time(D(6, 30, 13)); ps_.evaluate("render()"); l1 = ps_.inner_text('[data-ct="905@23:00"]')
-        check('S2 one-shift board: early-morning dose not overdue the day before; late dose overdue next morning', 'Overdue' not in e1 and 'Overdue' in l1, e1 + ' / ' + l1)
+        check('S2 one-shift board: early-morning dose not overdue the day before; late dose overdue next morning', 'OVERDUE' not in e1.upper() and 'OVERDUE' in l1.upper(), e1 + ' / ' + l1)
         ps_.clock.set_system_time(D(10, 0, 13)); ps_.evaluate("maybeReset();S.periods=[{id:'day',name:'Day',start:'07:00',end:'21:00'},{id:'night',name:'Night',start:'21:00',end:'07:00'}];S.resetAt='07:00';S.adminOk=true;togK('903|day',false);S.tab='periods';render()")
         ps_.click('[data-pst="day|start"]'); ps_.evaluate("(()=>{var o=TP.o;tpClose();o.ok('06:00')})()")
         check('S3 moving Day start moves Night end and the reset time', ps_.evaluate("S.periods[1].end==='06:00'&&S.resetAt==='06:00'"))
