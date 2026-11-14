@@ -289,6 +289,7 @@ def main():
         check('X5 no script errors (reminder stacking)', not ex_, '; '.join(ex_[:3]))
 
         # H. inventory + log database persistence
+        pg.wait_for_timeout(800); clear(pg)
         pg.evaluate("S.stock.push({id:601,name:'Gauze',qty:10,low:2});S.tab='stock';render()")
         pg.click('[data-sq="601|-1"]'); pg.wait_for_timeout(300)
         pg.reload(); pg.wait_for_timeout(700); clear(pg)
