@@ -248,6 +248,7 @@ nav{flex-wrap:wrap}nav button{white-space:nowrap}
 .futsep{display:flex;align-items:center;gap:12px;margin:24px 0 10px;color:var(--mut);font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600}.futsep::before,.futsep::after{content:'';flex:1;border-top:1px dashed var(--line)}.futc{border:1px dashed var(--line);border-radius:14px;padding:12px;background:transparent}.futc .ch b{color:var(--mut)}.task.fut{background:transparent;border:1px dashed var(--line)}.futc .ch{flex-wrap:wrap;gap:2px 10px}.task.fut:not(.done) .nm{color:var(--mut)}.task.fut:not(.done) .nm .tn{color:var(--tx);opacity:.85}.fday{flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:48px;padding:3px 6px;border:1px solid var(--line);border-radius:8px;line-height:1.15;color:var(--mut)}.fday b{font-size:13px;font-weight:600;color:var(--tx)}.fday small{font-size:11px}.tag.fin{background:var(--panel2);color:var(--mut)}
 .ordwrap{border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin-bottom:12px;background:var(--panel)}.ordh{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:4px}.ordh button{min-height:36px;padding:4px 12px;font-size:15px}.ordc{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;justify-content:space-between;padding:8px 0;border-top:1px solid var(--line)}.ordc .tag{margin-left:4px}.ordbtns{display:flex;gap:6px}.ordbtns button{min-height:36px;padding:4px 12px;font-size:15px}.ordl{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:12px;overflow:hidden}.ordr{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 12px;border-bottom:1px solid var(--line);background:var(--panel2)}.ordr:last-child{border-bottom:0}.ordn2{min-width:0;flex:1}.ordn2 small{display:block;color:var(--mut);font-size:13px}.ordr input{width:84px;flex:none;font-size:16px}.ordf{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.ordf .tpok{flex:1}.arrmv{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}.srow.low.ordd{box-shadow:inset 0 0 0 2px var(--due);background:color-mix(in srgb,var(--due) 8%,var(--panel2))}.onord{color:var(--acc)}.task.dlv .dlvb{color:var(--acc);border-color:var(--acc);display:grid;place-items:center}
 /* 1.15.1 sleeker tiles */.tiles{grid-template-columns:repeat(auto-fill,minmax(min(380px,100%),1fr))}.trow .task{padding:6px 10px;min-height:46px;gap:10px}.trow .task .box{width:26px;height:26px}.trow .task .nm{line-height:1.25;row-gap:0;column-gap:8px}.trow .task .nm .ord{font-size:14px;gap:2px 6px;flex-wrap:nowrap;white-space:nowrap;min-width:0;max-width:100%;overflow:hidden}.trow .task .nm .ord>span{min-width:0;overflow:hidden;text-overflow:ellipsis}.trow .task .nm .ord .opill,.trow .task .nm .ord .oamt{flex:none;overflow:visible}.trow .task .nm .ordn,.trow .task .nm .meta{flex:1 1 100%;font-size:13px;line-height:1.2}.trow .task .tag.stk{display:flex;flex-direction:column;align-items:center;line-height:1.15;padding:3px 7px;font-variant-numeric:tabular-nums}.tag.stk small{font-size:10.5px;font-weight:600;letter-spacing:.02em;text-transform:uppercase;opacity:.9}.infob{width:42px!important;min-height:0;padding:4px 2px!important;display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:1px;color:var(--mut)}.infob .ibl{font-size:10px;line-height:1.1}.infob.out{color:#ffb4aa;border-color:#7a3028;background:#3a1a17}.infob.low{color:var(--due);border-color:color-mix(in srgb,var(--due) 50%,var(--line))}.sh{grid-template-columns:auto 1fr auto;grid-template-areas:'n h b';min-height:0!important;padding:8px 14px!important}.sh .shh{padding-left:6px}.sh .shb{flex-direction:row!important;align-items:center!important;flex-wrap:wrap;justify-content:flex-end}@media (min-width:700px) and (max-width:960px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}@media (max-width:620px){.sh{grid-template-columns:1fr auto;grid-template-areas:'n b' 'h b'}.sh .shh{padding-left:0}.sh .shb{flex-direction:column!important;align-items:flex-end!important}}
+#te input.bad{border-color:var(--bad);box-shadow:0 0 0 1px var(--bad)}.shake{animation:shk .35s}@keyframes shk{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
 </style>
 </head>
 <body>
@@ -314,7 +315,7 @@ nav{flex-wrap:wrap}nav button{white-space:nowrap}
 <div class="modal" id="sh"><div class="card" style="max-width:460px" id="shb"></div></div>
 <div class="modal" id="tp"><div class="card" style="max-width:380px"><h2 id="tpt">Pick a time</h2><p class="note" id="tps" style="margin:0 0 4px"></p><p class="tpv" id="tpv" aria-live="polite"></p><div class="tpw"><div class="tpc" id="tph" aria-label="Hour"></div><div class="tpc" id="tpm" aria-label="Minute"></div><div class="tpc" id="tpa" aria-label="AM or PM"></div></div><p class="note" style="text-align:center;margin:4px 0 10px">Scroll to the time, then tap ✓ to save it.</p><p class="note" id="tpe" style="color:var(--bad);text-align:center" aria-live="polite"></p><div style="display:flex;gap:8px"><button id="tpx">Cancel</button><button id="tpok" class="tpok" aria-label="Save this time">✓</button></div></div></div>
 <script>
-var VER='1.15.1';
+var VER='1.15.2';
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
 var S={
   tab:'today',who:'',people:[{name:'Zach',pin:'1111'},{name:'Wife',pin:'2222'},{name:'Nurse',pin:'3333'}],pend:null,pin:{for:'',buf:''},reason:'',
@@ -512,10 +513,10 @@ function dueSec(t){var td=bizDay(),due=ivDue(t),nw=S.teNew===t.id,h='<div class=
   h+='<div class="ndue">'+ops.map(function(o){return'<button data-ndq="'+t.id+'|'+o[0]+'" class="'+(df===o[0]?'on':'')+'">'+o[1]+'</button>'}).join('')+'<input type="date" min="'+td+'" value="'+(df<0?td:due)+'" data-nd="'+t.id+'" aria-label="Pick a date"></div>';
   return h+'<p class="ndl">'+(df<0?'Overdue since '+dlabel(due):df===0?'Due today':'Due '+dlabel(due))+'</p></div>'}
 function fl(t){var n=t.n||t.every,u=t.unit||'days';return n===1?'Every '+u.slice(0,-1):'Every '+n+' '+u}
-function fq(t){return t.once?'once':t.at&&t.at.length?'clock':t.times>0?'times':t.prn?'prn':t.every>0?(t.unit||'days'):'period'}
+function fq(t){return t.once?'once':t.at&&t.at.length?'clock':t.times>0||t.needTimes?'times':t.prn?'prn':t.every>0?(t.unit||'days'):'period'}
 function setFreq(id,k){var t=S.tasks.filter(function(x){return x.id===id})[0];if(!t)return;
-  t.times=0;t.once=false;t.prn=false;t.every=0;t.unit=null;t.periods=[];t.at=[];t.n=t.n||3;
-  if(k==='clock')t.at=[];else if(k==='times')t.times=3;else if(k==='prn')t.prn=true;else if(k==='once'){t.once=true;t.date=t.date||bizDay();t.time=t.time||''}
+  t.times=0;t.needTimes=false;t.once=false;t.prn=false;t.every=0;t.unit=null;t.periods=[];t.at=[];t.n=t.n||3;
+  if(k==='clock')t.at=[];else if(k==='times')t.needTimes=true;else if(k==='prn')t.prn=true;else if(k==='once'){t.once=true;t.date=t.date||bizDay();t.time=t.time||''}
   else if(k==='period')t.periods=S.periods.map(function(p){return p.id});
   else{t.unit=k;t.every=t.n*(k==='weeks'?7:k==='months'?30:1);t.last=t.last||0}}
 var FQ=[['period','Each time of day'],['clock','At set times'],['times','Times per day'],['days','Every X days'],['weeks','Every X weeks'],['months','Every X months'],['prn','As needed'],['once','One time']];
@@ -534,13 +535,14 @@ function sumT(t){var f=fq(t),dt=(f==='clock'||f==='period')&&dayTxt(t)?dayTxt(t)
 function sumT0(t){var f=fq(t);
   if(f==='clock')return t.at.length?t.at.map(fmtT).join(' · '):'No times set';
   if(f==='period')return t.periods.length?t.periods.map(pn).join(' and '):'Not on any time of day';
-  if(f==='times')return t.times+' times per day';
+  if(f==='times')return t.needTimes?'Times per day not set':t.times+' times per day';
   if(f==='prn')return 'Whenever needed'+(t.gap?' · at least '+t.gap+'h apart':'');
   if(f==='once')return(t.date?dlabel(t.date):'No date')+(t.time?' at '+fmtT(t.time):'');
   return fl(t)}
 function applyFind(){var q=$('tfind');if(!q)return;var v=q.value.trim().toLowerCase(),any=false;S.tfind=q.value;
   [].forEach.call(document.querySelectorAll('.egrp'),function(g){var vis=0;[].forEach.call(g.querySelectorAll('.erow'),function(r){var on=!v||r.dataset.tn.indexOf(v)>-1;r.hidden=!on;if(on)vis++});g.hidden=!vis;if(vis)any=true});
   $('tnone').hidden=any}
+function teBlocked(){var t=T(S.teId);if(!t||!t.needTimes||fq(t)!=='times')return false;var i=document.querySelector('#te [data-tm]'),er=document.querySelector('#te .tmerr');if(er){er.textContent='Enter how many times a day before closing, or pick a different “How often.”';er.classList.add('shake');setTimeout(function(){er.classList.remove('shake')},400)}if(i)try{i.focus()}catch(x){}return true}
 function openTE(id){S.teNew=S.teNewPend===id?id:null;S.teNewPend=null;S.teId=id;drawTE();$('te').classList.add('show')}
 function drawTE(){var t=T(S.teId);if(!t){$('te').classList.remove('show');return}var f=fq(t),h='';
   h+='<p class="note" style="margin-top:0">Name</p><input type="text" value="'+esc(t.name)+'" data-n="'+t.id+'" aria-label="Task name" style="width:100%">';
@@ -549,7 +551,7 @@ function drawTE(){var t=T(S.teId);if(!t){$('te').classList.remove('show');return
     h+='<p class="note">Show as overdue after</p><label class="c"><input type="number" min="5" step="5" value="'+(t.grace||60)+'" data-gr="'+t.id+'" aria-label="Overdue after minutes"> minutes</label>'}
   else if(f==='period'){h+='<p class="note">Which times of day</p><div class="rs">'+S.periods.map(function(p){return'<label class="c chk"><input type="checkbox" data-p="'+t.id+'|'+p.id+'" '+(t.periods.indexOf(p.id)>-1?'checked':'')+'>'+esc(p.name)+'</label>'}).join('')+'</div>'}
   if(f==='clock'||f==='period')h+=dwSec(t);
-  else if(f==='times')h+='<p class="note">How many times a day</p><label class="c"><input type="number" min="1" value="'+t.times+'" data-tm="'+t.id+'" aria-label="Times per day"> times per day</label>';
+  else if(f==='times')h+='<p class="note">How many times a day</p><label class="c"><input type="number" min="1" max="48" inputmode="numeric" value="'+(t.needTimes?'':t.times)+'" placeholder="#" data-tm="'+t.id+'" aria-label="Times per day"'+(t.needTimes?' class="bad"':'')+'> times per day</label>'+(t.needTimes?'<p class="note tmerr" style="color:var(--bad);margin-top:4px">Enter how many times a day. It won’t show on the board until you do.</p>':'');
   else if(f==='days'||f==='weeks'||f==='months')h+='<p class="note">Repeats</p><label class="c">Every <input type="number" min="1" value="'+(t.n||t.every)+'" data-e="'+t.id+'" aria-label="Every"> '+f+'</label>'+dueSec(t);
   else if(f==='prn')h+='<p class="note">Minimum time between</p><label class="c"><input type="number" min="0" step="0.5" value="'+(t.gap||0)+'" data-gap="'+t.id+'" aria-label="Hours between" style="width:80px"> hours (0 = no limit)</label>';
   else if(f==='once')h+='<p class="note">When</p><div class="rs" style="align-items:center"><input type="date" value="'+t.date+'" data-od="'+t.id+'" aria-label="Date"><button class="tchip'+(S.flash===t.id+'@'+t.time?' new':'')+'" data-otp="'+t.id+'">'+(t.time?fmtT(t.time):'Pick a time')+'</button>'+(t.time?'<button data-otc="'+t.id+'">Any time</button>':'')+'</div>';
@@ -778,7 +780,7 @@ document.addEventListener('click',function(e){
   if(b.id==='ottclr'){OT.time='';drawOT();return}
   if(b.id==='otok'){saveOT();return}
   if(b.dataset.gv){openGuide(b.dataset.gv);return}
-  if(b.dataset.cl){$(b.dataset.cl).classList.remove('show');return}
+  if(b.dataset.cl){if(b.dataset.cl==='te'&&teBlocked())return;$(b.dataset.cl).classList.remove('show');return}
   if(b.dataset.ge){if(!can('guides'))return;openGE(b.dataset.ge);return}
   if(b.id==='gnew'){if(!can('guides'))return;openGE(null);return}
   if(b.id==='gsave'){saveGE();return}
@@ -880,7 +882,7 @@ document.addEventListener('change',function(e){
   if(d.gap){var gt=T(d.gap);gt.gap=Math.max(0,+e.target.value||0);lgc(gt.name+': minimum gap '+gt.gap+'h',gt.id);return}
   if(d.gr){S.tasks.filter(function(t){return t.id==d.gr})[0].grace=Math.max(5,+e.target.value||60);return}
   if(d.f){var fid=+d.f,fv=e.target.value;if(fv==='clock'){var ft=S.tasks.filter(function(t){return t.id===fid})[0];openTP({title:'First time for this task',sub:ft.name,ok:function(v){setFreq(fid,'clock');ft.at=[v];lgc(ft.name+': now at set times ('+fmtT(v)+')',fid);flashAt(fid,v)},cancel:render});return}setFreq(fid,fv);lgc(T(fid).name+': now '+(FQ.filter(function(o){return o[0]===fq(T(fid))})[0]||['',''])[1].toLowerCase(),fid);render();return}
-  if(d.tm){var tmt=T(d.tm);tmt.times=Math.max(1,+e.target.value||1);lgc(tmt.name+': '+tmt.times+' times per day',tmt.id)}
+  if(d.tm){var tmt=T(d.tm),tv=Math.round(+e.target.value);if(!tmt)return;if(!(tv>=1&&tv<=48)){if(!tmt.times)tmt.needTimes=true;else e.target.value=tmt.times;render();return}tmt.times=tv;tmt.needTimes=false;lgc(tmt.name+': '+tmt.times+' times per day',tmt.id);render();return}
   if(d.sl){S.stock.filter(function(x){return x.id==d.sl})[0].low=Math.max(0,+e.target.value||0);render();return}
   if(d.ppn!==undefined){var i=+d.ppn,pr=S.people[i];if(!pr)return;var o=pr.name,v=e.target.value.trim();if(!can('owner')||!v||v===o){e.target.value=o;return}if(v==='System'||S.people.some(function(x,j){return j!==i&&x.name.toLowerCase()===v.toLowerCase()})){e.target.value=o;if($('ppe'))$('ppe').textContent='“'+v+'” is already on the board. Pick a different name.';return}pr.name=v;if(S.who===o)S.who=v;lg('Changed','Renamed '+o+' to '+v);if($('ppe'))$('ppe').textContent='';head();return}
   if(d.n){var tn0=T(d.n),nv=e.target.value.trim();if(!nv){e.target.value=tn0.name}else if(nv!==tn0.name){lgc('Renamed “'+tn0.name+'” to “'+nv+'”',tn0.id);tn0.name=nv}}
@@ -1296,6 +1298,7 @@ var MDOWN=null,KEEP=['emed','ge','tour','fr','rk','ft','ah','sh'];
 document.addEventListener('pointerdown',function(e){MDOWN=e.target},true);
 document.addEventListener('click',function(e){var m=e.target;if(!m.classList||!m.classList.contains('modal')||!m.classList.contains('show')||MDOWN!==m)return;
   if(KEEP.indexOf(m.id)>-1)return;
+  if(m.id==='te'&&teBlocked())return;
   if(m.id==='tp'){tpClose(true);return}
   if(m.id==='due'){ackDue();return}
   if(m.id==='cf')CF=null;
