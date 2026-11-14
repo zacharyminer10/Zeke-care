@@ -357,7 +357,7 @@ def main():
         # SH. a new person signing in near the next shift can start it early
         pq_, eq_ = page(viewport={'width': 820, 'height': 1180}); pq_.clock.install(time=D(12, 0, 14))
         setup(pq_, U + 'index.html', 'Pat', '8181')
-        pq_.evaluate("S.people.forEach(p=>p.toured=true);S.people.push({name:'Kim',role:'caregiver',pin:'7272',toured:true});S.tasks.push({id:931,name:'Feed SH',periods:[],every:0,at:['19:00'],needs:[]});S.tab='today';render();S.who='';render();openPin('Kim')")
+        pq_.evaluate("S.notifAsked=true;S.people.forEach(p=>p.toured=true);S.people.push({name:'Kim',role:'caregiver',pin:'7272',toured:true});S.tasks.push({id:931,name:'Feed SH',periods:[],every:0,at:['19:00'],needs:[]});S.tab='today';render();S.who='';render();openPin('Kim')")
         code(pq_, '7272'); pq_.wait_for_timeout(400)
         check('SH1 signing in hours before the next shift doesn’t ask', not pq_.is_visible('#ti'))
         pq_.clock.set_system_time(D(17, 0, 14)); pq_.evaluate("S.who='Pat';render();openPin('Kim')"); code(pq_, '7272'); pq_.wait_for_timeout(400)
