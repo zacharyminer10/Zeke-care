@@ -315,7 +315,7 @@ nav{flex-wrap:wrap}nav button{white-space:nowrap}
 <div class="modal" id="sh"><div class="card" style="max-width:460px" id="shb"></div></div>
 <div class="modal" id="tp"><div class="card" style="max-width:380px"><h2 id="tpt">Pick a time</h2><p class="note" id="tps" style="margin:0 0 4px"></p><p class="tpv" id="tpv" aria-live="polite"></p><div class="tpw"><div class="tpc" id="tph" aria-label="Hour"></div><div class="tpc" id="tpm" aria-label="Minute"></div><div class="tpc" id="tpa" aria-label="AM or PM"></div></div><p class="note" style="text-align:center;margin:4px 0 10px">Scroll to the time, then tap ✓ to save it.</p><p class="note" id="tpe" style="color:var(--bad);text-align:center" aria-live="polite"></p><div style="display:flex;gap:8px"><button id="tpx">Cancel</button><button id="tpok" class="tpok" aria-label="Save this time">✓</button></div></div></div>
 <script>
-var VER='1.15.2';
+var VER='1.15.3';
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
 var S={
   tab:'today',who:'',people:[{name:'Zach',pin:'1111'},{name:'Wife',pin:'2222'},{name:'Nurse',pin:'3333'}],pend:null,pin:{for:'',buf:''},reason:'',
@@ -369,9 +369,9 @@ function startShift(pid){var p=curPeriods().filter(function(x){return x.id===pid
   lg('Changed',p.name+' shift started early at '+fmtT(t)+' by '+S.who+' (usually '+fmtT(usual)+')');$('ti').classList.remove('show');render();showHint(p.name+' shift started. The board now shows '+p.name+'.')}
 function undoShift(pid){var o=S.shOv;if(!o||o.key!==S.dayKey||!o.st[pid])return;var p=S.periods.filter(function(x){return x.id===pid})[0];delete o.st[pid];lg('Changed',(p?p.name:'Shift')+' early start undone, back to '+(p?fmtT(p.start):'the usual time'));render()}
 var SHNO={};
-function shiftAsk(){if(!S.who||document.querySelector('.modal.show:not(#due)'))return;var nx=nextShift(360),nm0=new Date().getHours()*60+new Date().getMinutes(),now0=offMin(nm0);
+function shiftAsk(){if(!S.who||document.querySelector('.modal.show:not(#due)'))return;var nx=nextShift(30),nm0=new Date().getHours()*60+new Date().getMinutes(),now0=offMin(nm0);
   if(!nx){var fp=S.periods.filter(function(q){return q.start===S.resetAt})[0];if(fp&&now0>=1440-90&&nowP().id!==fp.id)showHint(fp.name+' starts at '+fmtT(S.resetAt)+', when the new day begins. Until then the board shows '+nowP().name+'.');return}
-  if(offMin(mins(nx.start))-now0<=15||SHNO[S.dayKey+'|'+S.who])return;var cur=nowP(),m=periodModel(cur,cur),st=stats(m);
+  if(SHNO[S.dayKey+'|'+S.who])return;var cur=nowP(),m=periodModel(cur,cur),st=stats(m);
   showSheet('Starting your shift, '+S.who+'?','<p style="margin:0 0 8px;line-height:1.45">'+esc(nx.name)+' usually starts at <b>'+fmtT(nx.start)+'</b>. If you’re taking over now, start it and the board switches to '+esc(nx.name)+'.</p>'+(st.open?'<p class="note">'+esc(cur.name)+' still has '+st.open+' task'+(st.open===1?'':'s')+' open. They stay on '+esc(cur.name)+'’s list.</p>':''));
   $('tif').innerHTML='<button class="tpok" data-shst="'+nx.id+'">Yes, start '+esc(nx.name)+' now</button><button data-shno="1">No, just signing in</button>'}
 function addDays(k,n){return new Date(Date.parse(k)+n*864e5).toISOString().slice(0,10)}
