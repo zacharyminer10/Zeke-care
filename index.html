@@ -240,6 +240,9 @@ nav{flex-wrap:wrap}nav button{white-space:nowrap}
  .addrow input{min-width:0;flex-basis:100%}
  .scnt button{min-width:40px}
 }
+.ndsec{margin-top:10px;padding:10px 12px;border:1px solid var(--line,rgba(127,127,127,.25));border-radius:12px}.ndsec.ndnew{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc) inset}.ndue{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.ndue button.on{background:var(--tx);color:var(--bg);border-color:var(--tx);font-weight:500}.ndsec .note b{font-weight:600;color:var(--tx)}:root{color-scheme:dark}[data-theme="light"]{color-scheme:light}input[type=date]{-webkit-appearance:none;appearance:none;position:relative;background:var(--panel2) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238d9bab' stroke-width='2' stroke-linecap='round'%3E%3Crect x='3' y='5' width='18' height='16' rx='2'/%3E%3Cpath d='M3 10h18M8 3v4M16 3v4'/%3E%3C/svg%3E") no-repeat right 12px center/18px;color:var(--tx);border:1px solid var(--line);border-radius:10px;padding:8px 40px 8px 12px;min-height:44px;min-width:180px;font:inherit;font-size:16px;cursor:pointer;text-align:left}input[type=date][hidden]{display:none}input[type=date]::-webkit-date-and-time-value{text-align:left;color:var(--tx)}input[type=date]::-webkit-calendar-picker-indicator{position:absolute;inset:0;width:auto;height:auto;opacity:0;cursor:pointer}input[type=date]:focus-visible{outline:2px solid var(--acc);outline-offset:1px}.ndl{margin:8px 0 0;color:var(--mut);font-size:14px}
+.mhint{margin-left:auto;margin-right:8px;position:relative;align-self:center;display:flex;align-items:center;gap:0;background:var(--acc);color:#0c1420;border-radius:10px;padding:0 2px 0 12px;min-height:38px;font-size:15px;font-weight:500;white-space:nowrap}.mhint::after{content:'';position:absolute;right:-5px;top:50%;width:10px;height:10px;background:var(--acc);transform:translateY(-50%) rotate(45deg)}.mhint button{background:transparent;border:0;color:inherit;min-height:36px;padding:0 10px;font-size:19px;box-shadow:none;position:relative;z-index:1}.navr{display:flex;gap:6px;align-items:center;margin-left:auto;flex-wrap:nowrap}.navr button[data-t="menu"]{margin-left:0}.mhint{margin-left:0;font-size:14px;padding-left:10px}@media (max-width:520px){.mhint span{font-size:14px}}.task.mhl{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc) inset}.mhtag{display:inline-block;vertical-align:middle;margin-left:6px;background:var(--acc);color:#0c1420;font-size:12px;font-weight:600;border-radius:999px;padding:2px 8px}
+.wkgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}.wkc{display:flex;flex-direction:column;align-items:stretch;gap:6px;width:100%;min-height:0;text-align:left;padding:12px 14px;border-radius:14px;background:var(--panel);border:1px solid var(--line);color:var(--tx);font:inherit;font-size:15px;font-weight:400}.wkc.now{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc) inset}.wkh{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:2px}.wkh b{font-size:17px;font-weight:600}.wkh small{color:var(--mut)}.wkr{display:flex;justify-content:space-between;align-items:center;gap:8px}.wkt{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}.wkhl{font-size:13.5px;color:var(--mut);display:flex;align-items:center;gap:4px;flex-wrap:wrap}.wkhl .opill{font-size:10.5px}.wkx{display:flex;flex-direction:column;gap:3px;border-top:1px solid var(--line);padding-top:6px}.wki{display:flex;justify-content:space-between;gap:8px;font-size:14px}.wki span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.wki small,.wkm{color:var(--mut);white-space:nowrap}.wkgo{color:var(--acc);font-size:13.5px;margin-top:2px}.wdi{display:grid;grid-template-columns:76px 1fr auto;gap:8px;align-items:baseline;padding:8px 0;border-bottom:1px solid var(--line)}.wdt{color:var(--mut);font-size:14px;font-variant-numeric:tabular-nums}.wdn{min-width:0}.wdo{display:block;color:var(--acc);font-size:13.5px}.wdi.done .wdn{color:var(--mut)}.dwk{display:flex;flex-wrap:wrap;gap:6px}.dwk button{min-width:52px;min-height:40px;padding:6px 10px}.dwk button.on{background:var(--tx);color:var(--bg);border-color:var(--tx)}.dwq{display:flex;gap:6px;margin-top:6px}.dwq button{min-height:34px;padding:4px 12px;font-size:14px}.dwq button.on{background:var(--tx);color:var(--bg);border-color:var(--tx)}
 </style>
 </head>
 <body>
@@ -254,7 +257,7 @@ nav{flex-wrap:wrap}nav button{white-space:nowrap}
 <main id="main"></main>
 <div class="modal" id="st"><div class="card"><h2>Settings</h2><p class="note">Appearance</p><div class="rs" id="stth"></div><p class="note">Ask “Still here?” after no activity for (nobody gets signed out)</p><div class="rs" id="stid"></div><p class="note">Due alerts while the app is open</p><div class="rs" id="stdm"></div><p class="note" style="margin-top:-6px">Plays a chime and shows a banner when a timed task comes due. The chime won’t play if the iPad is muted or the app is closed.</p><p class="note">Keep the screen on while the app is open</p><div class="rs" id="stwk"></div><p class="note" id="stwkm" style="margin-top:-6px"></p><p class="note">New day starts at (check-offs and counters reset then)</p><div class="rs"><button class="tchip" id="strt"></button></div>
 <p class="note">Your data (saved on this device)</p><div class="rs" id="stbk" style="margin:-2px 0 8px"></div><p class="note" id="stsv" style="margin-top:-4px"></p><p class="note" id="stsz" style="margin-top:-6px"></p>
-<div class="rs" id="stdt"><button id="bkp">Save a backup</button><button id="rst">Restore from backup</button></div>
+<div class="rs" id="stdt"><button id="bkp">Save a backup</button><button id="rst">Restore from backup</button></div><p class="note" id="stbo" style="margin-top:-4px;display:none">Only an owner can save or restore backups, because a backup holds everyone’s sign-in codes.</p>
 <input type="file" id="rsf" accept=".json,application/json" style="display:none">
 <p class="note" id="stmsg" aria-live="polite"></p>
 <div class="rs"><button id="tourre">Show the tour</button></div><div><button id="stx">Done</button></div><div class="row" style="border:0;padding:14px 0 0;justify-content:flex-end"><span class="note" style="margin:0" id="stver"></span><button id="chkup">Check for updates</button></div></div></div>
@@ -304,7 +307,7 @@ nav{flex-wrap:wrap}nav button{white-space:nowrap}
 <div class="modal" id="sh"><div class="card" style="max-width:460px" id="shb"></div></div>
 <div class="modal" id="tp"><div class="card" style="max-width:380px"><h2 id="tpt">Pick a time</h2><p class="note" id="tps" style="margin:0 0 4px"></p><p class="tpv" id="tpv" aria-live="polite"></p><div class="tpw"><div class="tpc" id="tph" aria-label="Hour"></div><div class="tpc" id="tpm" aria-label="Minute"></div><div class="tpc" id="tpa" aria-label="AM or PM"></div></div><p class="note" style="text-align:center;margin:4px 0 10px">Scroll to the time, then tap ✓ to save it.</p><p class="note" id="tpe" style="color:var(--bad);text-align:center" aria-live="polite"></p><div style="display:flex;gap:8px"><button id="tpx">Cancel</button><button id="tpok" class="tpok" aria-label="Save this time">✓</button></div></div></div>
 <script>
-var VER='1.13';
+var VER='1.14';
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
 var S={
   tab:'today',who:'',people:[{name:'Zach',pin:'1111'},{name:'Wife',pin:'2222'},{name:'Nurse',pin:'3333'}],pend:null,pin:{for:'',buf:''},reason:'',
@@ -329,24 +332,26 @@ var S={
 var $=function(id){return document.getElementById(id)};
 function mins(t){var p=t.split(':');return +p[0]*60+ +p[1]}
 function inP(p,m){var s=mins(p.start),e=mins(p.end);return s<e?(m>=s&&m<e):(m>=s||m<e)}
-function nowP(){var d=new Date(),m=d.getHours()*60+d.getMinutes();return S.periods.filter(function(p){return inP(p,m)})[0]||S.periods[0]}
+function nowP(){var d=new Date(),m=d.getHours()*60+d.getMinutes();return perAt(m)}
 function fmt(d){return d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})}
 function fmtT(t){var m=mins(t),h=Math.floor(m/60),mm=m%60;return(h%12||12)+(mm?':'+String(mm).padStart(2,'0'):'')+(h<12?' AM':' PM')}
 function tick(){$('clock').textContent=new Date().toLocaleDateString([],{weekday:'long',month:'short',day:'numeric'})+' · '+fmt(new Date())}
 var whoHtml='';
 function head(){
   var wh='<label class="c" style="gap:8px">Who’s here <select id="whosel" aria-label="Who is here">'+(S.who?'':'<option value="" selected disabled>Choose who’s here</option>')+S.people.map(function(p){return'<option'+(p.name===S.who?' selected':'')+'>'+esc(p.name)+'</option>'}).join('')+'<option value="__new">+ Add new user…</option></select></label>';if(wh!==whoHtml){whoHtml=wh;$('who').innerHTML=wh}
-  $('nav').innerHTML=[['today','Today'],['week','This week'],['library','How-to'],['stock','Inventory'],['log','Log'],['menu','Menu']].map(function(t){return'<button class="'+(S.tab===t[0]||(t[0]==='menu'&&['edit','periods','people','admin'].indexOf(S.tab)>-1)?'on':'')+'" data-t="'+t[0]+'">'+t[1]+'</button>'}).join('')+'<button data-st="1" aria-label="Settings" title="Settings" style="font-size:20px;padding:10px 14px">⚙</button>';
+  var mh=mhintOn()?'<div class="mhint" id="mhint" role="note"><span>Add repeating tasks here</span><button id="mhx" aria-label="Got it, hide this">×</button></div>':'';
+  $('nav').innerHTML=[['today','Today'],['week','This week'],['library','How-to'],['stock','Inventory'],['log','Log'],['menu','Menu']].map(function(t){return(t[0]==='menu'?'<div class="navr">'+mh:'')+'<button class="'+(S.tab===t[0]||(t[0]==='menu'&&['edit','periods','people','admin'].indexOf(S.tab)>-1)?'on':'')+'" data-t="'+t[0]+'">'+t[1]+'</button>'}).join('')+'<button data-st="1" aria-label="Settings" title="Settings" style="font-size:20px;padding:10px 14px">⚙</button></div>';
 }
+function mhintOn(){var p=me();return!!(p&&S.who&&can('sched')&&!p.hintEdit&&!S.firstRun&&(S.tab==='today'||S.tab==='week'))}
+
 function cntTile(t){var c=S.cnt[t.id]||{n:0},ok=c.n>=t.times;
   return'<div class="trow"><button class="task '+(ok?'done':'')+'" data-c="'+t.id+'" data-lpc="'+t.id+'"><span class="box" style="width:auto;min-width:30px;padding:0 6px">'+c.n+'/'+t.times+'</span><span class="nm">'+esc(t.name)+'<span class="meta">'+(c.last?'Last: '+esc(c.who)+' at '+c.last+'. Hold to undo':t.times+' times per day. Tap to log one')+'</span></span></button></div>'}
 function ivTile(t){var left=t.every-t.last,d=t.done;
   var tag=d?'<span class="tag ok">Done</span>':left<0?'<span class="tag" style="background:#4a1f1b;color:#ffd9d4">Overdue</span>':left===0?'<span class="tag">Due today</span>':'<span class="tag ok">In '+left+' day'+(left>1?'s':'')+'</span>';
   return'<div class="trow"><button class="task '+(d?'done':'')+'" data-i="'+t.id+'"'+(!d&&left<=0?' data-lpi="'+t.id+'"':'')+'><span class="box">'+(d?'✓':'')+'</span><span class="nm">'+esc(t.name)+'<span class="meta">'+(d?esc(d.who)+' at '+d.time+' · next due '+dlabel(addDays(bizDay(),t.every)):fl(t)+(left<=0?', hold to push a day':left<=7?' · tap if done early':''))+'</span></span>'+tag+'</button></div>'}
-function slotDiff(x,nm,p){var m=mins(x),st=mins(p.start),e=mins(p.end);
-  if(st<e)return nm-m;
-  if(m>=st)return nm<e?nm+1440-m:nm-m;
-  return nm<e?nm-m:nm-m-1440}
+function slotDiff(x,nm){return offMin(nm)-offMin(mins(x))}
+function perLen(p){var a=mins(p.start),b=mins(p.end);return a<b?b-a:1440-a+b}
+function perAt(m){var c=S.periods.filter(function(p){return inP(p,m)});c.sort(function(a,b){return perLen(a)-perLen(b)});return c[0]||S.periods[0]}
 function addDays(k,n){return new Date(Date.parse(k)+n*864e5).toISOString().slice(0,10)}
 function dlabel(k){return new Date(Date.parse(k)).toLocaleDateString([],{weekday:'short',month:'short',day:'numeric',timeZone:'UTC'})}
 function onceTs(t){var q=t.date.split('-'),m=mins(t.time),d=new Date(+q[0],+q[1]-1,+q[2],Math.floor(m/60),m%60,0,0);if(m<mins(S.resetAt))d=new Date(d.getTime()+864e5);return d.getTime()}
@@ -364,10 +369,10 @@ function rtTile(t,p){var h='';
   return h}
 function periodModel(p,cur){
   var isNow=p.id===cur.id;
-  var list=S.tasks.filter(function(t){return !t.every&&!t.once&&((t.periods.indexOf(p.id)>-1&&!S.moves.some(function(m){return m.tid===t.id&&m.from===p.id}))||S.moves.some(function(m){return m.tid===t.id&&m.to===p.id&&t.periods.indexOf(p.id)<0}))});
-  var sls=[];S.tasks.forEach(function(t){(t.at||[]).forEach(function(x){var m=mins(x),own=S.periods.filter(function(q){return inP(q,m)})[0]||S.periods[0];if(own.id===p.id)sls.push({t:t,x:x})})});
-  S.moves.forEach(function(m){if(m.to!=='at')return;var t=S.tasks.filter(function(x){return x.id===m.tid})[0];if(!t)return;var d=new Date(m.ts),mm=d.getHours()*60+d.getMinutes(),own=S.periods.filter(function(q){return inP(q,mm)})[0]||S.periods[0];if(own.id===p.id)sls.push({t:t,x:hhmm(m.ts),m:m})});
-  S.tasks.forEach(function(t){if(!t.once||!t.time||t.date!==bizDay())return;var mm=mins(t.time),own=S.periods.filter(function(q){return inP(q,mm)})[0]||S.periods[0];if(own.id===p.id)sls.push({t:t,x:t.time,o:true})});
+  var list=S.tasks.filter(function(t){return !t.every&&!t.once&&((t.periods.indexOf(p.id)>-1&&perOn(t,p)&&!S.moves.some(function(m){return m.tid===t.id&&m.from===p.id}))||S.moves.some(function(m){return m.tid===t.id&&m.to===p.id&&t.periods.indexOf(p.id)<0}))});
+  var sls=[];S.tasks.forEach(function(t){(t.at||[]).forEach(function(x){var m=mins(x),own=perAt(m);if(own.id===p.id&&slotOn(t,x))sls.push({t:t,x:x})})});
+  S.moves.forEach(function(m){if(m.to!=='at')return;var t=S.tasks.filter(function(x){return x.id===m.tid})[0];if(!t)return;var d=new Date(m.ts),mm=d.getHours()*60+d.getMinutes(),own=perAt(mm);if(own.id===p.id)sls.push({t:t,x:hhmm(m.ts),m:m})});
+  S.tasks.forEach(function(t){if(!t.once||!t.time||t.date!==bizDay())return;var mm=mins(t.time),own=perAt(mm);if(own.id===p.id)sls.push({t:t,x:t.time,o:true})});
   var ps=mins(p.start);sls.sort(function(a,b){return (mins(a.x)-ps+1440)%1440-(mins(b.x)-ps+1440)%1440});
   var dueIv=S.tasks.filter(function(t){return t.every>0&&t.every-t.last<=0&&(t.done?t.done.pid===p.id:isNow)});
   var onceU=S.tasks.filter(function(t){return t.once&&t.date<=bizDay()&&(!t.time||t.date<bizDay())&&(t.done?t.done.pid===p.id:isNow)});
@@ -429,7 +434,7 @@ function periods(){
   S.periods.forEach(function(p){
     h+='<div class="row"><input type="text" value="'+esc(p.name)+'" data-pn="'+p.id+'"><button class="tchip" data-pst="'+p.id+'|start">'+fmtT(p.start)+'</button><span>to</span><button class="tchip" data-pst="'+p.id+'|end">'+fmtT(p.end)+'</button>'+(S.periods.length>1?'<button data-pd="'+p.id+'">Remove</button>':'')+'</div>';
   });
-  h+='<div class="row"><button id="addp">Add a time of day</button></div><p class="note">The period that matches the clock is highlighted on the Today screen.</p></div>';
+  h+='<div class="row"><button id="addp">Add a time of day</button></div><p class="note">The one that matches the clock is highlighted on the Today screen. Moving when one starts or ends also moves the one next to it, so there are no gaps. Check-offs reset for the new day at '+fmtT(S.resetAt)+'.</p></div>';
   return h;
 }
 function openOnce(id){var t=S.tasks.filter(function(x){return x.id==id})[0];if(!t)return;S.pend=null;$('pmrw').style.display='none';$('pmerr').textContent='';$('pmt').textContent=t.name;$('pmb').innerHTML='<button data-po="'+id+'">Push to tomorrow</button>';$('pm').classList.add('show')}
@@ -447,13 +452,29 @@ function openPush(tid,from){
   if(S.moves.some(function(m){return m.tid===tid&&m.from===from}))h+='<button data-undod="'+tid+'|'+from+'">Put back where it was</button>';
   S.pend={tid:tid,from:from};$('pmerr').textContent='';$('pmrw').style.display='';$('pmr').innerHTML=RS.map(function(r){return'<button data-rs="'+esc(r)+'" class="'+(S.reason===r?'on':'')+'">'+esc(r)+'</button>'}).join('');$('pmt').textContent=t.name;$('pmb').innerHTML=h;$('pm').classList.add('show');
 }
-function pushAt(tid,from,ts){S.moves=S.moves.filter(function(m){return !(m.tid===tid&&m.from===from)});S.moves.push({tid:tid,from:from,to:'at',ts:ts,at:Date.now(),who:S.who,reason:S.reason||'',time:fmt(new Date())});$('pm').classList.remove('show');render()}
+function pushLog(tid,from,where){lg('Pushed',tn(tid)+' ('+pn(from)+') '+where+(S.reason?' · '+S.reason:''),{tid:tid})}
+function pushAt(tid,from,ts){pushLog(tid,from,'to '+fmt(new Date(ts)));S.moves=S.moves.filter(function(m){return !(m.tid===tid&&m.from===from)});S.moves.push({tid:tid,from:from,to:'at',ts:ts,at:Date.now(),who:S.who,reason:S.reason||'',time:fmt(new Date())});$('pm').classList.remove('show');render()}
 function deferTile(s,p){var m=s.m,t=s.t,k=t.id+'|'+m.from,dn=S.done[k],diff=Math.round((new Date().getTime()-m.ts)/60000);
   var tg=dn?'<span class="tag ok">Done</span>':diff>=(t.grace||60)?'<span class="tag" style="background:#4a1f1b;color:#ffd9d4">Overdue</span>':diff>=0?'<span class="tag" style="font-weight:700">Due now</span>':'<span class="tag ok">'+fmt(new Date(m.ts))+'</span>';
   return'<div class="trow"><button class="task '+(dn?'done':'')+'" data-k="'+k+'"'+(dn?'':' data-lpd="'+k+'"')+(diff>=0&&!dn?' style="border:2px solid var(--due)"':'')+'><span class="box">'+(dn?'✓':'')+'</span><span class="nm">'+esc(t.name)+'<span class="meta">'+(dn?esc(dn.who)+' at '+dn.time:'Moved to '+fmt(new Date(m.ts))+' by '+esc(m.who)+(m.reason?', '+esc(m.reason.toLowerCase()):'')+'. Hold to change')+'</span></span>'+tg+'</button></div>'}
 function tn(id){var t=S.tasks.filter(function(x){return x.id==id})[0];return t?t.name:'a task'}
 function pn(id){if(id==='tomorrow')return 'tomorrow';if(String(id).indexOf('prev:')===0)return pn(id.slice(5))+', carried over';var p=S.periods.filter(function(x){return x.id===id})[0];return p?p.name:id}
 function use(id,d){var t=T(id);if(!t||!t.needs)return;t.needs.forEach(function(n){if(!n.use)return;S.stock.forEach(function(i){if(i.id===n.sid)i.qty=Math.max(0,i.qty-n.use*(d||1))})})}
+function ivDue(t){var td=bizDay();return t.done?addDays(td,t.every):addDays(td,t.every-t.last)}
+function dayDiff(a,b){return Math.round((Date.parse(b)-Date.parse(a))/864e5)}
+function setDue(t,k){var d=Math.max(0,dayDiff(bizDay(),k));t.last=t.every-d;lgc(t.name+': next due '+dlabel(addDays(bizDay(),d)),t.id)}
+function dwSec(t){var d=t.days&&t.days.length&&t.days.length<7?t.days:[0,1,2,3,4,5,6],all=d.length===7,early=(t.at||[]).filter(function(x){return mins(x)<mins(S.resetAt)});
+  var h='<p class="note">On these days</p><div class="dwk" role="group" aria-label="On these days">'+[1,2,3,4,5,6,0].map(function(x){var on=d.indexOf(x)>-1;return'<button data-dw="'+t.id+'|'+x+'" class="'+(on?'on':'')+'" aria-pressed="'+on+'">'+WDN[x]+'</button>'}).join('')+'</div>';
+  h+='<div class="dwq"><button data-dwp="'+t.id+'|all" class="'+(all?'on':'')+'">Every day</button><button data-dwp="'+t.id+'|wk">Weekdays</button></div>';
+  if(!all&&early.length)h+='<p class="note" style="margin-top:6px">'+early.map(fmtT).join(', ')+(early.length>1?' fall':' falls')+' before the board’s day starts ('+fmtT(S.resetAt)+'), so it goes by the calendar day: a '+fmtT(early[0])+' Monday dose shows on Sunday night’s board.</p>';
+  return h}
+function setDays(t,d){d=d.filter(function(x,i){return d.indexOf(x)===i}).sort();if(d.length>=7)delete t.days;else t.days=d;lgc(t.name+': '+(dayTxt(t)?'on '+dayTxt(t):'every day'),t.id)}
+function inLbl(t){var n=t.n||t.every,u=t.unit||'days';return'In '+n+' '+(n===1?u.slice(0,-1):u)}
+function dueSec(t){var td=bizDay(),due=ivDue(t),nw=S.teNew===t.id,h='<div class="ndsec'+(nw?' ndnew':'')+'"><p class="note" style="margin-top:0">'+(nw?'<b>When is it first due?</b>':'Next due')+'</p>';
+  if(t.done)return h+'<p class="ndl">Checked off today · next due '+dlabel(due)+'</p></div>';
+  var df=dayDiff(td,due),ops=[[0,'Today'],[1,'Tomorrow']];if(t.every>1)ops.push([t.every,inLbl(t)]);
+  h+='<div class="ndue">'+ops.map(function(o){return'<button data-ndq="'+t.id+'|'+o[0]+'" class="'+(df===o[0]?'on':'')+'">'+o[1]+'</button>'}).join('')+'<input type="date" min="'+td+'" value="'+(df<0?td:due)+'" data-nd="'+t.id+'" aria-label="Pick a date"></div>';
+  return h+'<p class="ndl">'+(df<0?'Overdue since '+dlabel(due):df===0?'Due today':'Due '+dlabel(due))+'</p></div>'}
 function fl(t){var n=t.n||t.every,u=t.unit||'days';return n===1?'Every '+u.slice(0,-1):'Every '+n+' '+u}
 function fq(t){return t.once?'once':t.at&&t.at.length?'clock':t.times>0?'times':t.prn?'prn':t.every>0?(t.unit||'days'):'period'}
 function setFreq(id,k){var t=S.tasks.filter(function(x){return x.id===id})[0];if(!t)return;
@@ -473,7 +494,8 @@ function edit2(){
   return h+'<p class="note" id="tnone" hidden>No tasks match.</p></div>';
 }
 var EGRP=[[['clock'],'At set times'],[['period'],'Each time of day'],[['times'],'Times per day'],[['days','weeks','months'],'Repeats every few days, weeks, or months'],[['prn'],'As needed'],[['once'],'One time']];
-function sumT(t){var f=fq(t);
+function sumT(t){var f=fq(t),dt=(f==='clock'||f==='period')&&dayTxt(t)?dayTxt(t)+' · ':'';return dt+sumT0(t)}
+function sumT0(t){var f=fq(t);
   if(f==='clock')return t.at.length?t.at.map(fmtT).join(' · '):'No times set';
   if(f==='period')return t.periods.length?t.periods.map(pn).join(' and '):'Not on any time of day';
   if(f==='times')return t.times+' times per day';
@@ -483,15 +505,16 @@ function sumT(t){var f=fq(t);
 function applyFind(){var q=$('tfind');if(!q)return;var v=q.value.trim().toLowerCase(),any=false;S.tfind=q.value;
   [].forEach.call(document.querySelectorAll('.egrp'),function(g){var vis=0;[].forEach.call(g.querySelectorAll('.erow'),function(r){var on=!v||r.dataset.tn.indexOf(v)>-1;r.hidden=!on;if(on)vis++});g.hidden=!vis;if(vis)any=true});
   $('tnone').hidden=any}
-function openTE(id){S.teId=id;drawTE();$('te').classList.add('show')}
+function openTE(id){S.teNew=S.teNewPend===id?id:null;S.teNewPend=null;S.teId=id;drawTE();$('te').classList.add('show')}
 function drawTE(){var t=T(S.teId);if(!t){$('te').classList.remove('show');return}var f=fq(t),h='';
   h+='<p class="note" style="margin-top:0">Name</p><input type="text" value="'+esc(t.name)+'" data-n="'+t.id+'" aria-label="Task name" style="width:100%">';
   h+='<p class="note">How often</p><select data-f="'+t.id+'" aria-label="How often" style="width:100%">'+FQ.map(function(o){return'<option value="'+o[0]+'"'+(o[0]===f?' selected':'')+'>'+o[1]+'</option>'}).join('')+'</select>';
   if(f==='clock'){h+='<p class="note">Times</p><div class="rs" style="align-items:center">'+t.at.map(function(x,i){return'<span class="tpair"><button class="tchip'+(S.flash===t.id+'@'+x?' new':'')+'" data-atp="'+t.id+'|'+i+'" aria-label="Change '+fmtT(x)+'">'+fmtT(x)+'</button>'+(t.at.length>1?'<button class="tx" data-atd="'+t.id+'|'+i+'" aria-label="Remove '+fmtT(x)+'">×</button>':'')+'</span>'}).join('')+'<button data-ata="'+t.id+'">+ Add a time</button></div>';
     h+='<p class="note">Show as overdue after</p><label class="c"><input type="number" min="5" step="5" value="'+(t.grace||60)+'" data-gr="'+t.id+'" aria-label="Overdue after minutes"> minutes</label>'}
   else if(f==='period'){h+='<p class="note">Which times of day</p><div class="rs">'+S.periods.map(function(p){return'<label class="c chk"><input type="checkbox" data-p="'+t.id+'|'+p.id+'" '+(t.periods.indexOf(p.id)>-1?'checked':'')+'>'+esc(p.name)+'</label>'}).join('')+'</div>'}
+  if(f==='clock'||f==='period')h+=dwSec(t);
   else if(f==='times')h+='<p class="note">How many times a day</p><label class="c"><input type="number" min="1" value="'+t.times+'" data-tm="'+t.id+'" aria-label="Times per day"> times per day</label>';
-  else if(f==='days'||f==='weeks'||f==='months')h+='<p class="note">Repeats</p><label class="c">Every <input type="number" min="1" value="'+(t.n||t.every)+'" data-e="'+t.id+'" aria-label="Every"> '+f+'</label>';
+  else if(f==='days'||f==='weeks'||f==='months')h+='<p class="note">Repeats</p><label class="c">Every <input type="number" min="1" value="'+(t.n||t.every)+'" data-e="'+t.id+'" aria-label="Every"> '+f+'</label>'+dueSec(t);
   else if(f==='prn')h+='<p class="note">Minimum time between</p><label class="c"><input type="number" min="0" step="0.5" value="'+(t.gap||0)+'" data-gap="'+t.id+'" aria-label="Hours between" style="width:80px"> hours (0 = no limit)</label>';
   else if(f==='once')h+='<p class="note">When</p><div class="rs" style="align-items:center"><input type="date" value="'+t.date+'" data-od="'+t.id+'" aria-label="Date"><button class="tchip'+(S.flash===t.id+'@'+t.time?' new':'')+'" data-otp="'+t.id+'">'+(t.time?fmtT(t.time):'Pick a time')+'</button>'+(t.time?'<button data-otc="'+t.id+'">Any time</button>':'')+'</div>';
   h+=ordSection(t);
@@ -536,50 +559,81 @@ function menu(){var p=me(),items=[];
   var h=(isOwner()&&S.setup?setupCard(true):'')+(isOwner()&&!S.rkey?'<div class="vb"><span>Create a recovery key so a forgotten owner code can be reset.</span><button id="rknew">Create recovery key</button></div>':'');
   h+='<div class="row" style="border:0;padding:0 0 12px;justify-content:space-between"><span class="note" style="margin:0">Signed in as <b>'+esc(S.who)+'</b> · '+roleName(p&&p.role)+'. Admin tools stay open while you’re signed in. Tap Lock if you step away.</span><button data-lock="1">Lock</button></div>';
   if(!items.length)h+='<p class="note">Your role doesn’t include any admin tools yet. An owner can turn them on in People and roles.</p>';
-  h+='<div class="grid">'+items.map(function(i){return'<button class="task" '+(i[0]==='emedit'?'id="emedit"':'data-t="'+i[0]+'"')+' style="display:block;min-height:88px"><span class="nm" style="display:block;font-size:19px;font-weight:500">'+i[1]+'</span><span class="meta">'+i[2]+'</span></button>'}).join('')+'</div>';
+  h+='<div class="grid">'+items.map(function(i){return'<button class="task'+(i[0]==='edit'&&p&&!p.hintEdit?' mhl':'')+'" '+(i[0]==='emedit'?'id="emedit"':'data-t="'+i[0]+'"')+' style="display:block;min-height:88px"><span class="nm" style="display:block;font-size:19px;font-weight:500">'+i[1]+(i[0]==='edit'&&p&&!p.hintEdit?' <span class="mhtag">Start here</span>':'')+'</span><span class="meta">'+i[2]+'</span></button>'}).join('')+'</div>';
   return h;
 }
-function week(){
-  var names=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],h='<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(230px,1fr))">';
-  for(var k=0;k<7;k++){
-    var dt=new Date();dt.setDate(dt.getDate()+k);
-    h+='<div class="col '+(k===0?'now':'')+'"><div class="ch"><b>'+(k===0?'Today':k===1?'Tomorrow':names[dt.getDay()])+'</b><small>'+dt.toLocaleDateString([],{month:'short',day:'numeric'})+'</small></div>';
-    var due=S.tasks.filter(function(t){if(!t.every)return false;var dd=t.done?t.every:Math.max(0,t.every-t.last);return k===dd||(k>dd&&(k-dd)%t.every===0)});
-    var sc=due.map(function(t){return'<div class="row"><span>'+esc(t.name)+'</span></div>'}).join('');var ky=addDays(bizDay(),k);sc+=S.tasks.filter(function(t){return t.once&&!t.done&&(k===0?t.date<=ky:t.date===ky)}).map(function(t){return'<div class="row"><span>'+esc(t.name)+'</span><span class="tag">One-time'+(k===0&&t.date<ky?', overdue':'')+'</span></div>'}).join('');
-    h+='<p class="note" style="margin-top:0">Upcoming tasks</p>'+(sc||'<p class="note">None</p>');
-    if(k===1){var pu=S.moves.filter(function(m){return m.to==='tomorrow'}).map(function(m){var t=S.tasks.filter(function(x){return x.id===m.tid})[0];return t?'<div class="row"><span>'+esc(t.name)+'</span><span class="tag">Pushed</span></div>':''}).join('');if(pu)h+='<p class="note">Pushed from today</p>'+pu}
-    var tot=0;
-    h+='<p class="note">Routines</p>'+S.periods.map(function(p){var n=S.tasks.filter(function(t){return !t.every&&t.periods.indexOf(p.id)>-1}).length;tot+=n;return'<div class="row"><span>'+esc(p.name)+'</span><span class="tag ok">'+n+' tasks</span></div>'}).join('');
-    if(k===0){var dn=Object.keys(S.done).filter(function(key){return S.done[key]}).length;h+='<p class="note">'+dn+' of '+tot+' routine check-offs done so far</p>'}
-    h+='</div>';
-  }
-  return h+'</div><p class="note">Shows today plus the next six days. Repeating changes are projected from when they were last done.</p>';
-}
-function fillSt(){storageLine();$('stbk').innerHTML=isOwner()?'<span class="note" style="margin:0;align-self:center">Backup reminder</span>'+[['on','Monthly'],['off','Off']].map(function(o){return'<button data-bkr="'+o[0]+'" class="'+((S.bkOff?'off':'on')===o[0]?'on':'')+'">'+o[1]+'</button>'}).join(''):'';$('stdm').innerHTML=[['sound','Chime and banner'],['banner','Banner only'],['off','Off']].map(function(o){return'<button data-duem="'+o[0]+'" class="'+((S.dueMode||'sound')===o[0]?'on':'')+'">'+o[1]+'</button>'}).join('');var cur=document.documentElement.dataset.theme||'dark';
+/* ---- 1.14: days of the week + one plan for the board and This week ---- */
+var WDN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+function keyWd(k){return new Date(Date.parse(k)).getUTCDay()}
+function calKey(key,hm){return mins(hm)<mins(S.resetAt)?addDays(key,1):key}
+function onDays(t,ck){return !t.days||!t.days.length||t.days.length>=7||t.days.indexOf(keyWd(ck))>-1}
+function slotOn(t,x,key){return onDays(t,calKey(key||bizDay(),x))}
+function perOn(t,p,key){return onDays(t,calKey(key||bizDay(),p.start))}
+function dayTxt(t){var d=t.days;if(!d||!d.length||d.length>=7)return'';if(d.length===5&&[1,2,3,4,5].every(function(x){return d.indexOf(x)>-1}))return'Weekdays';if(d.length===2&&d.indexOf(0)>-1&&d.indexOf(6)>-1)return'Weekends';return d.slice().sort().map(function(x){return WDN[x]}).join(', ')}
+function ivOn(t,k){if(!(t.every>0))return false;var dd=t.done?t.every:Math.max(0,t.every-t.last);return k===dd||(k>dd&&(k-dd)%t.every===0)}
+function startP(){return perAt(mins(S.resetAt))}
+function planModel(p,k){var key=addDays(bizDay(),k),sp=startP(),first=p.id===sp.id;
+  var list=S.tasks.filter(function(t){return !t.every&&!t.once&&!(t.at&&t.at.length)&&!(t.times>0)&&!t.prn&&t.periods.indexOf(p.id)>-1&&perOn(t,p,key)});
+  var sls=[];S.tasks.forEach(function(t){(t.at||[]).forEach(function(x){if(perAt(mins(x)).id===p.id&&slotOn(t,x,key))sls.push({t:t,x:x})});if(t.once&&t.time&&t.date===key&&perAt(mins(t.time)).id===p.id)sls.push({t:t,x:t.time,o:true})});
+  var ps=mins(p.start);sls.sort(function(a,b){return(mins(a.x)-ps+1440)%1440-(mins(b.x)-ps+1440)%1440});
+  return{p:p,isNow:false,future:true,key:key,list:list,sls:sls,dueIv:first?S.tasks.filter(function(t){return ivOn(t,k)}):[],onceU:first?S.tasks.filter(function(t){return t.once&&!t.done&&!t.time&&t.date===key}):[],cnts:first?S.tasks.filter(function(t){return t.times>0}):[]}}
+function dayModels(k){if(k===0){var cur=nowP();return S.periods.map(function(q){return periodModel(q,cur)})}return S.periods.map(function(q){return planModel(q,k)})}
+function mCount(m){return m.sls.length+m.list.length+m.cnts.length+m.dueIv.length+m.onceU.length}
+function dayLabel(k){var key=addDays(bizDay(),k);return(k===0?'Today':k===1?'Tomorrow':WDN[keyWd(key)])+' · '+new Date(Date.parse(key)).toLocaleDateString([],{weekday:'short',month:'short',day:'numeric',timeZone:'UTC'})}
+function week(){var h='<div class="wkgrid">';
+  for(var k=0;k<7;k++){var ms=dayModels(k),feeds=0,meds=0,spec=[];
+    ms.forEach(function(m){m.sls.forEach(function(x){var o=x.t.order;if(o&&o.kind==='feed')feeds++;else if(o&&o.kind==='med')meds++;if(x.o)spec.push([x.t.name,'One-time · '+fmtT(x.x)])});
+      m.dueIv.forEach(function(t){spec.push([t.name,k===0&&t.done?'Done':k===0&&t.every-t.last<0?'Overdue':fl(t)])});m.onceU.forEach(function(t){spec.push([t.name,k===0&&t.date<bizDay()?'Overdue':'One-time'])})});
+    if(k===1)S.moves.forEach(function(m){if(m.to==='tomorrow'&&T(m.tid))spec.push([tn(m.tid),'Pushed from today'])});
+    var key=addDays(bizDay(),k),nm=k===0?'Today':k===1?'Tomorrow':WDN[keyWd(key)];
+    h+='<button class="wkc'+(k===0?' now':'')+'" data-wday="'+k+'"><span class="wkh"><b>'+nm+'</b><small>'+new Date(Date.parse(key)).toLocaleDateString([],{month:'short',day:'numeric',timeZone:'UTC'})+'</small></span>';
+    ms.forEach(function(m){var n=mCount(m),tag;
+      if(k===0){var st=stats(m);tag=!n?'<span class="tag ok">Nothing</span>':st.open===0?'<span class="tag ok">All done</span>':'<span class="tag">'+(n-st.open)+' of '+n+' done</span>'+(st.over?'<span class="tag" style="background:#4a1f1b;color:#ffd9d4">'+st.over+' overdue</span>':'')}
+      else tag='<span class="tag ok">'+(n?n+' task'+(n===1?'':'s'):'Nothing')+'</span>';
+      h+='<span class="wkr"><span>'+esc(m.p.name)+'</span><span class="wkt">'+tag+'</span></span>'});
+    if(feeds||meds)h+='<span class="wkhl">'+(feeds?'<span class="opill">Feed</span> '+feeds+' feed'+(feeds===1?'':'s'):'')+(feeds&&meds?' · ':'')+(meds?'<span class="opill">Med</span> '+meds+' med'+(meds===1?'':'s'):'')+'</span>';
+    if(spec.length)h+='<span class="wkx">'+spec.slice(0,4).map(function(x){return'<span class="wki"><span>'+esc(x[0])+'</span><small>'+esc(x[1])+'</small></span>'}).join('')+(spec.length>4?'<small class="wkm">+'+(spec.length-4)+' more</small>':'')+'</span>';
+    h+='<span class="wkgo">See the day ›</span></button>'}
+  return h+'</div><p class="note">Counts match the board: the same tasks, shifts, and days. Tap a day to see everything on it.</p>'}
+function wdRow(time,name,t,tag,done){return'<div class="wdi'+(done?' done':'')+'"><span class="wdt">'+time+'</span><span class="wdn">'+esc(name)+(t&&ordTxt(t)?'<span class="wdo">'+esc(ordTxt(t))+'</span>':'')+'</span>'+(tag||'')+'</div>'}
+function openDay(k){var ms=dayModels(k),td=k===0,h='',ok='<span class="tag ok">Done</span>',ov='<span class="tag" style="background:#4a1f1b;color:#ffd9d4">Overdue</span>';
+  ms.forEach(function(m){var n=mCount(m),st=td?stats(m):null;
+    h+='<p class="sec">'+esc(m.p.name)+' · '+fmtT(m.p.start)+' to '+fmtT(m.p.end)+(td&&n?' · '+(n-st.open)+' of '+n+' done':'')+'</p>';
+    if(!n){h+='<p class="note" style="margin:0 0 6px">Nothing scheduled.</p>';return}
+    m.sls.forEach(function(x){var dn=td&&slotDone(x);h+=wdRow(fmtT(x.x),x.t.name+(x.o?' (one-time)':x.m?' (moved here)':''),x.t,dn?ok:td&&slotOver(x,m.p)?ov:'',dn)});
+    m.dueIv.forEach(function(t){var dn=td&&!!t.done;h+=wdRow('Any time',t.name,t,dn?ok:'<span class="tag">'+(td&&t.every-t.last<0?'Overdue':fl(t))+'</span>',dn)});
+    m.onceU.forEach(function(t){var dn=td&&!!t.done;h+=wdRow('Any time',t.name+' (one-time)',t,dn?ok:td&&t.date<bizDay()?ov:'',dn)});
+    m.cnts.forEach(function(t){var c=td?(S.cnt[t.id]||{n:0}).n:0;h+=wdRow('Any time',t.name,t,'<span class="tag'+(td&&c>=t.times?' ok':'')+'">'+(td?c+' of '+t.times:t.times+' times')+'</span>',td&&c>=t.times)});
+    m.list.forEach(function(t){var dn=td&&!!S.done[t.id+'|'+m.p.id];h+=wdRow('This shift',t.name,t,dn?ok:'',dn)})});
+  var prn=S.tasks.filter(function(t){return t.prn});if(prn.length)h+='<p class="sec">As needed</p><p class="note" style="margin:0">'+prn.map(function(t){return esc(t.name)}).join(', ')+'</p>';
+  if(k===1){var pu=S.moves.filter(function(m){return m.to==='tomorrow'&&T(m.tid)});if(pu.length)h+='<p class="sec">Pushed from today</p><p class="note" style="margin:0">'+pu.map(function(m){return esc(tn(m.tid))}).join(', ')+'</p>'}
+  showSheet(dayLabel(k),h,td?'<button id="wdgo" class="tpok">Open the board</button>':'')}
+function fillSt(){storageLine();var ow=isOwner();$('stdt').style.display=ow?'':'none';$('stbo').style.display=ow?'none':'';$('stbk').innerHTML=isOwner()?'<span class="note" style="margin:0;align-self:center">Backup reminder</span>'+[['on','Monthly'],['off','Off']].map(function(o){return'<button data-bkr="'+o[0]+'" class="'+((S.bkOff?'off':'on')===o[0]?'on':'')+'">'+o[1]+'</button>'}).join(''):'';$('stdm').innerHTML=[['sound','Chime and banner'],['banner','Banner only'],['off','Off']].map(function(o){return'<button data-duem="'+o[0]+'" class="'+((S.dueMode||'sound')===o[0]?'on':'')+'">'+o[1]+'</button>'}).join('');var cur=document.documentElement.dataset.theme||'dark';
   $('stth').innerHTML=[['dark','Dark'],['light','Light']].map(function(o){return'<button data-th="'+o[0]+'" class="'+(cur===o[0]?'on':'')+'">'+o[1]+'</button>'}).join('');
   $('stid').innerHTML=[[0,'Off'],[5,'5 min'],[15,'15 min'],[30,'30 min'],[60,'1 hour'],[120,'2 hours'],[240,'4 hours'],[480,'8 hours']].map(function(o){return'<button data-idl="'+o[0]+'" class="'+(S.idle===o[0]?'on':'')+'">'+o[1]+'</button>'}).join('');
-  $('strt').textContent=fmtT(S.resetAt);$('stmsg').textContent='';$('stver').textContent='Care Board · Version '+VER;
+  $('strt').textContent=fmtT(S.resetAt);$('strt').disabled=!isOwner();$('strt').title=isOwner()?'':'Only an owner can change this';$('stmsg').textContent='';$('stver').textContent='Care Board · Version '+VER;
   $('stwk').innerHTML=[[false,'Off'],[true,'On']].map(function(o){return'<button data-wk="'+(o[0]?1:0)+'" class="'+(!!S.wake===o[0]?'on':'')+'">'+o[1]+'</button>'}).join('');$('stwkm').textContent=('wakeLock' in navigator)?(S.wake?'The iPad screen stays on while Care Board is open. It still sleeps if you leave the app.':''):'This iPad can’t keep the screen on from the app. Instead, set iPad Settings → Display & Brightness → Auto-Lock to Never.';
   $('stsv').textContent=saved?'Saved on this device'+(lastSave?' at '+fmt(lastSave):'')+'. Last backup: '+(S.lastBackup?new Date(S.lastBackup).toLocaleDateString([],{month:'short',day:'numeric'}):'never')+'.':'Not saving on this device (private browsing or storage blocked). Download a backup to keep your data.'}
 var fresh=false;
 function bizDay(d){var x=new Date((d||new Date()).getTime()-mins(S.resetAt)*60000);return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0')}
-function missedList(skip){var out=[];skip=skip||{};
+function missedList(skip,nk){var out=[];skip=skip||{};nk=nk||addDays(S.dayKey,1);
   S.tasks.forEach(function(t){
-    if(t.once&&!t.done&&t.date<=S.dayKey&&!t.missedLogged){out.push(t.name+(t.time?' at '+fmtT(t.time):' (one-time)'));t.missedLogged=true}
-    (t.at||[]).forEach(function(x){if(!S.cdone[t.id+'@'+x])out.push(t.name+' at '+fmtT(x))});
+    if(t.once&&!t.done&&t.date<nk&&!t.missedLogged){out.push(t.name+(t.time?' at '+fmtT(t.time):' (one-time)'));t.missedLogged=true}
+    (t.at||[]).forEach(function(x){if(!S.cdone[t.id+'@'+x]&&slotOn(t,x,S.dayKey))out.push(t.name+' at '+fmtT(x))});
     if(t.times>0){var c=(S.cnt[t.id]||{n:0}).n;if(c<t.times)out.push(t.name+' ('+c+' of '+t.times+')')}
-    if(!t.every&&!(t.at&&t.at.length)&&!(t.times>0)&&t.periods.length)t.periods.forEach(function(pid){
+    if(!t.every&&!(t.at&&t.at.length)&&!(t.times>0)&&t.periods.length)t.periods.forEach(function(pid){var pp=S.periods.filter(function(z){return z.id===pid})[0];if(pp&&!perOn(t,pp,S.dayKey))return;
       var mv=S.moves.filter(function(m){return m.tid===t.id&&m.from===pid})[0];
       if(mv&&mv.to==='tomorrow')return;if(skip[t.id+'|'+pid])return;
       var q=mv&&mv.to!=='at'?mv.to:pid;if(!S.done[t.id+'|'+q])out.push(t.name+' ('+pn(q)+')')})});
   S.moves.forEach(function(m){if(m.carry&&!S.done[m.tid+'|'+m.from]&&!skip[m.tid+'|'+m.from]&&T(m.tid))out.push(tn(m.tid)+' (moved to '+fmt(new Date(m.ts))+')')});
   return out}
-function maybeReset(d){var k=bizDay(d);if(!S.dayKey){S.dayKey=k;return false}if(k===S.dayKey)return false;
-  var n=Math.max(1,Math.round((Date.parse(k)-Date.parse(S.dayKey))/864e5)),cm=carryMoves(k),miss=missedList(cm.skip),lbl=new Date(Date.parse(S.dayKey)).toLocaleDateString([],{weekday:'short',month:'short',day:'numeric',timeZone:'UTC'});S.dayKey=k;
+function maybeReset(d){var k=bizDay(d);if(!S.dayKey){S.dayKey=k;return false}if(k<=S.dayKey)return false;
+  var n=Math.max(1,Math.round((Date.parse(k)-Date.parse(S.dayKey))/864e5)),cm=carryMoves(k),miss=missedList(cm.skip,k),lbl=new Date(Date.parse(S.dayKey)).toLocaleDateString([],{weekday:'short',month:'short',day:'numeric',timeZone:'UTC'});S.prevKey=S.dayKey;S.dayKey=k;
   miss.reverse().forEach(function(d){S.log.unshift({ts:new Date(),who:'System',a:'Missed',d:d+' · '+lbl})});
   S.done={};S.cdone={};S.cnt={};S.moves=cm.moves;S.alerted={};if(cm.moves.length)S.log.unshift({ts:new Date(),who:'System',a:'Changed',d:cm.moves.length+' pushed task'+(cm.moves.length>1?'s':'')+' carried over to the new day: '+cm.moves.map(function(m){return tn(m.tid)+' at '+fmt(new Date(m.ts))}).join(', ')});S.tasks=S.tasks.filter(function(t){return !(t.once&&t.done)});
-  S.tasks.forEach(function(t){if(t.every>0){t.last=t.done?n:t.last+n;t.done=null}});
+  S.tasks.forEach(function(t){if(t.every>0){var lf=t.every-t.last,dk=addDays(S.prevKey,lf);if(!t.done&&lf<=0&&t.missedFor!==dk){S.log.unshift({ts:new Date(),who:'System',a:'Missed',d:t.name+(dk===S.prevKey?'':' (due '+dlabel(dk)+')')+' · '+lbl,tid:t.id});t.missedFor=dk}t.last=t.done?n:t.last+n;t.done=null}});
   return true}
+function setResetAt(v){if(v===S.resetAt)return;var was=S.resetAt;S.resetAt=v;if(bizDay()>S.dayKey)maybeReset();lgc('New day now starts at '+fmtT(v)+' (was '+fmtT(was)+')')}
 function signOut(){S.viewP=null;S.who='';S.adminOk=false;S.pend=null;S.pin={for:'',buf:''};hideUndo();['pin','pm','nu','st','wp','tp','emed','cf','ti','ge','ts','il','ot','te','qc','ns','op','ah','due'].forEach(function(id){$(id).classList.remove('show')});if(['edit','periods','people','admin','menu'].indexOf(S.tab)>-1)S.tab='today';render()}
 function idleCheck(){if(S.who&&S.idle>0&&Date.now()-S.last>S.idle*60000&&!$('ah').classList.contains('show'))askHere()}
 function needWho(){if(S.who)return false;if(!S.people.length){openFR();return true}$('wpm').textContent='';$('wpl').innerHTML=S.people.map(function(p){return'<button data-wp="'+esc(p.name)+'">'+esc(p.name)+'</button>'}).join('')+'<button data-wpn="1">+ Add new user…</button>';$('wp').classList.add('show');return true}
@@ -594,7 +648,7 @@ function admin(){fresh=false;
   h+='<div class="row"><span style="flex:1;min-width:200px"><b>Setup checklist</b><span class="meta">Show the step-by-step setup list in the Menu again</span></span><button id="setupre">Show checklist</button></div>';
   h+='<div class="row"><span style="flex:1;min-width:200px"><b>Start fresh</b><span class="meta">Erases all tasks, supplies, people, and the log on this iPad. Download a backup first.</span></span><button id="fresh" style="color:var(--bad)">Start fresh</button></div>';
   return h+'<p class="note" id="admmsg" aria-live="polite"></p></div>'}
-function render(keep){head();if(keep)return;setTimeout(function(){if($('te').classList.contains('show'))drawTE();if(S.tab==='edit')applyFind();if(S.tab==='log')applyLogQ()},0);var back=['edit','periods','people','admin'].indexOf(S.tab)>-1?'<button data-t="menu" style="margin-bottom:12px">← Menu</button>':'';$('main').innerHTML=back+(S.tab==='today'?today():S.tab==='week'?week():S.tab==='menu'?menu():S.tab==='edit'?edit2():S.tab==='stock'?stock():S.tab==='log'?logv():S.tab==='library'?library():S.tab==='periods'?periods():S.tab==='admin'?admin():people())}
+function render(keep){if(S.tab==='edit'){var pe=me();if(pe&&!pe.hintEdit){pe.hintEdit=true;save()}}head();if(keep)return;setTimeout(function(){if($('te').classList.contains('show'))drawTE();if(S.tab==='edit')applyFind();if(S.tab==='log')applyLogQ()},0);var back=['edit','periods','people','admin'].indexOf(S.tab)>-1?'<button data-t="menu" style="margin-bottom:12px">← Menu</button>':'';$('main').innerHTML=back+(S.tab==='today'?today():S.tab==='week'?week():S.tab==='menu'?menu():S.tab==='edit'?edit2():S.tab==='stock'?stock():S.tab==='log'?logv():S.tab==='library'?library():S.tab==='periods'?periods():S.tab==='admin'?admin():people())}
 document.addEventListener('click',function(e){
   var b=e.target.closest('button');if(!b)return;
   if(!S.who&&(b.dataset.pr||b.dataset.k||b.dataset.i||b.dataset.o||b.dataset.po||b.dataset.ct||b.dataset.c||b.dataset.mv||b.dataset.pi||b.dataset.undo||b.dataset.undomv)){needWho();return}
@@ -610,10 +664,16 @@ document.addEventListener('click',function(e){
   if(b.dataset.md){var a=b.dataset.md.split('|');pushAt(+a[0],a[1],new Date().getTime()+ +a[2]*60000);return}
   if(b.dataset.mt){var a=b.dataset.mt.split('|'),ts0=function(v){var d0=new Date();d0.setHours(+v.split(':')[0],+v.split(':')[1],0,0);return d0.getTime()};openTP({title:'Move to a time',sub:tn(+a[0]),check:function(v){return ts0(v)<=Date.now()?'Pick a time later than now.':''},ok:function(v){pushAt(+a[0],a[1],ts0(v))}});return}
   if(b.dataset.undod){var a=b.dataset.undod.split('|');S.moves=S.moves.filter(function(m){return !(m.tid===+a[0]&&m.from===a[1])});$('pm').classList.remove('show');render();return}
-  if(b.dataset.mv){var a=b.dataset.mv.split('|');S.moves=S.moves.filter(function(m){return !(m.tid===+a[0]&&m.from===a[1])});S.moves.push({tid:+a[0],from:a[1],to:a[2],at:Date.now(),who:S.who,reason:S.reason||'',time:fmt(new Date())});$('pm').classList.remove('show');render();return}
-  if(b.dataset.po){var t=S.tasks.filter(function(x){return x.id==b.dataset.po})[0];t.date=addDays(bizDay(),1);$('pm').classList.remove('show');render();return}
+  if(b.dataset.mv){var a=b.dataset.mv.split('|');pushLog(+a[0],a[1],a[2]==='tomorrow'?'to tomorrow':'to '+pn(a[2]));S.moves=S.moves.filter(function(m){return !(m.tid===+a[0]&&m.from===a[1])});S.moves.push({tid:+a[0],from:a[1],to:a[2],at:Date.now(),who:S.who,reason:S.reason||'',time:fmt(new Date())});$('pm').classList.remove('show');render();return}
+  if(b.dataset.po){var t=S.tasks.filter(function(x){return x.id==b.dataset.po})[0];t.date=addDays(bizDay(),1);t.missedLogged=false;lg('Pushed',t.name+' (one-time) to tomorrow',{tid:t.id});$('pm').classList.remove('show');render();return}
   if(b.dataset.otc){S.tasks.filter(function(x){return x.id==b.dataset.otc})[0].time='';render();return}
-  if(b.dataset.pi){var t=S.tasks.filter(function(x){return x.id==b.dataset.pi})[0];t.last=Math.max(0,t.every-1);$('pm').classList.remove('show');render();return}
+  if(b.dataset.dw){if(!can('sched'))return;var dw=b.dataset.dw.split('|'),tw=T(dw[0]);if(!tw)return;var cur=tw.days&&tw.days.length&&tw.days.length<7?tw.days.slice():[0,1,2,3,4,5,6],x=+dw[1],ix=cur.indexOf(x);if(ix>-1){if(cur.length===1){showHint('Pick at least one day. To stop a task, remove it instead.');return}cur.splice(ix,1)}else cur.push(x);setDays(tw,cur);render();return}
+  if(b.dataset.dwp){if(!can('sched'))return;var dq=b.dataset.dwp.split('|'),tq2=T(dq[0]);if(!tq2)return;setDays(tq2,dq[1]==='wk'?[1,2,3,4,5]:[0,1,2,3,4,5,6]);render();return}
+  if(b.dataset.wday!==undefined){openDay(+b.dataset.wday);return}
+  if(b.id==='wdgo'){$('ti').classList.remove('show');S.tab='today';S.viewP=null;render();return}
+  if(b.id==='mhx'){var pm=me();if(pm)pm.hintEdit=true;save();render();return}
+  if(b.dataset.ndq){var q=b.dataset.ndq.split('|'),tq=T(+q[0]);if(tq&&tq.every>0){setDue(tq,addDays(bizDay(),+q[1]));save();render()}return}
+  if(b.dataset.pi){var t=S.tasks.filter(function(x){return x.id==b.dataset.pi})[0];t.last=Math.max(0,t.every-1);lg('Pushed',t.name+' to tomorrow',{tid:t.id});$('pm').classList.remove('show');render();return}
   if(b.dataset.undo){var a=b.dataset.undo.split('|');S.moves=S.moves.filter(function(m){return !(m.tid===+a[0]&&m.from===a[1]&&m.to==='tomorrow')});render();return}
   if(b.dataset.undomv){var a=b.dataset.undomv.split('|');S.moves=S.moves.filter(function(m){return !(m.tid===+a[0]&&m.to===a[1])});render();return}
   if(b.id==='pmx'){$('pm').classList.remove('show');return}
@@ -656,8 +716,8 @@ document.addEventListener('click',function(e){
   if(b.dataset.shide){S.setup=false;render();return}
   if(b.id==='setupre'){S.setup=true;S.tab='menu';render();return}
   if(b.dataset.ti){openInfo(b.dataset.ti);return}
-  if(b.dataset.pst){var ps=b.dataset.pst.split('|'),pq=S.periods.filter(function(x){return x.id===ps[0]})[0];if(!pq)return;openTP({title:(ps[1]==='start'?'Starts at':'Ends at'),sub:pq.name,val:pq[ps[1]],ok:function(v){var ov=pq[ps[1]];pq[ps[1]]=v;S.setupHours=true;if(ov!==v)lgc(pq.name+' '+(ps[1]==='start'?'starts':'ends')+' at '+fmtT(v)+' (was '+fmtT(ov)+')');render()}});return}
-  if(b.id==='strt'){openTP({title:'New day starts at',sub:'Check-offs and counters reset then',val:S.resetAt,ok:function(v){S.resetAt=v;S.dayKey=bizDay();fillSt()}});return}
+  if(b.dataset.pst){var ps=b.dataset.pst.split('|'),pq=S.periods.filter(function(x){return x.id===ps[0]})[0];if(!pq)return;openTP({title:(ps[1]==='start'?'Starts at':'Ends at'),sub:pq.name,val:pq[ps[1]],ok:function(v){var ov=pq[ps[1]];pq[ps[1]]=v;S.setupHours=true;if(ov!==v){lgc(pq.name+' '+(ps[1]==='start'?'starts':'ends')+' at '+fmtT(v)+' (was '+fmtT(ov)+')');var other=ps[1]==='start'?'end':'start';S.periods.forEach(function(q){if(q!==pq&&q[other]===ov){q[other]=v;lgc(q.name+' '+(other==='start'?'starts':'ends')+' at '+fmtT(v)+' to match')}});if(ov===S.resetAt&&(ps[1]==='start'||S.periods.some(function(q){return q.start===v})))setResetAt(v)}render()}});return}
+  if(b.id==='strt'){if(!isOwner())return;openTP({title:'New day starts at',sub:'Check-offs and counters reset then',val:S.resetAt,ok:function(v){setResetAt(v);fillSt();render()}});return}
   if(b.id==='otadd'){if(needWho())return;OT={day:'today',time:''};$('otn').value='';$('otdt').value=addDays(bizDay(),2);$('ote').textContent='';drawOT();$('ot').classList.add('show');setTimeout(function(){try{$('otn').focus()}catch(x){}},60);return}
   if(b.dataset.otday){OT.day=b.dataset.otday;drawOT();return}
   if(b.id==='ottime'){openTP({title:'Time for this task',sub:$('otn').value.trim(),val:OT.time||null,ok:function(v){OT.time=v;drawOT()}});return}
@@ -695,7 +755,7 @@ document.addEventListener('click',function(e){
   if(b.id==='toastu'){var uf=UNDO.fn;hideUndo();if(uf)uf();return}
   if(b.id==='cfx'){$('cf').classList.remove('show');CF=null;return}
   if(b.id==='cfok'){var cfn=CF;$('cf').classList.remove('show');CF=null;if(cfn)cfn();return}
-  if(b.id==='bkp2'){saveBackup();return}
+  if(b.id==='bkp2'){if(!isOwner())return;saveBackup();return}
   if(b.id==='bklater'){S.bkSnooze=Date.now()+30*864e5;render();return}
   if(b.id==='bkoff'){S.bkOff=true;render();showHint('Backup reminders are off. An owner can turn them back on in ⚙ Settings.');return}
   if(b.dataset.bkr!==undefined){if(!isOwner())return;S.bkOff=b.dataset.bkr==='off';S.bkSnooze=0;fillSt();render();return}
@@ -723,7 +783,7 @@ document.addEventListener('click',function(e){
   if(b.id==='addpp'){if(!can('owner'))return;addPerson();return}
   if(b.dataset.del){var _b=b;askConfirm('Remove this task?','“'+tn(b.dataset.del)+'” and its schedule will be removed. This can’t be undone.','Remove task',function(){var b=_b;lg('Removed task',tn(b.dataset.del),{tid:b.dataset.del});S.tasks=S.tasks.filter(function(x){return x.id!=b.dataset.del});render();});return}
   if(b.dataset.pd){var _b=b;askConfirm('Remove this time of day?','“'+((S.periods.filter(function(x){return x.id===b.dataset.pd})[0])||{}).name+'” will be removed, and its routine tasks will lose this time of day.','Remove',function(){var b=_b;var id=b.dataset.pd;S.periods=S.periods.filter(function(p){return p.id!==id});S.tasks.forEach(function(t){t.periods=t.periods.filter(function(x){return x!==id})});render();});return}
-  if(b.id==='add'){var n=$('newn').value.trim();if(!n){$('newn').focus();return}var nk=$('newk').value,mk=function(){var nt={id:S.nid++,name:n,periods:[],every:0,n:3,times:0,prn:false,last:0};S.tasks.push(nt);setFreq(nt.id,nk);if(nk!=='clock'){S.teId=nt.id;setTimeout(function(){openTE(nt.id)},0)}if(nk!=='clock')lg('Added task',n+' ('+(FQ.filter(function(o){return o[0]===fq(T(nt.id))})[0]||['',''])[1].toLowerCase()+')',{tid:nt.id});return nt};
+  if(b.id==='add'){var n=$('newn').value.trim();if(!n){$('newn').focus();return}var nk=$('newk').value,mk=function(){var nt={id:S.nid++,name:n,periods:[],every:0,n:3,times:0,prn:false,last:0};S.tasks.push(nt);setFreq(nt.id,nk);if(nk==='days'||nk==='weeks'||nk==='months')S.teNewPend=nt.id;if(nk!=='clock'){S.teId=nt.id;setTimeout(function(){openTE(nt.id)},0)}if(nk!=='clock')lg('Added task',n+' ('+(FQ.filter(function(o){return o[0]===fq(T(nt.id))})[0]||['',''])[1].toLowerCase()+')',{tid:nt.id});return nt};
     if(nk==='clock'){openTP({title:'First time for this task',sub:n,ok:function(v){var nt=mk();nt.at=[v];lg('Added task',n+' (at set times: '+fmtT(v)+')',{tid:nt.id});$('newn').value='';openTE(nt.id);flashAt(nt.id,v)}});return}
     mk();render();return}
   if(b.id==='addp'){S.periods.push({id:'p'+S.nid++,name:'New period',start:'12:00',end:'13:00'});render();return}
@@ -732,18 +792,21 @@ document.addEventListener('click',function(e){
   if(b.dataset.st){fillSt();$('st').classList.add('show');return}
   if(b.dataset.th){document.documentElement.dataset.theme=b.dataset.th;fillSt();return}
   if(b.id==='stx'){$('st').classList.remove('show');return}
-  if(b.id==='bkp'){saveBackup();return}
+  if(b.id==='bkp'){if(!isOwner())return;saveBackup();return}
   if(b.id==='chkup'){checkUpdate(true);return}
   if(b.id==='updgo'){applyUpdate();return}
-  if(b.id==='rst'){$('rsf').value='';$('rsf').click();return}
+  if(b.id==='rst'){if(!isOwner())return;$('rsf').value='';$('rsf').click();return}
   if(b.id==='fresh'){if(!can('owner'))return;if(!fresh){fresh=true;b.textContent='Tap again to erase everything';return}
     blankState();save();render();openFR();return}
 });
 document.addEventListener('input',function(e){if(e.target.id==='tfind')applyFind();if(e.target.id==='logq'){var lv=e.target.value;clearTimeout(window._lqt);window._lqt=setTimeout(function(){S.logq=lv;S.logCap=300;S._lqf=true;render()},250)}});
 document.addEventListener('keydown',function(e){if(e.key!=='Enter')return;var id=e.target.id;if(id==='qcv'){e.preventDefault();saveQC()}else if(id==='exn'){e.preventDefault();addExtra(S.teId,e.target.value);setTimeout(function(){try{$('exn').focus()}catch(x){}},30)}else if(id==='rck'){e.preventDefault();checkRC()}else if(id==='rcn2'){e.preventDefault();saveRC()}});
 document.addEventListener('change',function(e){
-  if(e.target.id==='rsf'){var f=e.target.files&&e.target.files[0];if(!f)return;var fr=new FileReader();fr.onload=function(){var ok=false;try{ok=applySnap(JSON.parse(fr.result))}catch(x){}
-    if(ok){LREPL=true;S.last=Date.now();maybeReset();save();fillSt();$('stmsg').textContent='Restored. Sign in again from the Who’s here menu.';$('fr').classList.remove('show');render();if(S.people.length)needWho();else openFR()}else $('stmsg').textContent='That file is not a Care Board backup. Nothing was changed.'};fr.readAsText(f);return}
+  if(e.target.id==='rsf'){var f=e.target.files&&e.target.files[0];if(!f)return;var fr=new FileReader();fr.onload=function(){var bk=null;try{bk=JSON.parse(fr.result)}catch(x){}
+    if(!okSnap(bk)){$('stmsg').textContent='That file is not a Care Board backup. Nothing was changed.';return}
+    var go=function(){var ok=applySnap(bk);if(ok){LREPL=true;S.last=Date.now();maybeReset();save();fillSt();$('stmsg').textContent='Restored. Sign in again from the Who’s here menu.';$('fr').classList.remove('show');render();if(S.people.length)needWho();else openFR()}};
+    if(!S.people.length){go();return}if(!isOwner())return;
+    askConfirm('Replace everything with this backup?','The backup is from '+(bk.at?new Date(bk.at).toLocaleDateString([],{month:'short',day:'numeric',year:'numeric'}):'an unknown date')+' and has '+bk.state.tasks.length+' tasks and '+bk.state.people.length+' people. Everything on this iPad now, including today’s check-offs, will be replaced.','Replace with backup',go)};fr.readAsText(f);return}
   if(e.target.id==='whosel'){var wv=e.target.value;e.target.value=S.who;if(!wv)return;if(wv==='__new')openNew();else openPin(wv);return}
   var d=e.target.dataset;
   if(d.oamt){setOrder(+d.oamt,'amt',e.target.value);return}
@@ -759,7 +822,7 @@ document.addEventListener('change',function(e){
   if(d.lf!==undefined){S.logf=e.target.value;S.logCap=300;render();return}
   if(d.lt!==undefined){S.logt=e.target.value;S.logCap=300;render();return}
   if(d.at){var y=d.at.split('|'),ty=S.tasks.filter(function(x){return x.id==y[0]})[0];ty.at[+y[1]]=e.target.value||'12:00';ty.at.sort();render();return}
-  if(d.od!==undefined){S.tasks.filter(function(t){return t.id==d.od})[0].date=e.target.value||bizDay();return}
+  if(d.od!==undefined){var od=S.tasks.filter(function(t){return t.id==d.od})[0];od.date=e.target.value||bizDay();od.missedLogged=false;lgc(od.name+': date set to '+dlabel(od.date),od.id);return}
   if(d.ot!==undefined){S.tasks.filter(function(t){return t.id==d.ot})[0].time=e.target.value||'';return}
   if(d.ahint){var mp=me(),hv=e.target.value.trim();if(!mp||!isOwner())return;if(hintBad(hv,mp.pin)){e.target.value=mp.hint||'';if($('admmsg'))$('admmsg').textContent='The hint can’t include your code.';return}mp.hint=hv;if($('admmsg'))$('admmsg').textContent=hv?'Hint saved.':'Hint removed.';return}
   if(d.gap){var gt=T(d.gap);gt.gap=Math.max(0,+e.target.value||0);lgc(gt.name+': minimum gap '+gt.gap+'h',gt.id);return}
@@ -767,9 +830,10 @@ document.addEventListener('change',function(e){
   if(d.f){var fid=+d.f,fv=e.target.value;if(fv==='clock'){var ft=S.tasks.filter(function(t){return t.id===fid})[0];openTP({title:'First time for this task',sub:ft.name,ok:function(v){setFreq(fid,'clock');ft.at=[v];lgc(ft.name+': now at set times ('+fmtT(v)+')',fid);flashAt(fid,v)},cancel:render});return}setFreq(fid,fv);lgc(T(fid).name+': now '+(FQ.filter(function(o){return o[0]===fq(T(fid))})[0]||['',''])[1].toLowerCase(),fid);render();return}
   if(d.tm){var tmt=T(d.tm);tmt.times=Math.max(1,+e.target.value||1);lgc(tmt.name+': '+tmt.times+' times per day',tmt.id)}
   if(d.sl){S.stock.filter(function(x){return x.id==d.sl})[0].low=Math.max(0,+e.target.value||0);render();return}
-  if(d.ppn!==undefined){var i=+d.ppn,o=S.people[i].name,v=e.target.value.trim()||o;S.people[i].name=v;if(S.who===o)S.who=v;head()}
+  if(d.ppn!==undefined){var i=+d.ppn,pr=S.people[i];if(!pr)return;var o=pr.name,v=e.target.value.trim();if(!can('owner')||!v||v===o){e.target.value=o;return}if(v==='System'||S.people.some(function(x,j){return j!==i&&x.name.toLowerCase()===v.toLowerCase()})){e.target.value=o;if($('ppe'))$('ppe').textContent='“'+v+'” is already on the board. Pick a different name.';return}pr.name=v;if(S.who===o)S.who=v;lg('Changed','Renamed '+o+' to '+v);if($('ppe'))$('ppe').textContent='';head();return}
   if(d.n){var tn0=T(d.n),nv=e.target.value.trim();if(!nv){e.target.value=tn0.name}else if(nv!==tn0.name){lgc('Renamed “'+tn0.name+'” to “'+nv+'”',tn0.id);tn0.name=nv}}
-  if(d.e){var tt=S.tasks.filter(function(t){return t.id==d.e})[0];tt.n=Math.max(1,+e.target.value||1);tt.every=tt.n*(tt.unit==='weeks'?7:tt.unit==='months'?30:1);lgc(tt.name+': every '+tt.n+' '+(tt.unit||'days'),tt.id)}
+  if(d.nd){var tnd=T(+d.nd);if(tnd&&tnd.every>0&&e.target.value){setDue(tnd,e.target.value<bizDay()?bizDay():e.target.value);save();render()}return}
+  if(d.e){var tt=S.tasks.filter(function(t){return t.id==d.e})[0];tt.n=Math.max(1,+e.target.value||1);tt.every=tt.n*(tt.unit==='weeks'?7:tt.unit==='months'?30:1);lgc(tt.name+': every '+tt.n+' '+(tt.unit||'days'),tt.id);render()}
   if(d.p){var a=d.p.split('|'),t=S.tasks.filter(function(t){return t.id==a[0]})[0],i=t.periods.indexOf(a[1]);if(e.target.checked&&i<0)t.periods.push(a[1]);if(!e.target.checked&&i>-1)t.periods.splice(i,1);lgc(t.name+': '+(e.target.checked?'added to ':'removed from ')+pn(a[1]),t.id)}
   var P=function(id){return S.periods.filter(function(p){return p.id===id})[0]};
   if(d.pn)P(d.pn).name=e.target.value||'Unnamed';
@@ -889,7 +953,7 @@ document.addEventListener('pointerdown',function(){try{if(!AC){var C=window.Audi
 function chime(){if(!AC||S.dueMode!=='sound')return;try{var t0=AC.currentTime;[[880,0],[660,0.32],[880,0.64]].forEach(function(n){var o=AC.createOscillator(),g=AC.createGain();o.type='sine';o.frequency.value=n[0];g.gain.setValueAtTime(0.0001,t0+n[1]);g.gain.exponentialRampToValueAtTime(0.3,t0+n[1]+0.03);g.gain.exponentialRampToValueAtTime(0.0001,t0+n[1]+0.28);o.connect(g);g.connect(AC.destination);o.start(t0+n[1]);o.stop(t0+n[1]+0.3)})}catch(e){}}
 function dueItems(){var now=Date.now(),nm=new Date().getHours()*60+new Date().getMinutes(),out=[],win=60;
   S.tasks.forEach(function(t){
-    (t.at||[]).forEach(function(x){var q=t.id+'@'+x;if(S.cdone[q])return;var p=S.periods.filter(function(z){return inP(z,mins(x))})[0]||S.periods[0],d=slotDiff(x,nm,p);
+    (t.at||[]).forEach(function(x){var q=t.id+'@'+x;if(S.cdone[q]||!slotOn(t,x))return;var d=slotDiff(x,nm);
       if(d>=0&&d<Math.max(win,t.grace||60))out.push({key:'c:'+q+':'+S.dayKey,name:t.name,when:fmtT(x),ord:ordTxt(t),kind:'ct',ref:q})});
     if(t.once&&!t.done&&t.time&&t.date===bizDay()){var ts=onceTs(t),d2=(now-ts)/60000;if(d2>=0&&d2<win)out.push({key:'o:'+t.id+':'+t.date,name:t.name,when:fmtT(t.time),kind:'o',ref:String(t.id)})}});
   S.moves.forEach(function(m){if(m.to!=='at')return;var k=m.tid+'|'+m.from,d3=(now-m.ts)/60000;if(S.done[k]||!T(m.tid))return;if(d3>=0&&d3<win)out.push({key:'m:'+k+':'+m.ts,name:tn(m.tid),when:fmt(new Date(m.ts)),kind:'k',ref:k})});
@@ -903,8 +967,9 @@ function ring(){clearTimeout(DUE.rt);if(!$('due').classList.contains('show'))ret
 function drawDue(){var it=DUE.shown.filter(function(x){return !S.alerted[x.key]});if(!it.length){ackDue();return}
   $('dueh').textContent=it.length===1?'Due now':it.length+' things are due';
   $('duel').innerHTML=it.map(function(x){return'<div class="srow"><span class="sname" style="font-size:19px">'+esc(x.name)+'<span class="meta">Due at '+esc(x.when)+(x.ord?' · <b style="color:var(--tx)">'+esc(x.ord)+'</b>':'')+'</span></span><button class="tpok" data-dued="'+esc(x.key)+'" style="flex:none;font-size:16px;padding:8px 16px">Mark done</button></div>'}).join('')}
-function ackDue(){(DUE.shown||[]).forEach(function(x){S.alerted[x.key]=1});DUE.shown=[];clearTimeout(DUE.rt);$('due').classList.remove('show');save()}
-function dueDone(key){if(needWho())return;var x=DUE.shown.filter(function(y){return y.key===key})[0];if(!x)return;
+function duePend(){var p=DUE.pend;DUE.pend=null;if(p&&S.who&&Date.now()-p.ts<600000&&$('due').classList.contains('show'))dueDone(p.k)}
+function ackDue(){DUE.pend=null;(DUE.shown||[]).forEach(function(x){S.alerted[x.key]=1});DUE.shown=[];clearTimeout(DUE.rt);$('due').classList.remove('show');save()}
+function dueDone(key){if(!S.who){DUE.pend={k:key,ts:Date.now()};needWho();return}DUE.pend=null;var x=DUE.shown.filter(function(y){return y.key===key})[0];if(!x)return;
   if(x.kind==='ct'&&!S.cdone[x.ref])togCt(x.ref,true);else if(x.kind==='k'&&!S.done[x.ref])togK(x.ref,true);else if(x.kind==='o'){var t=T(x.ref);if(t&&!t.done)togO(x.ref,true)}
   S.alerted[key]=1;drawDue()}
 /* ---- 1.10: log storage (IndexedDB), paging, retention, CSV, storage use ---- */
@@ -1017,12 +1082,12 @@ function pinKey(k){
       if(pp.stage===1){pp.first=pp.buf;pp.buf='';pp.stage=2;$('pint').textContent='Enter it again to confirm';drawPin('');return}
       if(pp.buf===pp.first){var ex=S.people.filter(function(x){return x.name===pp.name})[0];
         if(ex){ex.pin=pp.first;ex.mustReset=false}else S.people.push({name:pp.name,pin:pp.first,role:needMigrate()?undefined:'caregiver'});
-        var same=S.who===pp.name;S.who=pp.name;if(!same){lockAdmin();if(isStaff()&&!needMigrate()){S.adminOk=true;S.last=Date.now()}}$('pin').classList.remove('show');render();if(same)showHint('Your code was changed.');else maybeTour();return}
+        var same=S.who===pp.name;S.who=pp.name;if(!same){lockAdmin();if(isStaff()&&!needMigrate()){S.adminOk=true;S.last=Date.now()}}$('pin').classList.remove('show');render();if(same)showHint('Your code was changed.');else{duePend();maybeTour()}return}
       pp.buf='';pp.first='';pp.stage=1;$('pint').textContent='Choose your code, '+pp.name;drawPin('Those didn’t match. Start again.');return}
     if(pp.for==='__admin'){var m=me();if(m&&m.pin===pp.buf){pinOk();S.adminOk=true;S.last=Date.now();$('pin').classList.remove('show');goArea(pp.back||'menu');return}pinWrong();return}
     if(pp.for==='__old'){if(pp.buf===S.adminPin){pinOk();$('pin').classList.remove('show');openOwnerPick(pp.back);return}pinWrong();return}
     var p=S.people.filter(function(x){return x.name===pp.for})[0];
-    if(p&&p.pin===pp.buf){pinOk();S.who=p.name;lockAdmin();if(isStaff()&&!needMigrate()){S.adminOk=true;S.last=Date.now()}$('pin').classList.remove('show');render();maybeTour();return}
+    if(p&&p.pin===pp.buf){pinOk();S.who=p.name;lockAdmin();if(isStaff()&&!needMigrate()){S.adminOk=true;S.last=Date.now()}$('pin').classList.remove('show');render();duePend();maybeTour();return}
     pinWrong();return}
   drawPin('')}
 function lockAdmin(){S.adminOk=false;if(['edit','periods','people','admin','menu'].indexOf(S.tab)>-1)S.tab='today'}
@@ -1086,7 +1151,7 @@ function saveFT(){var n=$('ftn').value.trim();if(!n){$('fte').textContent='Type 
   var t={id:S.nid++,name:n,periods:[],every:0,n:3,times:0,prn:false,last:0,needs:[]};S.tasks.push(t);
   if(FT.k==='once'){t.once=true;t.date=bizDay();t.time=''}else setFreq(t.id,FT.k);if(FT.k==='clock')t.at=[FT.time];
   lg('Added task',n+' (first task)',{tid:t.id});S.firstRun=false;$('ft').classList.remove('show');S.tab='today';S.viewP=null;
-  if(FT.k==='clock'){var mm=mins(FT.time),own=S.periods.filter(function(q){return inP(q,mm)})[0];if(own&&own.id!==nowP().id){S.viewP=own.id;S.viewFrom=nowP().id}}
+  if(FT.k==='clock'){var mm=mins(FT.time),own=perAt(mm);if(own&&own.id!==nowP().id){S.viewP=own.id;S.viewFrom=nowP().id}}
   render();var el=document.querySelector('[data-k^="'+t.id+'|"],[data-ct^="'+t.id+'@"],[data-pr="'+t.id+'"],[data-o="'+t.id+'"]');
   if(el){el.classList.add('flashtile');try{el.scrollIntoView({block:'center',behavior:'smooth'})}catch(x){}}
   showHint('That’s your task. Tap it when it’s done; hold it for more options.')}
@@ -1128,6 +1193,8 @@ function setupItems(){var e=S.emer||{contacts:[]};return[
 function setupCard(full){var it=setupItems(),done=it.filter(function(x){return x[3]}).length;if(done===it.length){S.setup=false;return''}
   if(!full)return'<div class="vb" style="background:var(--panel2);color:var(--tx);border:1px solid var(--acc)"><span>Finish setting up the board · <b>'+done+' of '+it.length+'</b> done</span><button data-t="menu" style="background:var(--acc);color:#0c1420">Open checklist</button></div>';
   return'<div class="col" style="margin-bottom:12px;border-color:var(--acc)"><div class="ch"><b>Set up the board</b><small>'+done+' of '+it.length+' done</small></div><div class="elist">'+it.map(function(x){return'<div class="srow"><span class="box" style="width:26px;height:26px;border-radius:8px;'+(x[3]?'background:var(--ok);border-color:var(--ok);color:#06231c':'')+'">'+(x[3]?'✓':'')+'</span><span class="sname"'+(x[3]?' style="color:var(--mut);text-decoration:line-through"':'')+'>'+x[1]+'<span class="meta" style="text-decoration:none">'+x[2]+'</span></span>'+(x[3]?'':(x[0]==='hours'?'<button data-sgo="periods">Check hours</button><button data-sok="hours">They’re right</button>':'<button data-sgo="'+x[4]+'">'+(x[0]==='bkp'?'Save backup':'Go')+'</button>'))+'</div>'}).join('')+'</div><button data-shide="1" style="margin-top:10px;background:transparent;border-color:transparent;color:var(--mut);padding-left:0">Hide this checklist</button></div>'}
+/* ---- 1.14: the pop-up opened last is always on top ---- */
+var MZ=20;try{var MO=new MutationObserver(function(ms){ms.forEach(function(m){var el=m.target,on=el.classList.contains('show');if(on&&!el._up){el._up=1;el.style.zIndex=++MZ}else if(!on&&el._up){el._up=0;el.style.zIndex='';if(!document.querySelector('.modal.show'))MZ=20}})});[].forEach.call(document.querySelectorAll('.modal'),function(el){MO.observe(el,{attributes:true,attributeFilter:['class']})})}catch(e){}
 /* ---- 1.6: tap outside a pop-up to close it ---- */
 var MDOWN=null,KEEP=['emed','ge','tour','fr','rk','ft','ah','sh'];
 document.addEventListener('pointerdown',function(e){MDOWN=e.target},true);
@@ -1275,9 +1342,10 @@ function drawEmEd(){var h='<p class="note" style="margin-top:0">Top message (sho
   $('emf').innerHTML=h}
 function emRead(){EM.alert=$('ema').value.trim();EM.tell=$('emt').value;EM.plan=$('empl').value;EM.contacts=EM.contacts.map(function(c,i){var a=$('emf').querySelector('[data-emn="'+i+'"]'),b=$('emf').querySelector('[data-emp="'+i+'"]');return{n:a?a.value.trim():c.n,p:b?b.value.trim():c.p}})}
 /* ---- local persistence (this device only) ---- */
-var KEY='zeke-care-board.v1',TRANSIENT=['tab','who','pend','pin','reason','adminOk','viewP','viewFrom','logf','logt','logi','logq','logSpan','logCap','_lqf','flash'],saved=false,lastSave=null;
+var KEY='zeke-care-board.v1',TRANSIENT=['teNew','teNewPend','prevKey','tab','who','pend','pin','reason','adminOk','viewP','viewFrom','logf','logt','logi','logq','logSpan','logCap','_lqf','flash'],saved=false,lastSave=null;
 function snap(full){var o={};Object.keys(S).forEach(function(k){if(TRANSIENT.indexOf(k)>-1)return;if(k==='log'){if(full||!LDBOK)o.log=cleanLog(S.log);return}o[k]=S[k]});return{app:'zeke-care-board',v:1,at:new Date().toISOString(),theme:document.documentElement.dataset.theme||'dark',state:o}}
-function applySnap(d){if(!d||d.app!=='zeke-care-board'||!d.state||!Array.isArray(d.state.tasks)||!Array.isArray(d.state.periods)||!d.state.periods.length||!Array.isArray(d.state.people)||!d.state.people.length)return false;
+function okSnap(d){return !!(d&&d.app==='zeke-care-board'&&d.state&&Array.isArray(d.state.tasks)&&Array.isArray(d.state.periods)&&d.state.periods.length&&Array.isArray(d.state.people)&&d.state.people.length)}
+function applySnap(d){if(!okSnap(d))return false;
   Object.keys(d.state).forEach(function(k){S[k]=d.state[k]});
   (S.log||[]).forEach(function(r){r.ts=new Date(r.ts)});
   if(d.theme)document.documentElement.dataset.theme=d.theme;
