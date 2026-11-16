@@ -92,7 +92,7 @@ def main():
         pg.fill('#newpn', 'Nurse'); pg.select_option('#newpr', 'caregiver'); pg.click('#addpp')
         pg.fill('#newpn', 'Mgr'); pg.select_option('#newpr', 'manager'); pg.click('#addpp')
         check('B1 codes never shown on People screen', '1111' not in pg.inner_html('main'))
-        pg.select_option('#whosel', 'Nurse'); code(pg, '2222'); code(pg, '2222'); clear(pg)
+        pg.click('#whob'); pg.click('#wpl [data-wp="Nurse"]'); code(pg, '2222'); code(pg, '2222'); clear(pg)
         pg.click('#nav [data-t="menu"]')
         check('B2 caregiver cannot open Menu', not pg.is_visible('#pin') and pg.evaluate("S.tab")!='menu')
 
@@ -119,7 +119,7 @@ def main():
 
         # E. wrong-code limits
         pg.evaluate("S.pinFail={n:0,until:0,last:0};S.who='';render()")
-        pg.select_option('#whosel', 'Owner')
+        pg.click('#whob'); pg.click('#wpl [data-wp="Owner"]')
         for _ in range(5): code(pg, '9999')
         check('E1 five wrong codes pause entry', pg.evaluate('pinLocked()') and pg.locator('#pad button:disabled').count() > 0)
         pg.evaluate('S.pinFail.until=Date.now()-1'); pg.wait_for_timeout(1200)
@@ -128,7 +128,7 @@ def main():
 
         # N. owners/managers go straight into the Menu after signing in
         pg.evaluate("S.who='';S.adminOk=false;render()")
-        pg.select_option('#whosel', 'Owner'); code(pg, '1111'); clear(pg)
+        pg.click('#whob'); pg.click('#wpl [data-wp="Owner"]'); code(pg, '1111'); clear(pg)
         pg.click('#nav [data-t="menu"]')
         check('N1 owner opens Menu without retyping a code', not pg.is_visible('#pin') and pg.evaluate("S.tab")=='menu')
         pg.click('[data-lock]'); pg.click('#nav [data-t="menu"]')
@@ -388,6 +388,34 @@ def main():
         pt_.fill('#te [data-tm]', '5'); pt_.click('#te [data-cl="te"]'); pt_.wait_for_timeout(150)
         check('TP3 a number saves, closes, and puts it on the board', not pt_.is_visible('#te') and pt_.evaluate("dayModels(0).some(m=>m.cnts.some(t=>t.name==='Count TP'&&t.times===5))"))
         check('TP4 no script errors (times per day)', not et_, '; '.join(et_[:3]))
+
+        # DS. 1.16 design pass: who's-here button, tab bar, supply details, grouped editor
+        pd_, ed_ = page(viewport={'width': 1080, 'height': 810})
+        setup(pd_, U + 'index.html', 'Dee', '2525')
+        pd_.evaluate("S.people.forEach(p=>p.toured=true);S.people.push({name:'Kim Larson',role:'caregiver',pin:'3636',toured:true});S.stock.push({id:881,name:'Gauze DS',qty:0,low:2});S.tasks.push({id:882,name:'Med DS',periods:[],every:0,at:['09:00'],needs:[]});S.tab='today';render()")
+        check('DS1 who’s here shows initials and name', pd_.inner_text('#whob').startswith('D') and 'Dee' in pd_.inner_text('#whob'))
+        pd_.click('#whob')
+        check('DS2 tapping it lists people with roles and a sign-out', pd_.is_visible('#wp') and 'KL' in pd_.inner_text('#wpl') and 'Caregiver' in pd_.inner_text('#wpl') and pd_.locator('[data-wso]').count() == 1)
+        pd_.click('#wpx')
+        check('DS3 the tab bar has six tabs with a low-supply badge', pd_.locator('nav .tabs [data-t]').count() == 6 and pd_.inner_text('nav [data-t="stock"] .nbadge') == '1')
+        pd_.click('.lowchip')
+        check('DS4 the low-supplies chip opens Supplies', pd_.evaluate("S.tab") == 'stock')
+        pd_.click('[data-sdet="881"]')
+        check('DS5 tapping a supply opens its details', pd_.is_visible('#ti') and 'Reorder at' in pd_.inner_text('#tib') and pd_.locator('#tif [data-sd="881"]').count() == 1)
+        pd_.click('#tif [data-cl="ti"]'); pd_.evaluate("openTE(882)"); pd_.wait_for_timeout(100)
+        check('DS6 the editor folds supplies and how-to under More options', pd_.locator('#te [data-tna]').count() == 0 and pd_.is_visible('#te [data-temore]'))
+        pd_.click('#te [data-temore]'); pd_.wait_for_timeout(100)
+        check('DS7 More options opens them', pd_.locator('#te [data-tna]').count() == 1 and pd_.locator('#te [data-gr]').count() == 1)
+        pd_.evaluate("$('te').classList.remove('show')")
+        pd_.evaluate("S.tasks.push({id:883,name:'Care DS',periods:['day'],every:0,needs:[{sid:881,use:1}]});S.orders=[{id:'oDS',items:[{sid:881,qty:5}],expected:bizDay(),from:'X',status:'open'}];S.tab='admin';render()")
+        pd_.click('[data-bsup="0"]'); pd_.evaluate("S.tab='today';render()")
+        check('DS9 hiding supplies removes low warnings, supply icons, and deliveries from the board', pd_.locator('.lowchip').count() == 0 and pd_.locator('.dlv').count() == 0 and pd_.locator('main .infob').count() == 0)
+        pd_.evaluate("togK('883|day',false)")
+        check('DS10 counts still go down when tasks are checked off', pd_.evaluate("sItem(881).qty") == 0 and pd_.evaluate("S.log.some(r=>r.d.indexOf('task board: hidden')>-1)"))
+        pd_.evaluate("S.guides.push({id:'gDS',title:'Guide DS',steps:'a'});S.tasks.push({id:884,name:'How DS',periods:['day'],every:0,needs:[],guide:'gDS'});S.tab='today';render()")
+        h1 = pd_.locator('main .infob[data-ti="884"]').count(); pd_.evaluate("S.tab='admin';render()"); pd_.click('[data-bhow="0"]'); pd_.evaluate("S.tab='today';render()")
+        check('DS11 hiding how-tos removes the How-to icon from tasks', h1 == 1 and pd_.locator('main .infob').count() == 0 and pd_.evaluate("S.log.some(r=>r.d.indexOf('How-tos on the task board: hidden')>-1)"))
+        check('DS8 no script errors (design pass)', not ed_, '; '.join(ed_[:3]))
 
         # H. inventory + log database persistence
         pg.wait_for_timeout(800); clear(pg)
