@@ -12,9 +12,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="theme-color" content="#10151c">
 <style>
-:root{--bg:#10151c;--panel:#18202a;--panel2:#202a36;--line:#2b3846;--tx:#e6ebf1;--mut:#8d9bab;--ok:#5fc3a5;--okbg:#17332f;--due:#f0b35a;--dubg:#3a2f1a;--bad:#ef7b6e;--acc:#7fa8e6;--dim:.45;
+:root{--bg:#10151c;--panel:#18202a;--panel2:#202a36;--line:#2b3846;--tx:#e6ebf1;--mut:#8d9bab;--ok:#5fc3a5;--okbg:#17332f;--due:#f0b35a;--dubg:#3a2f1a;--bad:#ef7b6e;--acc:#7fa8e6;--badbg:#4a1f1b;--badfg:#ffd9d4;--dim:.45;
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-:root[data-theme="light"]{--bg:#f3f5f8;--panel:#fff;--panel2:#e9eef4;--line:#d3dbe4;--tx:#18222d;--mut:#5d6b7a;--ok:#1d8a6c;--okbg:#dff3ec;--due:#b26d00;--dubg:#fbefd8;--bad:#c4382b;--acc:#2b62b8}
+:root[data-theme="light"]{--badbg:#fbe3e0;--badfg:#a3261b;--bg:#f3f5f8;--panel:#fff;--panel2:#e9eef4;--line:#d3dbe4;--tx:#18222d;--mut:#5d6b7a;--ok:#1d8a6c;--okbg:#dff3ec;--due:#b26d00;--dubg:#fbefd8;--bad:#c4382b;--acc:#2b62b8}
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--tx);font:17px/1.35 -apple-system,"SF Pro Text",system-ui,sans-serif}
 body{padding:14px;max-width:1180px;margin:0 auto}
@@ -275,6 +275,9 @@ nav{display:block;margin-bottom:12px}.tabs{display:flex;gap:2px;background:var(-
 .srow.low{box-shadow:inset 4px 0 0 var(--bad)!important;background:var(--panel2)!important;border-radius:0}.srow.low.ordd{box-shadow:inset 4px 0 0 var(--due)!important}.srow.low .sq{color:var(--bad)}.elist .srow:first-child{border-top-left-radius:11px;border-top-right-radius:11px}
 .ch .addbtn{min-height:34px;padding:4px 12px;font-size:14px}
 #st .card.stc{max-width:560px;padding:16px 18px 20px}.sthead{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}.sthead h2{margin:0}.sthead .tpok{min-height:38px;padding:6px 18px;font-size:16px;flex:none}.stsec{margin:18px 0 6px 4px;font-size:12px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--mut)}.stfoot{margin:6px 4px 0;font-size:13px;color:var(--mut);line-height:1.4}#st .grow>span:first-child{display:flex;flex-direction:column;font-size:16px}#st .grow small{color:var(--mut);font-size:13px}#st .seg{flex:none}#st .seg button{min-height:34px;padding:4px 12px;font-size:14px}#st select{min-height:36px;font-size:15px;padding:4px 10px}#st .stinfo>span{font-size:14px!important;color:var(--tx)}#st .stinfo small{margin-top:2px}.gact{display:block;width:100%;text-align:left;background:transparent;border:0;border-bottom:1px solid var(--line);border-radius:0;color:var(--acc);min-height:46px;padding:10px 14px;font-size:16px}.grp>.gact:last-child,#stdt .gact:last-child{border-bottom:0}#stdt{border-top:1px solid var(--line)}.grow+#stdt{border-top:1px solid var(--line)}.gsm{min-height:34px;padding:4px 12px;font-size:14px}#st .tchip{min-height:36px;padding:4px 14px}#st .tchip:disabled{opacity:.55}
+.tag.bad{background:var(--badbg)!important;color:var(--badfg)!important}.mgwrap{max-width:760px;margin:0 auto}.mghead{margin-bottom:4px}.mgwho{display:flex;align-items:center;gap:12px;font-size:17px}.mgwho>span:last-child{display:flex;flex-direction:column}.mgwho small{color:var(--mut);font-size:13px}.mgwho .av{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,var(--acc) 22%,var(--panel2));color:var(--acc);font-weight:650;font-size:14px}.mgrow{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:transparent;border:0;border-bottom:1px solid var(--line);border-radius:0;min-height:62px;padding:10px 14px;color:var(--tx)}.grp>.mgrow:last-child{border-bottom:0}.mgic{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;background:color-mix(in srgb,var(--acc) 18%,var(--panel2));color:var(--acc);flex:none}.mgic.sos{background:color-mix(in srgb,var(--bad) 18%,var(--panel2));color:var(--bad)}.mgtx{flex:1;display:flex;flex-direction:column;font-size:17px;font-weight:500;min-width:0}.mgtx small{color:var(--mut);font-size:13.5px;font-weight:400}.mgrow .chev{color:var(--mut);font-size:22px}@media (prefers-reduced-motion:no-preference){.task.pop .box{animation:boxpop .38s cubic-bezier(.3,1.6,.5,1)}.task.pop{animation:popglow .7s ease-out}}@keyframes boxpop{0%{transform:scale(.55)}100%{transform:scale(1)}}@keyframes popglow{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--ok) 60%,transparent)}100%{box-shadow:0 0 0 12px color-mix(in srgb,var(--ok) 0%,transparent)}}
+.whob .chev,.temore .chev{display:grid;place-items:center;line-height:0;color:var(--mut)}.whob .chev svg{margin-left:-2px}
+.pad button{touch-action:manipulation;transition:background .08s}.pad button.hit{animation:padhit .18s ease-out}@keyframes padhit{0%{background:var(--acc);color:#0c1420;transform:scale(.94)}100%{transform:scale(1)}}
 </style>
 </head>
 <body>
@@ -359,7 +362,7 @@ nav{display:block;margin-bottom:12px}.tabs{display:flex;gap:2px;background:var(-
 <div class="modal" id="sh"><div class="card" style="max-width:460px" id="shb"></div></div>
 <div class="modal" id="tp"><div class="card" style="max-width:380px"><h2 id="tpt">Pick a time</h2><p class="note" id="tps" style="margin:0 0 4px"></p><p class="tpv" id="tpv" aria-live="polite"></p><div class="tpw"><div class="tpc" id="tph" aria-label="Hour"></div><div class="tpc" id="tpm" aria-label="Minute"></div><div class="tpc" id="tpa" aria-label="AM or PM"></div></div><p class="note" style="text-align:center;margin:4px 0 10px">Scroll to the time, then tap ✓ to save it.</p><p class="note" id="tpe" style="color:var(--bad);text-align:center" aria-live="polite"></p><div style="display:flex;gap:8px"><button id="tpx">Cancel</button><button id="tpok" class="tpok" aria-label="Save this time">✓</button></div></div></div>
 <script>
-var VER='1.16';
+var VER='1.17';
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
 var S={
   tab:'today',who:'',people:[{name:'Zach',pin:'1111'},{name:'Wife',pin:'2222'},{name:'Nurse',pin:'3333'}],pend:null,pin:{for:'',buf:''},reason:'',
@@ -390,7 +393,7 @@ function fmtT(t){var m=mins(t),h=Math.floor(m/60),mm=m%60;return(h%12||12)+(mm?'
 function tick(){$('clock').textContent=new Date().toLocaleDateString([],{weekday:'long',month:'short',day:'numeric'})+' · '+fmt(new Date())}
 var whoHtml='';
 function head(){
-  var wp0=me(),wh=S.who?'<button class="whob" id="whob" aria-label="Signed in as '+esc(S.who)+'. Switch person"><span class="av">'+esc(inits(S.who))+'</span><span class="whn">'+esc(S.who)+'</span><span class="whr">'+esc(roleName(wp0&&wp0.role))+'</span><span class="chev" aria-hidden="true">⌄</span></button>':'<button class="whob nobody" id="whob"><span class="av">?</span><span class="whn">Who’s here?</span><span class="chev" aria-hidden="true">⌄</span></button>';if(wh!==whoHtml){whoHtml=wh;$('who').innerHTML=wh}
+  var wp0=me(),wh=S.who?'<button class="whob" id="whob" aria-label="Signed in as '+esc(S.who)+'. Switch person"><span class="av">'+esc(inits(S.who))+'</span><span class="whn">'+esc(S.who)+'</span><span class="whr">'+esc(roleName(wp0&&wp0.role))+'</span><span class="chev" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></button>':'<button class="whob nobody" id="whob"><span class="av">?</span><span class="whn">Who’s here?</span><span class="chev" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></button>';if(wh!==whoHtml){whoHtml=wh;$('who').innerHTML=wh}
   var mh=mhintOn()?'<div class="mhint" id="mhint" role="note"><span>Add repeating tasks here</span><button id="mhx" aria-label="Got it, hide this">×</button></div>':'';
   var nlow=S.stock.filter(function(i){return i.qty<=i.low&&!onOrder(i.id)}).length;
   $('nav').innerHTML='<div class="tabs" role="tablist">'+[['today','Today'],['week','This week'],['library','How-to'],['stock','Supplies'],['log','Log'],['menu','Manage']].map(function(t){var on=S.tab===t[0]||(t[0]==='menu'&&['edit','periods','people','admin'].indexOf(S.tab)>-1);return'<button role="tab" aria-selected="'+on+'" class="'+(on?'on':'')+'" data-t="'+t[0]+'">'+ICO[t[0]]+'<span>'+t[1]+'</span>'+(t[0]==='stock'&&nlow?'<span class="nbadge" aria-label="'+nlow+' low">'+nlow+'</span>':'')+'</button>'}).join('')+'</div>';
@@ -403,7 +406,7 @@ function mhintOn(){return false;var p=me();return!!(p&&S.who&&can('sched')&&!p.h
 function cntTile(t){var c=S.cnt[t.id]||{n:0},ok=c.n>=t.times;
   return'<div class="trow"><button class="task '+(ok?'done':'')+'" data-c="'+t.id+'" data-lpc="'+t.id+'"><span class="box" style="width:auto;min-width:30px;padding:0 6px">'+c.n+'/'+t.times+'</span><span class="nm">'+esc(t.name)+'<span class="meta">'+(c.last?'Last: '+esc(c.who)+' at '+c.last:t.times+' times a day')+'</span></span></button></div>'}
 function ivTile(t){var left=t.every-t.last,d=t.done;
-  var tag=d?'<span class="tag ok dn">'+esc(d.who)+' · '+d.time+'</span>':left<0?'<span class="tag" style="background:#4a1f1b;color:#ffd9d4">Overdue</span>':left===0?'<span class="tag">Due today</span>':'<span class="tag up">In '+left+' day'+(left>1?'s':'')+'</span>';
+  var tag=d?'<span class="tag ok dn">'+esc(d.who)+' · '+d.time+'</span>':left<0?'<span class="tag bad">Overdue</span>':left===0?'<span class="tag">Due today</span>':'<span class="tag up">In '+left+' day'+(left>1?'s':'')+'</span>';
   return'<div class="trow"><button class="task '+(d?'done':'')+'" data-i="'+t.id+'"'+(!d&&left<=0?' data-lpi="'+t.id+'"':'')+'><span class="box">'+(d?'✓':'')+'</span><span class="nm">'+esc(t.name)+'<span class="meta">'+(d?'Next due '+dlabel(addDays(bizDay(),t.every)):fl(t)+(left>0&&left<=7?' · tap if done early':''))+'</span></span>'+tag+'</button></div>'}
 function slotDiff(x,nm){return offMin(nm)-offMin(mins(x))}
 function perLen(p){var a=mins(p.start),b=mins(p.end);return a<b?b-a:1440-a+b}
@@ -426,11 +429,11 @@ function addDays(k,n){return new Date(Date.parse(k)+n*864e5).toISOString().slice
 function dlabel(k){return new Date(Date.parse(k)).toLocaleDateString([],{weekday:'short',month:'short',day:'numeric',timeZone:'UTC'})}
 function onceTs(t){var q=t.date.split('-'),m=mins(t.time),d=new Date(+q[0],+q[1]-1,+q[2],Math.floor(m/60),m%60,0,0);if(m<mins(S.resetAt))d=new Date(d.getTime()+864e5);return d.getTime()}
 function onceTile(t){var td=bizDay(),d=t.done,od=t.date<td,now=new Date().getTime(),ts=t.time&&!od?onceTs(t):0,diff=ts?Math.round((now-ts)/60000):0;
-  var tg=d?'<span class="tag ok dn">'+esc(d.who)+' · '+d.time+'</span>':od?'<span class="tag" style="background:#4a1f1b;color:#ffd9d4">Overdue</span>':ts?(diff>=(t.grace||60)?'<span class="tag" style="background:#4a1f1b;color:#ffd9d4">Overdue</span>':diff>=0?'<span class="tag" style="font-weight:700">Due now</span>':'<span class="tag up">'+fmtT(t.time)+'</span>'):'<span class="tag">Due today</span>';
+  var tg=d?'<span class="tag ok dn">'+esc(d.who)+' · '+d.time+'</span>':od?'<span class="tag bad">Overdue</span>':ts?(diff>=(t.grace||60)?'<span class="tag bad">Overdue</span>':diff>=0?'<span class="tag" style="font-weight:700">Due now</span>':'<span class="tag up">'+fmtT(t.time)+'</span>'):'<span class="tag">Due today</span>';
   var meta='One-time'+(!d&&t.time?' at '+fmtT(t.time):'')+(!d&&od?', was due '+dlabel(t.date):'');
   return'<div class="trow"><button class="task '+(d?'done':'')+'" data-o="'+t.id+'"'+(d?'':' data-lpo="'+t.id+'"')+(!d&&(od||diff>=(t.grace||60)&&ts)?' data-st8="over"':!d&&diff>=0&&ts?' data-st8="due"':'')+'><span class="box">'+(d?'✓':'')+'</span><span class="nm">'+esc(t.name)+'<span class="meta">'+meta+'</span></span>'+tg+'</button></div>'}
 function slotTile(s,p){if(s.o)return onceTile(s.t);if(s.m)return deferTile(s,p);var nw=new Date(),nm=nw.getHours()*60+nw.getMinutes(),key=s.t.id+'@'+s.x,dn=S.cdone[key],diff=slotDiff(s.x,nm,p);
-  var tg=dn?'<span class="tag ok dn">'+esc(dn.who)+' · '+dn.time+'</span>':diff>=(s.t.grace||60)?'<span class="tag stk" style="background:#4a1f1b;color:#ffd9d4"><small>Overdue</small>'+fmtT(s.x)+'</span>':diff>=0?'<span class="tag stk" style="font-weight:700"><small>Due now</small>'+fmtT(s.x)+'</span>':'<span class="tag up">'+fmtT(s.x)+'</span>';
+  var tg=dn?'<span class="tag ok dn">'+esc(dn.who)+' · '+dn.time+'</span>':diff>=(s.t.grace||60)?'<span class="tag stk bad"><small>Overdue</small>'+fmtT(s.x)+'</span>':diff>=0?'<span class="tag stk" style="font-weight:700"><small>Due now</small>'+fmtT(s.x)+'</span>':'<span class="tag up">'+fmtT(s.x)+'</span>';
   return'<div class="trow"><button class="task '+(dn?'done':diff>=(s.t.grace||60)?'over':diff>=0?'due':'')+'" data-ct="'+key+'"'+(dn?'':' data-lpt="'+key+'"')+'><span class="box">'+(dn?'✓':'')+'</span><span class="nm">'+esc(s.t.name)+'<span class="meta"></span></span>'+tg+'</button></div>'}
 function rtTile(t,p){var h='';
       var d=S.done[t.id+'|'+p.id];
@@ -472,7 +475,7 @@ function today(){
   if(S.viewP&&(S.viewFrom!==cur.id||!S.periods.some(function(q){return q.id===S.viewP})))S.viewP=null;
   var models=curPeriods().map(function(q){return periodModel(q,cur)}),view=models.filter(function(m){return m.p.id===(S.viewP||cur.id)})[0]||models[0];
   h+='<div class="shifts" role="group" aria-label="Shift">'+models.map(function(m){var st=stats(m),on=m===view;
-    var bd=st.open===0?'<span class="tag ok">All done</span>':'<span class="tag">'+st.open+' left</span>'+(st.over?'<span class="tag" style="background:#4a1f1b;color:#ffd9d4">'+st.over+' overdue</span>':'');
+    var bd=st.open===0?'<span class="tag ok">All done</span>':'<span class="tag">'+st.open+' left</span>'+(st.over?'<span class="tag bad">'+st.over+' overdue</span>':'');
     return'<button class="sh'+(on?' on':'')+'" data-sh="'+m.p.id+'" aria-pressed="'+on+'"><span class="shn">'+esc(m.p.name)+(m.isNow?(inP(m.p,new Date().getHours()*60+new Date().getMinutes())?'<span class="pill">Now</span>':'<span class="pill" style="background:var(--panel2);color:var(--mut);border:1px solid var(--line)">After hours</span>'):'')+'</span><span class="shh">'+fmtT(m.p.start)+' to '+fmtT(m.p.end)+(m.p.early?' · started by '+esc(m.p.early.who):'')+'</span><span class="shb">'+bd+'</span></button>'}).join('')+'</div>';
   if(!view.isNow){var cp=models.filter(function(m){return m.isNow})[0],nx=nextShift();h+='<div class="vb"><span>Viewing <b>'+esc(view.p.name)+'</b>, which is not the active shift.</span><span style="display:flex;gap:8px;flex-wrap:wrap">'+(nx&&nx.id===view.p.id&&S.who?'<button data-shst="'+nx.id+'">Start '+esc(nx.name)+' now</button>':'')+'<button data-sh="'+cp.p.id+'">Back to '+esc(cp.p.name)+'</button></span></div>'}
   else if(view.p.early)h+='<div class="vb" style="background:var(--panel2);color:var(--tx);border:1px solid var(--line)"><span>'+esc(view.p.name)+' started early at '+fmtT(view.p.early.t)+' by '+esc(view.p.early.who)+' (usually '+fmtT(view.p.early.usual)+').</span>'+(S.who?'<button data-shun="'+view.p.id+'" style="background:transparent;color:var(--tx);border-color:var(--line)">Undo</button>':'')+'</div>'
@@ -540,7 +543,7 @@ function openPush(tid,from){
 function pushLog(tid,from,where){lg('Pushed',tn(tid)+' ('+pn(from)+') '+where+(S.reason?' · '+S.reason:''),{tid:tid})}
 function pushAt(tid,from,ts){pushLog(tid,from,'to '+fmt(new Date(ts)));S.moves=S.moves.filter(function(m){return !(m.tid===tid&&m.from===from)});S.moves.push({tid:tid,from:from,to:'at',ts:ts,at:Date.now(),who:S.who,reason:S.reason||'',time:fmt(new Date())});$('pm').classList.remove('show');render()}
 function deferTile(s,p){var m=s.m,t=s.t,k=t.id+'|'+m.from,dn=S.done[k],diff=Math.round((new Date().getTime()-m.ts)/60000);
-  var tg=dn?'<span class="tag ok dn">'+esc(dn.who)+' · '+dn.time+'</span>':diff>=(t.grace||60)?'<span class="tag" style="background:#4a1f1b;color:#ffd9d4">Overdue</span>':diff>=0?'<span class="tag" style="font-weight:700">Due now</span>':'<span class="tag up">'+fmt(new Date(m.ts))+'</span>';
+  var tg=dn?'<span class="tag ok dn">'+esc(dn.who)+' · '+dn.time+'</span>':diff>=(t.grace||60)?'<span class="tag bad">Overdue</span>':diff>=0?'<span class="tag" style="font-weight:700">Due now</span>':'<span class="tag up">'+fmt(new Date(m.ts))+'</span>';
   return'<div class="trow"><button class="task '+(dn?'done':'')+'" data-k="'+k+'"'+(dn?'':' data-lpd="'+k+'"')+(!dn&&diff>=(t.grace||60)?' data-st8="over"':!dn&&diff>=0?' data-st8="due"':'')+'><span class="box">'+(dn?'✓':'')+'</span><span class="nm">'+esc(t.name)+'<span class="meta">'+(dn?'':'Moved by '+esc(m.who)+(m.reason?' · '+esc(m.reason.toLowerCase()):''))+'</span></span>'+tg+'</button></div>'}
 function tn(id){var t=S.tasks.filter(function(x){return x.id==id})[0];return t?t.name:'a task'}
 function pn(id){if(id==='tomorrow')return 'tomorrow';if(String(id).indexOf('prev:')===0)return pn(id.slice(5))+', carried over';var p=S.periods.filter(function(x){return x.id===id})[0];return p?p.name:id}
@@ -606,7 +609,7 @@ function drawTE(){var t=T(S.teId);if(!t){$('te').classList.remove('show');return
   h+='</div><div class="tegrp">'+ordSection(t).replace('<div class="tesec">','<div>')+'</div>';
   var nd=needsOf(t),g=guideOf(t),nx=(t.extras||[]).length,mo=TEM[t.id]!=null?TEM[t.id]:!!(nd.length||nx||g||(f==='clock'&&t.grace&&t.grace!==60));
   var sum=[nd.length?nd.length+' suppl'+(nd.length===1?'y':'ies'):'',nx?nx+' to have ready':'',g?'how-to':''].filter(Boolean).join(' · ');
-  h+='<button class="temore" data-temore="'+t.id+'" aria-expanded="'+mo+'"><span>More options</span><small>'+(sum||'Supplies, things to have ready, how-to'+(f==='clock'?', overdue timing':''))+'</small><span class="chev">'+(mo?'⌃':'⌄')+'</span></button>';
+  h+='<button class="temore" data-temore="'+t.id+'" aria-expanded="'+mo+'"><span>More options</span><small>'+(sum||'Supplies, things to have ready, how-to'+(f==='clock'?', overdue timing':''))+'</small><span class="chev">'+(mo?'<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg>':'<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>')+'</span></button>';
   if(mo){h+='<div class="tegrp">';
     if(f==='clock')h+='<div class="tero"><span>Show as overdue after</span><label class="c"><input type="number" min="5" step="5" value="'+(t.grace||60)+'" data-gr="'+t.id+'" aria-label="Overdue after minutes" style="width:80px"> min</label></div>';
     var free=S.stock.filter(function(i){return !(t.needs||[]).some(function(n){return n.sid===i.id})}).sort(function(a,b){return a.name.localeCompare(b.name)});
@@ -645,18 +648,21 @@ function setQty(id,q){var it=S.stock.filter(function(x){return x.id==id})[0];if(
 var QC=null;
 function openQC(id){var it=S.stock.filter(function(x){return x.id==id})[0];if(!it)return;QC=it.id;$('qct').textContent=it.name;$('qcv').value=it.qty;$('qce').textContent='';$('qc').classList.add('show');setTimeout(function(){try{$('qcv').focus();$('qcv').select()}catch(x){}},60)}
 function saveQC(){var v=$('qcv').value.trim();if(!/^\d+$/.test(v)){$('qce').textContent='Enter a whole number, like 12.';return}var it0=sItem(QC);$('qc').classList.remove('show');if(it0&&+v>it0.qty&&!ASKD[QC]&&onOrder(QC)&&askArr(QC,+v))return;setQty(QC,+v);render()}
+var MICO={edit:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11"/><path d="M4 6h.01M4 12h.01M4 18h.01"/></svg>',periods:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></svg>',people:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19a5.5 5.5 0 0111 0"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14.2a4.5 4.5 0 015.5 4.8"/></svg>',emedit:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4l9 16H3z"/><path d="M12 10v4M12 17.2v.3"/></svg>',stock:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7.5l9-4 9 4v9l-9 4-9-4z"/><path d="M3 7.5l9 4 9-4M12 11.5v9"/></svg>',library:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4.5h9.5a3 3 0 013 3V20H8a3 3 0 01-3-3z"/><path d="M5 17a3 3 0 013-3h9.5"/></svg>',admin:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7.5 3v5.5c0 4.4-3.1 8.2-7.5 9.5-4.4-1.3-7.5-5.1-7.5-9.5V6z"/><path d="M9 12l2 2 4-4"/></svg>'};
 function menu(){var p=me(),items=[];
   if(can('sched'))items.push(['edit','All tasks','Every task on the board: add, change, or remove']);
   if(can('owner'))items.push(['periods','Times of day','Rename Day and Night, change hours, or add more'],['people','People and roles','Add people, set roles, and reset codes']);
   if(can('emer'))items.push(['emedit','Emergency info','Numbers, what to tell 911, and the plan']);
-  if(can('stock'))items.push(['stock','Manage supplies','Add, remove, and link supplies in Inventory']);
-  if(can('guides'))items.push(['library','Write guides','Add and edit how-to guides']);
-  if(can('owner'))items.push(['admin','Admin settings','Recovery key, your code hint, setup checklist, and Start fresh']);
+  if(can('stock'))items.push(['stock','Supplies','Add, remove, and link supplies; log orders']);
+  if(can('guides'))items.push(['library','How-to guides','Write and edit step-by-step guides']);
+  if(can('owner'))items.push(['admin','Admin settings','Recovery key, code hint, what shows on the board, Start fresh']);
   var h=(isOwner()&&S.setup?setupCard(true):'')+(isOwner()&&!S.rkey?'<div class="vb"><span>Create a recovery key so a forgotten owner code can be reset.</span><button id="rknew">Create recovery key</button></div>':'');
-  h+='<div class="row" style="border:0;padding:0 0 12px;justify-content:space-between"><span class="note" style="margin:0">Signed in as <b>'+esc(S.who)+'</b> · '+roleName(p&&p.role)+'. Admin tools stay open while you’re signed in. Tap Lock if you step away.</span><button data-lock="1">Lock</button></div>';
+  h+='<div class="mgwrap"><div class="grp mghead"><div class="grow"><span class="mgwho"><span class="av">'+esc(inits(S.who))+'</span><span>'+esc(S.who)+'<small>'+roleName(p&&p.role)+' · admin tools stay open while you’re signed in</small></span></span><button data-lock="1" class="gsm">Lock</button></div></div>';
   if(!items.length)h+='<p class="note">Your role doesn’t include any admin tools yet. An owner can turn them on in People and roles.</p>';
-  h+='<div class="grid">'+items.map(function(i){return'<button class="task'+''+'" '+(i[0]==='emedit'?'id="emedit"':'data-t="'+i[0]+'"')+' style="display:block;min-height:88px"><span class="nm" style="display:block;font-size:19px;font-weight:500">'+i[1]+''+'</span><span class="meta">'+i[2]+'</span></button>'}).join('')+'</div>';
-  return h;
+  var G=[['Tasks and schedule',['edit','periods']],['Supplies and guides',['stock','library']],['People and safety',['people','emedit']],['Owner',['admin']]];
+  G.forEach(function(g){var its=items.filter(function(i){return g[1].indexOf(i[0])>-1});if(!its.length)return;
+    h+='<p class="stsec">'+g[0]+'</p><div class="grp">'+its.map(function(i){return'<button class="mgrow" '+(i[0]==='emedit'?'id="emedit"':'data-t="'+i[0]+'"')+'><span class="mgic'+(i[0]==='emedit'?' sos':'')+'">'+MICO[i[0]]+'</span><span class="mgtx">'+i[1]+'<small>'+i[2]+'</small></span><span class="chev" aria-hidden="true">›</span></button>'}).join('')+'</div>'});
+  return h+'</div>';
 }
 /* ---- 1.14: days of the week + one plan for the board and This week ---- */
 var WDN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
@@ -685,7 +691,7 @@ function week(){var h='<div class="wkgrid">';
     var key=addDays(bizDay(),k),nm=k===0?'Today':k===1?'Tomorrow':WDN[keyWd(key)];
     h+='<button class="wkc'+(k===0?' now':'')+'" data-wday="'+k+'"><span class="wkh"><b>'+nm+'</b><small>'+new Date(Date.parse(key)).toLocaleDateString([],{month:'short',day:'numeric',timeZone:'UTC'})+'</small></span>';
     ms.forEach(function(m){var n=mCount(m),tag;
-      if(k===0){var st=stats(m);tag=!n?'<span class="tag ok">Nothing</span>':st.open===0?'<span class="tag ok">All done</span>':'<span class="tag">'+(n-st.open)+' of '+n+' done</span>'+(st.over?'<span class="tag" style="background:#4a1f1b;color:#ffd9d4">'+st.over+' overdue</span>':'')}
+      if(k===0){var st=stats(m);tag=!n?'<span class="tag ok">Nothing</span>':st.open===0?'<span class="tag ok">All done</span>':'<span class="tag">'+(n-st.open)+' of '+n+' done</span>'+(st.over?'<span class="tag bad">'+st.over+' overdue</span>':'')}
       else tag='<span class="tag ok">'+(n?n+' task'+(n===1?'':'s'):'Nothing')+'</span>';
       h+='<span class="wkr"><span>'+esc(m.p.name)+'</span><span class="wkt">'+tag+'</span></span>'});
     if(feeds||meds)h+='<span class="wkhl">'+(feeds?'<span class="opill">Feed</span> '+feeds+' feed'+(feeds===1?'':'s'):'')+(feeds&&meds?' · ':'')+(meds?'<span class="opill">Med</span> '+meds+' med'+(meds===1?'':'s'):'')+'</span>';
@@ -693,7 +699,7 @@ function week(){var h='<div class="wkgrid">';
     h+='<span class="wkgo">See the day ›</span></button>'}
   return h+'</div><p class="note">Counts match the board: the same tasks, shifts, and days. Tap a day to see everything on it.</p>'}
 function wdRow(time,name,t,tag,done){return'<div class="wdi'+(done?' done':'')+'"><span class="wdt">'+time+'</span><span class="wdn">'+esc(name)+(t&&ordTxt(t)?'<span class="wdo">'+esc(ordTxt(t))+'</span>':'')+'</span>'+(tag||'')+'</div>'}
-function openDay(k){var ms=dayModels(k),td=k===0,h='',ok='<span class="tag ok">Done</span>',ov='<span class="tag" style="background:#4a1f1b;color:#ffd9d4">Overdue</span>';
+function openDay(k){var ms=dayModels(k),td=k===0,h='',ok='<span class="tag ok">Done</span>',ov='<span class="tag bad">Overdue</span>';
   ms.forEach(function(m){var n=mCount(m),st=td?stats(m):null;
     h+='<p class="sec">'+esc(m.p.name)+' · '+fmtT(m.p.start)+' to '+fmtT(m.p.end)+(td&&n?' · '+(n-st.open)+' of '+n+' done':'')+'</p>';
     if(!n){h+='<p class="note" style="margin:0 0 6px">Nothing scheduled.</p>';return}
@@ -888,7 +894,7 @@ document.addEventListener('click',function(e){
   if(b.dataset.ssort){S.ssort=b.dataset.ssort;render();return}
   if(b.dataset.sd){if(!can('stock'))return;$('ti').classList.remove('show');var _b=b;askConfirm('Remove this supply?','“'+((S.stock.filter(function(x){return x.id==b.dataset.sd})[0])||{}).name+'” and its count will be removed.','Remove supply',function(){var b=_b;S.stock=S.stock.filter(function(x){return x.id!=b.dataset.sd});S.tasks.forEach(function(t){t.needs=(t.needs||[]).filter(function(n){return n.sid!=b.dataset.sd})});render();});return}
   if(b.id==='addi'){if(!can('stock'))return;var nm2=$('newi').value.trim();if(!nm2)return;S.stock.push({id:S.nid++,name:nm2,qty:Math.max(0,+$('newq').value||0),low:2});render();return}
-  if(b.dataset.pk){pinKey(b.dataset.pk);return}
+  if(b.dataset.pk){if(e.detail===0)pinKey(b.dataset.pk);return}
   if(b.id==='pinx'){$('pin').classList.remove('show');return}
   if(b.dataset.rs){S.reason=S.reason===b.dataset.rs?'':b.dataset.rs;if(S.pend)openPush(S.pend.tid,S.pend.from);return}
   if(b.dataset.ppd){if(!can('owner'))return;var _i=+b.dataset.ppd,_p=S.people[_i];if(!_p||_p.name===S.who||(_p.role==='owner'&&owners().length<=1))return;askConfirm('Remove this person?','“'+_p.name+'” won’t be able to sign in anymore. Their past check-offs stay in the log.','Remove person',function(){var ix=S.people.indexOf(_p);if(ix>-1)S.people.splice(ix,1);lg('Changed','Removed '+_p.name);render()});return}
@@ -958,6 +964,8 @@ document.addEventListener('change',function(e){
   var P=function(id){return S.periods.filter(function(p){return p.id===id})[0]};
   if(d.pn)P(d.pn).name=e.target.value||'Unnamed';
 });
+/* 1.17: code pad reacts the instant a finger touches a key (no tap delay, fast repeats like 1111 all count) */
+document.addEventListener('pointerdown',function(e){var b=e.target.closest&&e.target.closest('#pad [data-pk]');if(!b||b.disabled)return;if(e.pointerType==='mouse'&&e.button!==0)return;e.preventDefault();b.classList.remove('hit');void b.offsetWidth;b.classList.add('hit');pinKey(b.dataset.pk)},true);
 var lp={t:null,x:0,y:0,fired:false};
 function lpCancel(){clearTimeout(lp.t);lp.t=null}
 document.addEventListener('pointerdown',function(e){
@@ -1146,7 +1154,7 @@ function openOrders(){return(S.orders||[]).filter(function(o){return o.status===
 function onOrder(sid){var n=0;openOrders().forEach(function(o){o.items.forEach(function(x){if(x.sid===sid)n+=x.qty})});return n}
 function nextOrd(sid){return openOrders().filter(function(o){return o.items.some(function(x){return x.sid===sid})})[0]}
 function whenLbl(k){var d=dayDiff(bizDay(),k);return d<0?'late (was due '+dlabel(k)+')':d===0?'arriving today':d===1?'arriving tomorrow':'arriving '+(d<7?WDN[keyWd(k)]:dlabel(k))}
-function whenTag(k){var d=dayDiff(bizDay(),k);return d<0?'<span class="tag" style="background:#4a1f1b;color:#ffd9d4">Late</span>':d===0?'<span class="tag">Arriving today</span>':'<span class="tag fin">'+(d===1?'Tomorrow':dlabel(k))+'</span>'}
+function whenTag(k){var d=dayDiff(bizDay(),k);return d<0?'<span class="tag bad">Late</span>':d===0?'<span class="tag">Arriving today</span>':'<span class="tag fin">'+(d===1?'Tomorrow':dlabel(k))+'</span>'}
 function openOrd(id){if(!can('stock')){unlock('stock');return}var o=id?(S.orders||[]).filter(function(x){return x.id===id})[0]:null;ORD={id:o?o.id:null};
   var q={};if(o)o.items.forEach(function(x){q[x.sid]=x.qty});var td=bizDay();
   var list=S.stock.slice().sort(function(a,b){var la=a.qty<=a.low,lb=b.qty<=b.low;if(la!==lb)return la?-1:1;return a.name.localeCompare(b.name)});
@@ -1333,7 +1341,7 @@ function tourCards(n){var tile=function(name,meta,tag,done,extra){return'<div cl
   {t:'Welcome, '+esc(n),b:'This board keeps everyone on the same page with his care. Here’s a one-minute look at how it works.',v:'<div class="shifts" style="position:static;padding:0;margin:0"><div class="sh on" style="min-height:0"><span class="shn">Day<span class="pill">Now</span></span><span class="shh">7 AM to 9 PM</span><span class="shb"><span class="tag">6 left</span></span></div><div class="sh" style="min-height:0"><span class="shn">Night</span><span class="shh">9 PM to 7 AM</span><span class="shb"><span class="tag">4 left</span></span></div></div><p class="note" style="margin:8px 0 0">The shift happening now is highlighted. Tap the other one to look ahead.</p>'},
   {t:'Tap to check things off',b:'Tap a task when it’s done. Your name and the time are saved with it. Tapped the wrong one? Tap <b>Undo</b> at the bottom of the screen right away. Later, tap the task and choose <b>Undo this check-off</b>. Tapping a finished task never undoes it by accident.',v:tile('Clean G-tube site','You at 9:12 AM','<span class="tag ok">Done</span>',true)},
   {t:'Hold a task to move or edit it',b:'Press and hold a task to move it later today, to the other shift, or to tomorrow. Owners and managers can also edit the task from there. You can add a reason, like “He’s sleeping.”',v:tile('Humidification check','Tap when done, hold for options','')},
-  {t:'Watch the tags',b:'Feeds and meds show their time until it comes up, then <b>Due now</b>, then <b>Overdue</b> if they’re missed.',v:'<div class="rs" style="margin:0"><span class="tag ok">2 PM</span><span class="tag" style="font-weight:600">Due now</span><span class="tag" style="background:#4a1f1b;color:#ffd9d4">Overdue</span></div>'},
+  {t:'Watch the tags',b:'Feeds and meds show their time until it comes up, then <b>Due now</b>, then <b>Overdue</b> if they’re missed.',v:'<div class="rs" style="margin:0"><span class="tag ok">2 PM</span><span class="tag" style="font-weight:600">Due now</span><span class="tag bad">Overdue</span></div>'},
   {t:'How-to and supplies',b:'A <b>How-to</b> or <b>Supplies</b> button next to a task shows the steps and what you’ll need. Count supplies in the <b>Inventory</b> tab with − and +, or tap the number to type a count.',v:tile('Change trach ties','Every 3 days','<span class="tag">Due today</span>',false,'<span class="push infob" style="display:grid;place-items:center">How-to</span>')},
   {t:'In an emergency',b:'The red <b>Emergency</b> button at the top is always there, with phone numbers, what to tell 911, and the plan. You can replay this tour any time from ⚙ Settings.',v:'<div style="display:flex;justify-content:center"><span class="sos" style="display:inline-block;padding:8px 16px;border-radius:10px;border:1px solid #7a3028">Emergency</span></div>'}]}
 function maybeTour(){var p=S.people.filter(function(x){return x.name===S.who})[0];if(p&&!p.toured)openTour()}
@@ -1387,7 +1395,7 @@ function isOut(x){return x.i.qty<Math.max(1,x.n.use||0)}
 function guideOf(t){return t&&t.guide?S.guides.filter(function(g){return g.id===t.guide})[0]:null}
 function stepsOf(g){return(g.steps||'').split('\n').map(function(x){return x.trim()}).filter(Boolean)}
 function needsHtml(list){return list.map(function(x){var out=isOut(x),low=x.i.qty<=x.i.low;
-  return'<div class="emr"><span>'+esc(x.i.name)+'<span class="meta">'+(x.n.use?'Uses '+x.n.use+' each time':'Needed, not used up')+'</span></span><span style="display:flex;gap:8px;align-items:center"><span style="font-variant-numeric:tabular-nums">'+x.i.qty+' on hand</span>'+(out?'<span class="tag" style="background:#4a1f1b;color:#ffd9d4">Out</span>':low?'<span class="tag">Low</span>':'<span class="tag ok">OK</span>')+'</span></div>'}).join('')}
+  return'<div class="emr"><span>'+esc(x.i.name)+'<span class="meta">'+(x.n.use?'Uses '+x.n.use+' each time':'Needed, not used up')+'</span></span><span style="display:flex;gap:8px;align-items:center"><span style="font-variant-numeric:tabular-nums">'+x.i.qty+' on hand</span>'+(out?'<span class="tag bad">Out</span>':low?'<span class="tag">Low</span>':'<span class="tag ok">OK</span>')+'</span></div>'}).join('')}
 function stepsHtml(g){var st=stepsOf(g);return st.length?'<ol class="emol">'+st.map(function(x){return'<li>'+esc(x)+'</li>'}).join('')+'</ol>':'<p class="note">No steps written yet.</p>'}
 function supOn(){return S.boardSup!==false}
 function howOn(){return S.boardHow!==false}
@@ -1445,13 +1453,14 @@ var UNDO={fn:null,t:null};
 function showUndo(msg,fn){clearTimeout(UNDO.t);UNDO.fn=fn;$('toastu').hidden=false;$('toastt').textContent=msg;$('toast').hidden=false;UNDO.t=setTimeout(hideUndo,5000)}
 function hideUndo(){clearTimeout(UNDO.t);UNDO.fn=null;$('toast').hidden=true}
 function T(id){return S.tasks.filter(function(x){return x.id==id})[0]}
+function popEl(sel){setTimeout(function(){var el=document.querySelector(sel);if(el){el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop')}},0)}
 function togK(k,ui){var tid=+k.split('|')[0],lbl=tn(tid)+' ('+pn(k.split('|')[1])+')';
-  if(S.done[k]){delete S.done[k];use(tid,-1);lg('Undid',lbl,{tid:tid});if(ui)hideUndo()}else{S.done[k]={who:S.who,time:fmt(new Date())};use(tid);lg('Completed',lbl,{tid:tid});if(ui)showUndo('Checked off: '+tn(tid),function(){togK(k,false)})}render()}
-function togI(id,ui){var t=T(id);if(!t)return;t.done=t.done?null:{who:S.who,time:fmt(new Date()),pid:nowP().id};use(t.id,t.done?1:-1);lg(t.done?'Completed':'Undid',t.name,{tid:t.id});if(ui){if(t.done)showUndo('Checked off: '+t.name,function(){togI(id,false)});else hideUndo()}render()}
-function togO(id,ui){var t=T(id);if(!t)return;t.done=t.done?null:{who:S.who,time:fmt(new Date()),pid:nowP().id};use(t.id,t.done?1:-1);lg(t.done?'Completed':'Undid',t.name+' (one-time)',{tid:t.id});if(ui){if(t.done)showUndo('Checked off: '+t.name,function(){togO(id,false)});else hideUndo()}render()}
+  if(S.done[k]){delete S.done[k];use(tid,-1);lg('Undid',lbl,{tid:tid});if(ui)hideUndo()}else{S.done[k]={who:S.who,time:fmt(new Date())};use(tid);lg('Completed',lbl,{tid:tid});popEl('[data-k="'+k+'"]');if(ui)showUndo('Checked off: '+tn(tid),function(){togK(k,false)})}render()}
+function togI(id,ui){var t=T(id);if(!t)return;t.done=t.done?null:{who:S.who,time:fmt(new Date()),pid:nowP().id};if(t.done)popEl('[data-i="'+t.id+'"]');use(t.id,t.done?1:-1);lg(t.done?'Completed':'Undid',t.name,{tid:t.id});if(ui){if(t.done)showUndo('Checked off: '+t.name,function(){togI(id,false)});else hideUndo()}render()}
+function togO(id,ui){var t=T(id);if(!t)return;t.done=t.done?null:{who:S.who,time:fmt(new Date()),pid:nowP().id};if(t.done)popEl('[data-o="'+t.id+'"]');use(t.id,t.done?1:-1);lg(t.done?'Completed':'Undid',t.name+' (one-time)',{tid:t.id});if(ui){if(t.done)showUndo('Checked off: '+t.name,function(){togO(id,false)});else hideUndo()}render()}
 function togCt(q,ui){var qi=+q.split('@')[0],lbl=tn(qi)+' at '+fmtT(q.split('@')[1]);
-  if(S.cdone[q]){delete S.cdone[q];use(qi,-1);lg('Undid',lbl,{tid:qi});if(ui)hideUndo()}else{S.cdone[q]={who:S.who,time:fmt(new Date())};use(qi);lg('Completed',lbl,{tid:qi});if(ui)showUndo('Checked off: '+lbl,function(){togCt(q,false)})}render()}
-function addC(id){var c=S.cnt[id]||(S.cnt[id]={n:0});c.n++;c.last=fmt(new Date());c.who=S.who;use(+id);lg('Logged',tn(id),{tid:id});showUndo('Logged: '+tn(id)+' ('+c.n+')',function(){decC(id)});render()}
+  if(S.cdone[q]){delete S.cdone[q];use(qi,-1);lg('Undid',lbl,{tid:qi});if(ui)hideUndo()}else{S.cdone[q]={who:S.who,time:fmt(new Date())};use(qi);lg('Completed',lbl,{tid:qi});popEl('[data-ct="'+q+'"]');if(ui)showUndo('Checked off: '+lbl,function(){togCt(q,false)})}render()}
+function addC(id){var c=S.cnt[id]||(S.cnt[id]={n:0});c.n++;popEl('[data-c="'+id+'"]');c.last=fmt(new Date());c.who=S.who;use(+id);lg('Logged',tn(id),{tid:id});showUndo('Logged: '+tn(id)+' ('+c.n+')',function(){decC(id)});render()}
 function decC(id){var c2=S.cnt[id];if(c2&&c2.n>0){c2.n--;use(+id,-1);lg('Undid',tn(id),{tid:id});if(!c2.n)c2.last=''}render()}
 /* ---- as needed ---- */
 function dayStart(){var q=S.dayKey.split('-'),m=mins(S.resetAt);return new Date(+q[0],+q[1]-1,+q[2],Math.floor(m/60),m%60).getTime()}
