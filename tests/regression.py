@@ -485,7 +485,7 @@ def main():
         check('N18 an overnight block still shows after midnight', 'Now: Sleep K until 6:30 AM' in tl2, tl2)
         # AT. 1.19: one Add task pop-up everywhere
         pa, ea = page(viewport={'width': 1080, 'height': 810})
-        setup(pa, U + 'index.html', 'Ada', '4545'); pa.evaluate("S.people.forEach(p=>p.toured=true);S.tab='today';render()")
+        setup(pa, U + 'index.html', 'Ada', '4545'); pa.evaluate("S.people.forEach(p=>p.toured=true);S.notifAsked=true;S.tab='today';render()")
         n0 = pa.evaluate("S.tasks.length"); l0 = pa.evaluate("S.log.length")
         pa.click('#otadd'); pa.wait_for_timeout(150)
         check('AT1 Today’s Add task opens the editor-style pop-up', pa.is_visible('#te') and pa.inner_text('#tet') == 'Add task' and pa.is_visible('#teadd') and pa.is_visible('#tecan') and not pa.is_visible('#tedel') and not pa.is_visible('#tedone'))
