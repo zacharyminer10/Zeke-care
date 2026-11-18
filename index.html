@@ -780,14 +780,14 @@ function today(){
   var lOpen=view.list.filter(function(t){return !S.done[t.id+'|'+p.id]}).map(function(t){return rtTile(t,p)}).join(''),lDone=view.list.filter(function(t){return S.done[t.id+'|'+p.id]}).map(function(t){return rtTile(t,p)}).join('');
   var cOk=function(t){return(S.cnt[t.id]||{n:0}).n>=t.times},cnt=view.cnts.filter(function(t){return !cOk(t)}).map(cntTile).join(''),cDone=view.cnts.filter(cOk).map(cntTile).join('');
   var done=sDone.map(function(x){return slotTile(x,p)}).join('')+dDone+lDone+cDone;
-  var prn=view.isNow?S.tasks.filter(function(t){return t.prn}).map(prnTile).join(''):'';
+  var prn=view.isNow?S.tasks.filter(function(t){return t.prn}).map(prnTile).join(''):'',pprn=past?prnIn(S.dayKey,p).map(prnPvTile).join(''):'';
   var dlv=view.isNow&&supOn()?openOrders().filter(function(o){return o.expected<=bizDay()}).map(dlvTile).join(''):'';
   h+='<div class="col panel'+(view.isNow?' now':'')+'" aria-label="'+esc(p.name)+' tasks">';
-  if(!view.sls.length&&!dOpen&&!dDone&&!view.list.length&&!view.cnts.length&&!prn&&!dlv)h+='<p class="note">No tasks yet. Tap + Add task above.</p>';
+  if(!view.sls.length&&!dOpen&&!dDone&&!view.list.length&&!view.cnts.length&&!prn&&!pprn&&!dlv)h+='<p class="note">No tasks yet. Tap + Add task above.</p>';
   if(view.isNow){var urg=sOpen.filter(function(x){return slotDiff(x.x,mn)>=0}),up=sOpen.filter(function(x){return slotDiff(x.x,mn)<0}),nxx=up.length?up[0].x:null;
     var upn=urg.map(function(x){return slotTile(x,p)}).join('')+up.filter(function(x){return x.x===nxx}).map(function(x){return slotTile(x,p,true)}).join(''),later=up.filter(function(x){return x.x!==nxx}).map(function(x){return slotTile(x,p)}).join('');
     h+=grp('Deliveries',dlv)+grp('Up next',upn)+grp('Anytime '+wd,dOpen+cnt+lOpen)+grp('Later '+wd,later)+grp('As needed',prn)+grp('Done',done)}
-  else if(past)h+=grp('Not done',sOpen.map(function(x){return slotTile(x,p)}).join('')+dOpen+lOpen)+grp('Done',done);
+  else if(past)h+=grp('Not done',sOpen.map(function(x){return slotTile(x,p)}).join('')+dOpen+lOpen)+grp('Done',done)+grp('As needed',pprn);
   else h+=grp('Anytime',dOpen+cnt+lOpen)+grp('Scheduled',sOpen.map(function(x){return slotTile(x,p)}).join(''))+grp('Done',done);
   h+='</div>';
   var tm=S.moves.filter(function(m){return m.to==='tomorrow'});
@@ -809,14 +809,18 @@ function prevModel(){var P=S.prevDay,ps=P.periods,p=ps[ps.length-1],key=P.key,ou
     if(!(t.at&&t.at.length)&&!(t.times>0)&&t.periods.indexOf(p.id)>-1&&perOn(t,p,key)&&!(P.moves||[]).some(function(m){return m.tid===t.id&&m.from===p.id})){var k2=t.id+'|'+p.id,d2=(P.done||{})[k2];(d2?out.done:out.missed).push({kind:'r',key:k2,t:t,when:'',d:d2,ord:9999})}});
   var o=function(a,b){return offMin(a.ord===9999?1439+mins(S.resetAt):a.ord)-offMin(b.ord===9999?1439+mins(S.resetAt):b.ord)};out.missed.sort(o);out.done.sort(o);return out}
 function pvTile(x){var d=x.d;return'<div class="trow"><button class="task '+(d?'done':'over')+'" data-pv="'+x.kind+'|'+x.key+'">'+(x.kind==='n'?'<span class="box" style="width:auto;min-width:30px;padding:0 6px">'+x.n+'/'+x.t.times+'</span>':'<span class="box">'+(d?'✓':'')+'</span>')+'<span class="nm">'+esc(x.t.name)+'<span class="meta">'+(d?'':x.kind==='n'?'Missed · '+x.n+' of '+x.t.times+' done':x.when?'Missed':'Missed · not checked off')+'</span></span>'+(d?'<span class="tag ok dn">'+esc(d.who)+' · '+d.time+(d.late?' · late':'')+'</span>':x.when?'<span class="tag bad">'+x.when+'</span>':'')+'</button></div>'}
-/* "As needed" tasks given during that shift (from each task's own history; nothing to check off late) */
-function prevPrn(){var P=S.prevDay,p=P.periods[P.periods.length-1],q=P.key.split('-'),a=mins(S.resetAt)+offMin(mins(p.start)),
+/* look-back views: "As needed" tasks given during a shift (from each task's own history) and Every-X / One-time tasks
+   finished during it (saved with the look-back at the daily reset). Read-only: nothing to check off late. */
+function prnIn(key,p){var q=key.split('-'),a=mins(S.resetAt)+offMin(mins(p.start)),
   t0=new Date(+q[0],+q[1]-1,+q[2],0,a).getTime(),t1=new Date(+q[0],+q[1]-1,+q[2],0,a+perLen(p)).getTime();
   return S.tasks.filter(function(t){return t.prn}).map(function(t){return{t:t,h:(t.hist||[]).filter(function(x){return x.ts>=t0&&x.ts<t1})}}).filter(function(x){return x.h.length})}
+function prevPrn(){var P=S.prevDay;return prnIn(P.key,P.periods[P.periods.length-1])}
+function prevIv(){var P=S.prevDay,p=P.periods[P.periods.length-1];return(P.iv||[]).filter(function(x){return x.d&&x.d.pid===p.id})}
+function ivPvTile(x){return'<div class="trow"><div class="task done" style="cursor:default"><span class="box">✓</span><span class="nm">'+esc(x.name)+'<span class="meta">'+esc(x.f)+'</span></span><span class="tag ok dn">'+esc(x.d.who)+' · '+x.d.time+'</span></div></div>'}
 function prnPvTile(x){var n=x.h.length;return'<div class="trow"><div class="task done" style="cursor:default"><span class="box">✓</span><span class="nm">'+esc(x.t.name)+'<span class="meta">'+x.h.map(function(e){return esc(e.who)+' at '+fmt(new Date(e.ts))}).join(' · ')+'</span></span><span class="tag ok dn">'+(n===1?'1 time':n+' times')+'</span></div></div>'}
-function prevPanel(){var m=prevModel(),pr=prevPrn();var h='<div class="col panel" aria-label="'+esc(m.p.name)+' tasks, '+dlabel(S.prevDay.key)+'">';
-  if(!m.missed.length&&!m.done.length&&!pr.length)h+='<p class="note">Nothing was scheduled.</p>';
-  h+=grp('Missed',m.missed.map(pvTile).join(''))+grp('Done',m.done.map(pvTile).join(''))+grp('As needed',pr.map(prnPvTile).join(''));return h+'</div>'}
+function prevPanel(){var m=prevModel(),pr=prevPrn(),iv=prevIv();var h='<div class="col panel" aria-label="'+esc(m.p.name)+' tasks, '+dlabel(S.prevDay.key)+'">';
+  if(!m.missed.length&&!m.done.length&&!pr.length&&!iv.length)h+='<p class="note">Nothing was scheduled.</p>';
+  h+=grp('Missed',m.missed.map(pvTile).join(''))+grp('Done',m.done.map(pvTile).join('')+iv.map(ivPvTile).join(''))+grp('As needed',pr.map(prnPvTile).join(''));return h+'</div>'}
 function togPrev(v){if(!prevOK()||!S.who)return;
   if(v.charAt(0)==='n'){var P0=S.prevDay,id=+v.slice(2),t0=T(id);if(!t0)return;P0.cnt=P0.cnt||{};var c=P0.cnt[id]||(P0.cnt[id]={n:0}),l0=t0.name+' · '+dlabel(P0.key);
     if(c.n>=t0.times){showSheet(t0.name,'<p style="margin:0 0 6px;font-size:18px">✓ Done '+c.n+' of '+t0.times+' times. Last by <b>'+esc(c.who||'')+'</b> at '+esc(c.last||'')+(c.late?' (checked off late)':'')+'</p><p class="note">'+esc(l0)+'</p>');return}
@@ -1098,7 +1102,7 @@ function missedList(skip,nk){var out=[];skip=skip||{};nk=nk||addDays(S.dayKey,1)
   S.moves.forEach(function(m){if(m.carry&&!S.done[m.tid+'|'+m.from]&&!skip[m.tid+'|'+m.from]&&T(m.tid))out.push(tn(m.tid)+' (moved to '+fmt(new Date(m.ts))+')')});
   return out}
 function maybeReset(d){var k=bizDay(d);if(!S.dayKey){S.dayKey=k;return false}if(k<=S.dayKey)return false;
-  var n=Math.max(1,Math.round((Date.parse(k)-Date.parse(S.dayKey))/864e5)),cm=carryMoves(k),miss=missedList(cm.skip,k),lbl=new Date(Date.parse(S.dayKey)).toLocaleDateString([],{weekday:'short',month:'short',day:'numeric',timeZone:'UTC'});S.prevDay={key:S.dayKey,periods:JSON.parse(JSON.stringify(curPeriods())),done:S.done,cdone:S.cdone,cnt:S.cnt,moves:S.moves};S.prevKey=S.dayKey;S.dayKey=k;
+  var n=Math.max(1,Math.round((Date.parse(k)-Date.parse(S.dayKey))/864e5)),cm=carryMoves(k),miss=missedList(cm.skip,k),lbl=new Date(Date.parse(S.dayKey)).toLocaleDateString([],{weekday:'short',month:'short',day:'numeric',timeZone:'UTC'});S.prevDay={key:S.dayKey,periods:JSON.parse(JSON.stringify(curPeriods())),done:S.done,cdone:S.cdone,cnt:S.cnt,moves:S.moves,iv:S.tasks.filter(function(t){return(t.every>0||t.once)&&t.done}).map(function(t){return{id:t.id,name:t.name,f:t.once?'One time':fl(t),d:t.done}})};S.prevKey=S.dayKey;S.dayKey=k;
   miss.reverse().forEach(function(d){S.log.unshift({ts:new Date(),who:'System',a:'Missed',d:d+' · '+lbl})});
   S.done={};S.cdone={};S.cnt={};S.moves=cm.moves;S.alerted={};if(cm.moves.length)S.log.unshift({ts:new Date(),who:'System',a:'Changed',d:cm.moves.length+' pushed task'+(cm.moves.length>1?'s':'')+' carried over to the new day: '+cm.moves.map(function(m){return tn(m.tid)+' at '+fmt(new Date(m.ts))}).join(', ')});S.tasks=S.tasks.filter(function(t){return !(t.once&&t.done)});
   S.tasks.forEach(function(t){if(t.every>0){var lf=t.every-t.last,dk=addDays(S.prevKey,lf);if(!t.done&&lf<=0&&t.missedFor!==dk){S.log.unshift({ts:new Date(),who:'System',a:'Missed',d:t.name+(dk===S.prevKey?'':' (due '+dlabel(dk)+')')+' · '+lbl,tid:t.id});t.missedFor=dk}t.last=t.done?n:t.last+n;t.done=null}});
