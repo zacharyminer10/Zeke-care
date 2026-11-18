@@ -13,7 +13,7 @@ EZAide is a care checklist web app for families and caregivers looking after som
 | Branch | What it is | Served at |
 | --- | --- | --- |
 | `main` | The family version used on Zach's own iPad | GitHub Pages: https://zacharyminer10.github.io/Zeke-care/ |
-| `app-store` | EZAide for the App Store (Capacitor wrapper, 7-day trial label, alerts prompt, disclaimer, generic examples) | Not served by Pages; copied to the tester site (below) |
+| `app-store` | EZAide for the App Store (prepared for a future Capacitor wrapper (no native project yet), 7-day trial label, alerts prompt, disclaimer, generic examples) | Not served by Pages; copied to the tester site (below) |
 
 - **Never merge `app-store` into `main`.** Changes flow one way: main → app-store.
 - Main must keep `KEY='zeke-care-board.v1'`, `app:'zeke-care-board'` in backups, and `CACHE = 'zeke-care-' + VERSION` in sw.js. Changing them makes the family iPad look empty.
