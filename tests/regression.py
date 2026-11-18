@@ -523,6 +523,20 @@ def main():
         pa.click('#tecan')
         check('AT15 no script errors (add task)', not ea, '; '.join(ea[:3]))
 
+        # KB. 1.19.1: iPad landscape keyboard keeps the first-task title in view.
+        # Chromium has no on-screen keyboard, so fake what iOS reports: a 400px visible strip slid 200px down.
+        pv, ev = page(viewport={'width': 1080, 'height': 810})
+        pv.add_init_script("(()=>{var vv=new EventTarget();vv.width=1080;vv.height=810;vv.offsetTop=0;vv.offsetLeft=0;vv.scale=1;Object.defineProperty(window,'visualViewport',{get:function(){return vv},configurable:true});window.__vv=vv})()")
+        setup(pv, U + 'index.html'); pv.evaluate("openFT()"); pv.wait_for_timeout(300)
+        check('KB1 first-task pop-up puts the cursor in the name box', pv.evaluate("document.activeElement===document.querySelector('#te [data-n]')"))
+        pv.evaluate("(()=>{var v=window.__vv;v.height=400;v.offsetTop=200;v.dispatchEvent(new Event('resize'));v.dispatchEvent(new Event('scroll'))})()"); pv.wait_for_timeout(500)
+        shown = lambda sel: pv.evaluate("(s=>{var v=window.__vv,r=document.querySelector(s).getBoundingClientRect();return r.top>=v.offsetTop&&r.bottom<=v.offsetTop+v.height})", sel)
+        check('KB2 with the keyboard up, the title and "Last step" stay on screen', shown('#tet') and shown('#tek'))
+        check('KB3 with the keyboard up, the name box is on screen too', shown('#te [data-n]'))
+        pv.evaluate("(()=>{var v=window.__vv;v.height=810;v.offsetTop=0;v.dispatchEvent(new Event('resize'))})()"); pv.wait_for_timeout(200)
+        check('KB4 keyboard down, the pop-up uses the full screen again', abs(pv.evaluate("document.querySelector('#te .card').getBoundingClientRect().height") - 767) < 40)
+        check('KB5 no script errors (keyboard)', not ev, '; '.join(ev[:3]))
+
         # LD. 1.19: filter the log by date
         pl, el_ = page(viewport={'width': 1080, 'height': 810}); pl.clock.install(time=datetime.datetime(2026, 11, 17, 10, 0))
         setup(pl, U + 'index.html', 'Lee', '5151'); pl.evaluate("S.people.forEach(p=>p.toured=true)")
