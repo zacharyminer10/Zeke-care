@@ -30,7 +30,7 @@
   --badbg:#4a1f1b;
   --badfg:#ffd9d4;
   --dim:.45;
-  /* text on coloured buttons, the Emergency red, and the pop-up backdrop (same in both themes for now) */
+  /* text on coloured buttons, the Emergency red, and the pop-up backdrop */
   --onacc:#0c1420;
   --onok:#06231c;
   --ondue:#1a1205;
@@ -58,7 +58,13 @@
   --due:#b26d00;
   --dubg:#fbefd8;
   --bad:#c4382b;
-  --acc:#2b62b8
+  --acc:#2b62b8;
+  /* light mode: white text on blue/green buttons, and a light Emergency red (readable contrast) */
+  --onacc:#fff;
+  --onok:#fff;
+  --sosbg:#fbe3e0;
+  --sosln:#e3a39b;
+  --sosfg:#a3261b
 }
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--tx);font:17px/1.35 -apple-system,"SF Pro Text",system-ui,sans-serif;font-family:-apple-system,"SF Pro Text",BlinkMacSystemFont,system-ui,"Segoe UI",Roboto,sans-serif;font-size:16px;letter-spacing:-.006em}
@@ -637,7 +643,7 @@ button.tyb{cursor:pointer}
 <div style="display:flex;gap:8px"><button id="tcx">Cancel</button><button id="tcok" class="tpok">Copy</button></div></div></div>
 <div class="modal" id="tp"><div class="card" style="max-width:380px"><h2 id="tpt">Pick a time</h2><p class="note" id="tps" style="margin:0 0 4px"></p><p class="tpv" id="tpv" aria-live="polite"></p><div class="tpw"><div class="tpc" id="tph" aria-label="Hour"></div><div class="tpc" id="tpm" aria-label="Minute"></div><div class="tpc" id="tpa" aria-label="AM or PM"></div></div><p class="note" style="text-align:center;margin:4px 0 10px">Scroll to the time, then tap ✓ to save it.</p><p class="note" id="tpe" style="color:var(--bad);text-align:center" aria-live="polite"></p><div style="display:flex;gap:8px"><button id="tpx">Cancel</button><button id="tpok" class="tpok" aria-label="Save this time">✓</button></div></div></div>
 <script>
-var VER='1.19.1';
+var VER='1.19.2';
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
 var S={
   tab:'today',who:'',people:[{name:'Zach',pin:'1111'},{name:'Wife',pin:'2222'},{name:'Nurse',pin:'3333'}],pend:null,pin:{for:'',buf:''},reason:'',
@@ -1713,7 +1719,7 @@ function tourCards(n){var tile=function(name,meta,tag,done,extra){return'<div cl
   {t:'Hold a task to move or edit it',b:'Press and hold a task to move it later today, to the other shift, or to tomorrow. Owners and managers can also edit the task from there. You can add a reason, like “He’s sleeping.”',v:tile('Humidification check','Tap when done, hold for options','')},
   {t:'Watch the tags',b:'Feeds and meds show their time until it comes up, then <b>Due now</b>, then <b>Overdue</b> if they’re missed.',v:'<div class="rs" style="margin:0"><span class="tag ok">2 PM</span><span class="tag" style="font-weight:600">Due now</span><span class="tag bad">Overdue</span></div>'},
   {t:'How-to and supplies',b:'A <b>How-to</b> or <b>Supplies</b> button next to a task shows the steps and what you’ll need. Count supplies in the <b>Inventory</b> tab with − and +, or tap the number to type a count.',v:tile('Change trach ties','Every 3 days','<span class="tag">Due today</span>',false,'<span class="push infob" style="display:grid;place-items:center">How-to</span>')},
-  {t:'In an emergency',b:'The red <b>Emergency</b> button at the top is always there, with phone numbers, what to tell 911, and the plan. You can replay this tour any time from ⚙ Settings.',v:'<div style="display:flex;justify-content:center"><span class="sos" style="display:inline-block;padding:8px 16px;border-radius:10px;border:1px solid #7a3028">Emergency</span></div>'}]}
+  {t:'In an emergency',b:'The red <b>Emergency</b> button at the top is always there, with phone numbers, what to tell 911, and the plan. You can replay this tour any time from ⚙ Settings.',v:'<div style="display:flex;justify-content:center"><span class="sos" style="display:inline-block;padding:8px 16px;border-radius:10px;border:1px solid var(--sosln)">Emergency</span></div>'}]}
 function maybeTour(){var p=S.people.filter(function(x){return x.name===S.who})[0];if(p&&!p.toured)openTour()}
 function openTour(){TOUR={i:0,c:tourCards(S.who||'there')};drawTour();$('tour').classList.add('show')}
 function drawTour(){var c=TOUR.c[TOUR.i],n=TOUR.c.length,last=TOUR.i===n-1;
@@ -1730,8 +1736,8 @@ function setupItems(){var e=S.emer||{contacts:[]};return[
   ['stock','Add supplies','So the board can flag what’s running low',S.stock.length>0,'stock'],
   ['bkp','Save your first backup','The iPad holds the only copy of your data',!!S.lastBackup,'bkp']]}
 function setupCard(full){var it=setupItems(),done=it.filter(function(x){return x[3]}).length;if(done===it.length){S.setup=false;return''}
-  if(!full)return'<div class="vb" style="background:var(--panel2);color:var(--tx);border:1px solid var(--acc)"><span>Finish setting up the board · <b>'+done+' of '+it.length+'</b> done</span><button data-t="menu" style="background:var(--acc);color:#0c1420">Open checklist</button></div>';
-  return'<div class="col" style="margin-bottom:12px;border-color:var(--acc)"><div class="ch"><b>Set up the board</b><small>'+done+' of '+it.length+' done</small></div><div class="elist">'+it.map(function(x){return'<div class="srow"><span class="box" style="width:26px;height:26px;border-radius:8px;'+(x[3]?'background:var(--ok);border-color:var(--ok);color:#06231c':'')+'">'+(x[3]?'✓':'')+'</span><span class="sname"'+(x[3]?' style="color:var(--mut);text-decoration:line-through"':'')+'>'+x[1]+'<span class="meta" style="text-decoration:none">'+x[2]+'</span></span>'+(x[3]?'':(x[0]==='hours'?'<button data-sgo="periods">Check hours</button><button data-sok="hours">They’re right</button>':'<button data-sgo="'+x[4]+'">'+(x[0]==='bkp'?'Save backup':'Go')+'</button>'))+'</div>'}).join('')+'</div><button data-shide="1" style="margin-top:10px;background:transparent;border-color:transparent;color:var(--mut);padding-left:0">Hide this checklist</button></div>'}
+  if(!full)return'<div class="vb" style="background:var(--panel2);color:var(--tx);border:1px solid var(--acc)"><span>Finish setting up the board · <b>'+done+' of '+it.length+'</b> done</span><button data-t="menu" style="background:var(--acc);color:var(--onacc)">Open checklist</button></div>';
+  return'<div class="col" style="margin-bottom:12px;border-color:var(--acc)"><div class="ch"><b>Set up the board</b><small>'+done+' of '+it.length+' done</small></div><div class="elist">'+it.map(function(x){return'<div class="srow"><span class="box" style="width:26px;height:26px;border-radius:8px;'+(x[3]?'background:var(--ok);border-color:var(--ok);color:var(--onok)':'')+'">'+(x[3]?'✓':'')+'</span><span class="sname"'+(x[3]?' style="color:var(--mut);text-decoration:line-through"':'')+'>'+x[1]+'<span class="meta" style="text-decoration:none">'+x[2]+'</span></span>'+(x[3]?'':(x[0]==='hours'?'<button data-sgo="periods">Check hours</button><button data-sok="hours">They’re right</button>':'<button data-sgo="'+x[4]+'">'+(x[0]==='bkp'?'Save backup':'Go')+'</button>'))+'</div>'}).join('')+'</div><button data-shide="1" style="margin-top:10px;background:transparent;border-color:transparent;color:var(--mut);padding-left:0">Hide this checklist</button></div>'}
 /* ---- 1.14: the pop-up opened last is always on top ---- */
 var MZ=20;try{var MO=new MutationObserver(function(ms){ms.forEach(function(m){var el=m.target,on=el.classList.contains('show');if(on&&!el._up){el._up=1;el.style.zIndex=++MZ}else if(!on&&el._up){el._up=0;el.style.zIndex='';if(!document.querySelector('.modal.show'))MZ=20}})});[].forEach.call(document.querySelectorAll('.modal'),function(el){MO.observe(el,{attributes:true,attributeFilter:['class']})})}catch(e){}
 /* ---- 1.6: tap outside a pop-up to close it ---- */
@@ -1938,7 +1944,7 @@ function typRange(b){return fmtT(b.s)+(b.e?' – '+fmtT(b.e):'')}
 function typLine(){if(!typOn())return'';var x=typNow();if(!x.bl.length&&!x.now)return'';
   var a=x.now?'Now: <b>'+esc(x.now.b.n)+'</b>'+(x.now.b.e?' until '+fmtT(x.now.b.e):x.now.e!==null&&x.now.e<1440?' until '+fmtT(m2s(x.now.e)):''):'',b=x.nx?'Next: <b>'+esc(x.nx.n)+'</b> at '+fmtT(x.nx.s):'';
   if(!a&&!b)return'';return'<div class="typline"><span class="tyl">Typical day</span><span>'+[a,b].filter(Boolean).join('<span class="tydot">·</span>')+'</span><button class="gsm" data-wv="typ">See the day</button></div>'}
-function typCard(b,isNow,edit){var tg=edit?'button':'div';return'<div class="trow"><'+tg+' class="task tyb'+(isNow?' tynow':'')+'"'+(edit?' data-tyb="'+esc(b.id)+'"':'')+'><span class="nm">'+esc(b.n)+(b.note?'<span class="meta">'+esc(b.note)+'</span>':'')+'</span>'+(isNow?'<span class="tag" style="background:var(--acc);color:#0c1420">Now</span>':'')+'<span class="tag up">'+typRange(b)+'</span></'+tg+'></div>'}
+function typCard(b,isNow,edit){var tg=edit?'button':'div';return'<div class="trow"><'+tg+' class="task tyb'+(isNow?' tynow':'')+'"'+(edit?' data-tyb="'+esc(b.id)+'"':'')+'><span class="nm">'+esc(b.n)+(b.note?'<span class="meta">'+esc(b.note)+'</span>':'')+'</span>'+(isNow?'<span class="tag" style="background:var(--acc);color:var(--onacc)">Now</span>':'')+'<span class="tag up">'+typRange(b)+'</span></'+tg+'></div>'}
 function typChips(sel,attr){var td=new Date().getDay();return'<div class="tychips" role="group" aria-label="Day of the week">'+WK7.map(function(wd){var n=typDay(wd).length;return'<button '+attr+'="'+wd+'" class="'+(wd===sel?'on':'')+'" aria-pressed="'+(wd===sel)+'">'+WDN[wd]+(wd===td?'<span class="nowdot" title="Today"></span>':'')+(n?'<small>'+n+'</small>':'')+'</button>'}).join('')+'</div>'}
 function typView(){var td=new Date().getDay(),wd=S.tyv!=null?S.tyv:td,bl=typDay(wd),x=wd===td?typNow():null;
   var h=typChips(wd,'data-tyv')+'<div class="col panel"><div class="ch"><b>'+WDF[wd]+(wd===td?' · today':'')+'</b>'+(isStaff()?'<button class="gsm" data-t="typ" data-tyd2="'+wd+'">Edit</button>':'')+'</div>';
