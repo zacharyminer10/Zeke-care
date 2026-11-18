@@ -49,6 +49,9 @@ STATES = [
     ('toast', "S.tab='today';render();showUndo('Logged: Brush teeth (2)',function(){});clearTimeout(UNDO.t)"),
     ('emergency-edit', "S.tab='today';render();openEmEd()"),
     ('guide', "S.tab='library';render();openGuide(S.guides[0].id)"),
+    ('who', "S.tab='today';render();openWho()"),
+    ('code-pad', "S.tab='today';render();openPin('Ann')"),
+    ('still-here', "S.tab='today';render();askHere()"),
 ]
 
 COLLECT = r"""(()=>{
