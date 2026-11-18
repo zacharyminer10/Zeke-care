@@ -674,7 +674,7 @@ function fmt(d){return d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}
 function fmtT(t){var m=mins(t),h=Math.floor(m/60),mm=m%60;return(h%12||12)+(mm?':'+String(mm).padStart(2,'0'):'')+(h<12?' AM':' PM')}
 function tick(){$('clock').textContent=new Date().toLocaleDateString([],{weekday:'long',month:'short',day:'numeric'})+' · '+fmt(new Date())}
 var whoHtml='';
-function head(){var TT={today:'Today',week:'This week',library:'How-to',stock:'Supplies',log:'Log',menu:'Manage',edit:'All tasks',periods:'Times of day',people:'People and roles',admin:'Admin settings',typ:'Typical day'},ttl=$('ttl');if(ttl)ttl.textContent=TT[S.tab]||'EZAide';
+function head(){var TT={today:'Today',week:'This week',library:'How-to',stock:'Supplies',log:'Log',menu:'Manage',edit:'All tasks',periods:'Shifts',people:'People and roles',admin:'Admin settings',typ:'Typical day'},ttl=$('ttl');if(ttl)ttl.textContent=TT[S.tab]||'EZAide';
   var wp0=me(),wh=S.who?'<button class="whob" id="whob" aria-label="Signed in as '+esc(S.who)+'. Switch person"><span class="av">'+esc(inits(S.who))+'</span><span class="whn">'+esc(S.who)+'</span><span class="whr">'+esc(roleName(wp0&&wp0.role))+'</span><span class="chev" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></button>':'<button class="whob nobody" id="whob"><span class="av">?</span><span class="whn">Who’s here?</span><span class="chev" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></button>';if(wh!==whoHtml){whoHtml=wh;$('who').innerHTML=wh}
   var nlow=S.stock.filter(function(i){return i.qty<=i.low&&!onOrder(i.id)}).length;
   $('nav').innerHTML='<div class="tabs" role="tablist">'+[['today','Today'],['week','This week'],['library','How-to'],['stock','Supplies'],['log','Log'],['menu','Manage']].map(function(t){var on=S.tab===t[0]||(t[0]==='menu'&&['edit','periods','people','admin','typ'].indexOf(S.tab)>-1);return'<button role="tab" aria-selected="'+on+'" class="'+(on?'on':'')+'" data-t="'+t[0]+'">'+ICO[t[0]]+'<span>'+t[1]+'</span>'+(t[0]==='stock'&&nlow?'<span class="nbadge" aria-label="'+nlow+' low">'+nlow+'</span>':'')+'</button>'}).join('')+'</div>';
@@ -835,11 +835,11 @@ function edit(){
   return h;
 }
 function periods(){
-  var h='<div class="col"><div class="ch"><b>Times of day</b><small>Rename, retime, or add more</small></div>';
+  var h='<div class="col"><div class="ch"><b>Shifts</b><small>Rename, retime, or add more</small></div>';
   S.periods.forEach(function(p){
     h+='<div class="row"><input type="text" value="'+esc(p.name)+'" data-pn="'+p.id+'"><button class="tchip" data-pst="'+p.id+'|start">'+fmtT(p.start)+'</button><span>to</span><button class="tchip" data-pst="'+p.id+'|end">'+fmtT(p.end)+'</button>'+(S.periods.length>1?'<button data-pd="'+p.id+'">Remove</button>':'')+'</div>';
   });
-  h+='<div class="row"><button id="addp">Add a time of day</button></div><p class="note">The one that matches the clock is highlighted on the Today screen. Moving when one starts or ends also moves the one next to it, so there are no gaps. Check-offs reset for the new day at '+fmtT(S.resetAt)+'.</p></div>';
+  h+='<div class="row"><button id="addp">Add a shift</button></div><p class="note">The one that matches the clock is highlighted on the Today screen. Moving when one starts or ends also moves the one next to it, so there are no gaps. Check-offs reset for the new day at '+fmtT(S.resetAt)+'.</p></div>';
   return h;
 }
 function canEditT(){var p=me();return !!p&&(p.role==='owner'||(p.role==='manager'&&!!(p.perms&&p.perms.sched)))}
@@ -907,7 +907,7 @@ var EGRP=[[['clock'],'At set times'],[['period'],'Each shift per day'],[['times'
 function sumT(t){var f=fq(t),dt=(f==='clock'||f==='period')&&dayTxt(t)?dayTxt(t)+' · ':'';return dt+sumT0(t)}
 function sumT0(t){var f=fq(t);
   if(f==='clock')return t.at.length?t.at.map(fmtT).join(' · '):'No times set';
-  if(f==='period')return t.periods.length?t.periods.map(pn).join(' and '):'Not on any time of day';
+  if(f==='period')return t.periods.length?t.periods.map(pn).join(' and '):'Not on any shift';
   if(f==='times')return t.needTimes?'Times per day not set':t.times+' times per day';
   if(f==='prn')return 'Whenever needed'+(t.gap?' · at least '+t.gap+'h apart':'');
   if(f==='once')return(t.date?dlabel(t.date):'No date')+(t.time?' at '+fmtT(t.time):'');
@@ -923,14 +923,14 @@ function drawTE(){var t=T(S.teId);if(!t){$('te').classList.remove('show');return
   h+='<div class="tegrp"><p class="tegt">Task</p><input type="text" value="'+esc(t.name)+'" data-n="'+t.id+'" aria-label="Task name" placeholder="'+(dr?'Task name, for example: Morning medication':'Task name')+'" maxlength="80" style="width:100%">';
   h+='<div class="tero"><span>How often</span><select data-f="'+t.id+'" aria-label="How often">'+(dr&&!canEditT()?FQ.filter(function(o){return o[0]==='once'}):FQ).map(function(o){return'<option value="'+o[0]+'"'+(o[0]===f?' selected':'')+'>'+o[1]+'</option>'}).join('')+'</select></div>';
   if(f==='clock')h+='<p class="note">Times</p><div class="rs" style="align-items:center">'+t.at.map(function(x,i){return'<span class="tpair"><button class="tchip'+(S.flash===t.id+'@'+x?' new':'')+'" data-atp="'+t.id+'|'+i+'" aria-label="Change '+fmtT(x)+'">'+fmtT(x)+'</button>'+(t.at.length>1?'<button class="tx" data-atd="'+t.id+'|'+i+'" aria-label="Remove '+fmtT(x)+'">×</button>':'')+'</span>'}).join('')+'<button data-ata="'+t.id+'">+ Add a time</button></div>';
-  else if(f==='period')h+='<p class="note">Which times of day</p><div class="rs">'+S.periods.map(function(p){return'<label class="c chk"><input type="checkbox" data-p="'+t.id+'|'+p.id+'" '+(t.periods.indexOf(p.id)>-1?'checked':'')+'>'+esc(p.name)+'</label>'}).join('')+'</div>';
+  else if(f==='period')h+='<p class="note">Which shifts</p><div class="rs">'+S.periods.map(function(p){return'<label class="c chk"><input type="checkbox" data-p="'+t.id+'|'+p.id+'" '+(t.periods.indexOf(p.id)>-1?'checked':'')+'>'+esc(p.name)+'</label>'}).join('')+'</div>';
   if(f==='clock'||f==='period')h+=dwSec(t);
   else if(f==='times')h+='<p class="note">How many times a day</p><label class="c"><input type="number" min="1" max="48" inputmode="numeric" value="'+(t.needTimes?'':t.times)+'" placeholder="#" data-tm="'+t.id+'" aria-label="Times per day"'+(t.needTimes?' class="bad"':'')+'> times per day</label>'+(t.needTimes?'<p class="note tmerr" style="color:var(--bad);margin-top:4px">Enter how many times a day. It won’t show on the board until you do.</p>':'');
   else if(f==='days'||f==='weeks'||f==='months')h+='<p class="note">Repeats</p><label class="c">Every <input type="number" min="1" value="'+(t.n||t.every)+'" data-e="'+t.id+'" aria-label="Every"> '+f+'</label>'+dueSec(t);
   else if(f==='prn')h+='<p class="note">Minimum time between</p><label class="c"><input type="number" min="0" step="0.5" value="'+(t.gap||0)+'" data-gap="'+t.id+'" aria-label="Hours between" style="width:80px"> hours (0 = no limit)</label>';
   else if(f==='once')h+='<p class="note">When</p><div class="rs" style="align-items:center"><input type="date" value="'+t.date+'" data-od="'+t.id+'" aria-label="Date"><button class="tchip'+(S.flash===t.id+'@'+t.time?' new':'')+'" data-otp="'+t.id+'">'+(t.time?fmtT(t.time):'Pick a time')+'</button>'+(t.time?'<button data-otc="'+t.id+'">Any time</button>':'')+'</div>';
   if(dr&&!canEditT())h+='<p class="note" style="margin-top:8px">Owners and managers can add tasks that repeat.</p>';
-  if(lim){h+='</div>';ntFoot(t);$('teb').innerHTML=h+ftHours(t);return}
+  if(lim){h+='</div>';ntFoot(t);$('teb').innerHTML=h;return}
   h+='</div><div class="tegrp">'+ordSection(t).replace('<div class="tesec">','<div>')+'</div>';
   var nd=needsOf(t),g=guideOf(t),nx=(t.extras||[]).length,mo=TEM[t.id]!=null?TEM[t.id]:!!(nd.length||nx||g||(f==='clock'&&t.grace&&t.grace!==60));
   var sum=[nd.length?nd.length+' suppl'+(nd.length===1?'y':'ies'):'',nx?nx+' to have ready':'',g?'how-to':''].filter(Boolean).join(' · ');
@@ -945,7 +945,7 @@ function drawTE(){var t=T(S.teId);if(!t){$('te').classList.remove('show');return
     h+='<p class="tegt">Also have ready <span style="color:var(--mut);text-transform:none;letter-spacing:0;font-weight:400">· not counted</span></p>'+(nx?'<div class="rs" style="margin-bottom:6px">'+t.extras.map(function(x,i){return'<span class="xchip">'+esc(x)+'<button class="tx" data-exd="'+t.id+'|'+i+'" aria-label="Remove '+esc(x)+'">×</button></span>'}).join('')+'</div>':'')+'<div class="addrow"><input type="text" id="exn" maxlength="40" placeholder="e.g. Wet washcloth" aria-label="Something to have ready"><button data-exa="'+t.id+'" style="flex:none">Add</button></div>';
     h+='<div class="tero" style="margin-top:12px"><span>How-to guide</span><select data-tg="'+t.id+'" aria-label="How-to guide"><option value="">None</option>'+S.guides.map(function(x){return'<option value="'+x.id+'"'+(g&&g.id===x.id?' selected':'')+'>'+esc(x.title)+'</option>'}).join('')+(can('guides')?'<option value="__new">Write a new guide…</option>':'')+'</select></div>';
     h+='</div>'}
-  ntFoot(t);$('teb').innerHTML=h+ftHours(t);$('tedel').dataset.del=t.id}
+  ntFoot(t);$('teb').innerHTML=h;$('tedel').dataset.del=t.id}
 function ntFoot(t){var dr=t===DRAFT,first=dr&&NTX&&NTX.ctx==='first';$('tet').textContent=dr?(first?'Add your first task':'Add task'):t.name;$('tek').hidden=!first;
   $('tedel').hidden=dr;$('tedone').hidden=dr;$('tecan').hidden=!dr;$('teadd').hidden=!dr;$('tecan').textContent=first?'Skip for now':'Cancel';if(!dr)$('tem').textContent=''}
 /* ---- 1.19.1: keep pop-ups (and their titles) above the iPad keyboard ---- */
@@ -954,23 +954,21 @@ if(window.visualViewport){visualViewport.addEventListener('resize',vvFit);visual
 document.addEventListener('focusin',function(e){var el=e.target,c=el&&el.closest&&el.closest('.modal .card');if(!c)return;
   setTimeout(function(){if(!c.scrollTop||document.activeElement!==el)return;var off=el.getBoundingClientRect().bottom-c.getBoundingClientRect().top+c.scrollTop;if(off+12<=c.clientHeight)c.scrollTop=0},350)});
 /* ---- 1.19: one Add task pop-up everywhere (Today, All tasks, first task) ---- */
-function ftHours(t){if(t!==DRAFT||!NTX||NTX.ctx!=='first')return'';
-  return'<div class="tegrp"><p class="tegt">Your shifts</p><label style="display:flex;gap:10px;align-items:flex-start;cursor:pointer;line-height:1.4"><input type="checkbox" id="fthk"'+(NTX.hk!==false?' checked':'')+' style="width:20px;height:20px;flex:none;margin-top:1px"><span>'+esc(S.periods.map(function(x){return x.name+' '+fmtT(x.start)+' to '+fmtT(x.end)}).join(' · '))+'<span class="meta" style="display:block">These hours are right. You can change them later in Menu → Times of day.</span></span></label></div>'}
-function openNT(ctx){NTX={ctx:ctx||'today',hk:true};DRAFT={id:S.nid++,name:'',periods:[],every:0,n:3,times:0,prn:false,last:0,needs:[]};
+function openNT(ctx){NTX={ctx:ctx||'today'};DRAFT={id:S.nid++,name:'',periods:[],every:0,n:3,times:0,prn:false,last:0,needs:[]};
   setFreq(DRAFT.id,can('sched')?'period':'once');S.teNewPend=null;S.teNew=DRAFT.id;S.teId=DRAFT.id;TEM[DRAFT.id]=false;$('tem').textContent='';
   drawTE();$('te').classList.add('show');setTimeout(function(){var i=document.querySelector('#te [data-n]');if(i)try{i.focus({preventScroll:true})}catch(x){}},80)}
-function cancelNT(){var ctx=NTX&&NTX.ctx;if(ctx==='first'&&NTX.hk!==false)S.setupHours=true;DRAFT=null;NTX=null;S.teNew=null;$('te').classList.remove('show');if(ctx==='first'){S.firstRun=false;S.tab='menu';render()}}
+function cancelNT(){var ctx=NTX&&NTX.ctx;DRAFT=null;NTX=null;S.teNew=null;$('te').classList.remove('show');if(ctx==='first'){S.firstRun=false;S.tab='menu';render()}}
 /* tap outside a new task: close it like Cancel; if a name was typed, check first so it isn't lost by accident */
 function tapOutNT(){var i=document.querySelector('#te [data-n]'),n=(i?i.value:DRAFT.name||'').trim();if(!n){cancelNT();return}
   askConfirm('Discard this new task?','“'+n+'” hasn’t been added yet.','Discard',cancelNT);$('cfx').textContent='Keep editing'}
 function saveNT(){var t=DRAFT;if(!t)return;var ni=document.querySelector('#te [data-n]');if(ni)t.name=ni.value.trim();var f=fq(t),er='';
   if(!t.name)er='Type a name for the task.';
   else if(f==='clock'&&!(t.at||[]).length)er='Add at least one time.';
-  else if(f==='period'&&!t.periods.length)er='Pick at least one time of day.';
+  else if(f==='period'&&!t.periods.length)er='Pick at least one shift.';
   else if(f==='times'&&(t.needTimes||!t.times))er='Enter how many times a day.';
   else if(f==='once'&&(!t.date||t.date<bizDay()))er='Pick today or a later date.';
   if(er){$('tem').textContent=er;if(!t.name&&ni)try{ni.focus()}catch(x){}return}
-  var ctx=NTX?NTX.ctx:'today';if(ctx==='first'&&NTX.hk!==false)S.setupHours=true;t.by=S.who;S.tasks.push(t);DRAFT=null;NTX=null;S.teNew=null;$('tem').textContent='';$('te').classList.remove('show');
+  var ctx=NTX?NTX.ctx:'today';t.by=S.who;S.tasks.push(t);DRAFT=null;NTX=null;S.teNew=null;$('tem').textContent='';$('te').classList.remove('show');
   lg('Added task',t.name+' ('+(f==='once'?'one-time, '+(t.date===bizDay()?'today':dlabel(t.date))+(t.time?' at '+fmtT(t.time):''):(FQ.filter(function(o){return o[0]===f})[0]||['',''])[1].toLowerCase())+(ctx==='first'?', first task':'')+')',{tid:t.id});
   if(ctx==='first')S.firstRun=false;
   if(ctx==='edit'){render();var er0=document.querySelector('[data-te="'+t.id+'"]');if(er0){er0.classList.add('flashtile');try{er0.scrollIntoView({block:'center',behavior:'smooth'})}catch(x){}}return}
@@ -1012,7 +1010,7 @@ var MICO={edit:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stro
 function menu(){var p=me(),items=[];
   if(can('sched'))items.push(['edit','All tasks','Every task on the board: add, change, or remove']);
   if(can('sched')&&typOn())items.push(['typ','Typical day','The usual routine for each day of the week']);
-  if(can('owner'))items.push(['periods','Times of day','Rename Day and Night, change hours, or add more'],['people','People and roles','Add people, set roles, and reset codes']);
+  if(can('owner'))items.push(['periods','Shifts','Rename Day and Night, change hours, or add more'],['people','People and roles','Add people, set roles, and reset codes']);
   if(can('emer'))items.push(['emedit','Emergency info','Numbers, what to tell 911, and the plan']);
   if(can('stock'))items.push(['stock','Supplies','Add, remove, and link supplies; log orders']);
   if(can('guides'))items.push(['library','How-to guides','Write and edit step-by-step guides']);
@@ -1293,7 +1291,7 @@ document.addEventListener('click',function(e){
   if(b.dataset.keep!==undefined){if(!can('owner'))return;S.keepDays=+b.dataset.keep;lg('Changed','Log keeps '+keepName(S.keepDays).toLowerCase());render();return}
   if(b.id==='addpp'){if(!can('owner'))return;addPerson();return}
   if(b.dataset.del){var _b=b;askConfirm('Remove this task?','“'+tn(b.dataset.del)+'” and its schedule will be removed. This can’t be undone.','Remove task',function(){var b=_b;lg('Removed task',tn(b.dataset.del),{tid:b.dataset.del});S.tasks=S.tasks.filter(function(x){return x.id!=b.dataset.del});render();});return}
-  if(b.dataset.pd){var _b=b;askConfirm('Remove this time of day?','“'+((S.periods.filter(function(x){return x.id===b.dataset.pd})[0])||{}).name+'” will be removed, and its routine tasks will lose this time of day.','Remove',function(){var b=_b;var id=b.dataset.pd;S.periods=S.periods.filter(function(p){return p.id!==id});S.tasks.forEach(function(t){t.periods=t.periods.filter(function(x){return x!==id})});render();});return}
+  if(b.dataset.pd){var _b=b;askConfirm('Remove this shift?','“'+((S.periods.filter(function(x){return x.id===b.dataset.pd})[0])||{}).name+'” will be removed, and its routine tasks will lose this shift.','Remove',function(){var b=_b;var id=b.dataset.pd;S.periods=S.periods.filter(function(p){return p.id!==id});S.tasks.forEach(function(t){t.periods=t.periods.filter(function(x){return x!==id})});render();});return}
   if(b.id==='addp'){S.periods.push({id:'p'+S.nid++,name:'New period',start:'12:00',end:'13:00'});render();return}
   if(b.id==='sos'){fillEm();$('modal').classList.add('show');return}
   if(b.id==='close')$('modal').classList.remove('show');
@@ -1310,7 +1308,6 @@ document.addEventListener('click',function(e){
 document.addEventListener('input',function(e){if(DRAFT&&e.target.dataset&&e.target.dataset.n==DRAFT.id){DRAFT.name=e.target.value;if(e.target.value.trim())$('tem').textContent=''}if(e.target.id==='tfind')applyFind();if(e.target.id==='logq'){var lv=e.target.value;clearTimeout(window._lqt);window._lqt=setTimeout(function(){S.logq=lv;S.logCap=300;S._lqf=true;render()},250)}});
 document.addEventListener('keydown',function(e){if(e.key!=='Enter')return;var id=e.target.id;if(id==='qcv'){e.preventDefault();saveQC()}else if(id==='exn'){e.preventDefault();addExtra(S.teId,e.target.value);setTimeout(function(){try{$('exn').focus()}catch(x){}},30)}else if(id==='rck'){e.preventDefault();checkRC()}else if(id==='rcn2'){e.preventDefault();saveRC()}});
 document.addEventListener('change',function(e){
-  if(e.target.id==='fthk'&&NTX){NTX.hk=e.target.checked;return}
   if(e.target.id==='rsf'){var f=e.target.files&&e.target.files[0];if(!f)return;var fr=new FileReader();fr.onload=function(){var bk=null;try{bk=JSON.parse(fr.result)}catch(x){}
     if(!okSnap(bk)){$('stmsg').textContent='That file is not an EZAide backup. Nothing was changed.';return}
     var go=function(){var ok=applySnap(bk);if(ok){LREPL=true;S.last=Date.now();maybeReset();save();fillSt();$('stmsg').textContent='Restored. Sign in again from the Who’s here menu.';$('fr').classList.remove('show');render();if(S.people.length)needWho();else openFR()}};
@@ -1426,7 +1423,7 @@ function safariNote(where){if(!inSafariTab())return'';
 var SH={n:2,a:'07:00',b:'21:00',next:null};
 function openShifts(next){SH={n:0,a:'07:00',b:'21:00',next:next||null};drawShifts();$('sh').classList.add('show')}
 function drawShifts(){var h;
-  if(!SH.n){h='<p class="note" style="margin:0 0 4px">Set up your shifts</p><h2>Do you need to complete tasks overnight?</h2><p style="margin:0 0 16px;line-height:1.45">This sets up the board’s shifts. You can change them later in Menu → Times of day.</p>'+
+  if(!SH.n){h='<p class="note" style="margin:0 0 4px">Set up your shifts</p><h2>Do you need to complete tasks overnight?</h2><p style="margin:0 0 16px;line-height:1.45">This sets up the board’s shifts. You can change them later in Menu → Shifts.</p>'+
     '<div class="shopt"><button data-shn="2"><b>Yes</b><span>Day and Night shifts</span></button><button data-shn="1"><b>No</b><span>One Day shift</span></button></div>'}
   else{var two=SH.n===2;h='<p class="note" style="margin:0 0 4px">Set up your shifts</p><h2>'+(two?'When do your shifts start?':'When does your day start and end?')+'</h2>'+
     '<p style="margin:0 0 14px;line-height:1.45">'+(two?'Each shift ends when the other begins, so every hour is covered.':'Tasks show on the board during these hours.')+'</p>'+
