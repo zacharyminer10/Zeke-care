@@ -61,11 +61,12 @@ def bump(folder, ver):
         open(p, 'w', encoding='utf-8').write(re.sub(pat, new, s))
 
 
-def regression(html, prev_html, label):
+def regression(html, prev_html, label, src=ROOT):
+    """Run the regression suite that belongs to the same source as the build (src), not this checkout's."""
     say(f'Regression tests: {label}')
     with tempfile.NamedTemporaryFile('w', suffix='.html', delete=False, encoding='utf-8') as f:
         f.write(prev_html)
-    r = subprocess.run([sys.executable, os.path.join(ROOT, 'tests', 'regression.py'), '--html', html, '--prev', f.name],
+    r = subprocess.run([sys.executable, os.path.join(src, 'tests', 'regression.py'), '--html', html, '--prev', f.name],
                        capture_output=True, text=True)
     os.unlink(f.name)
     out = r.stdout + r.stderr
@@ -117,8 +118,8 @@ def family(ver, dry, notes):
         _, fam, sto = B.build(src, out)
     except B.BuildError as e:
         fail('build refused: ' + str(e))
-    regression(os.path.join(fam, 'index.html'), prev_main, 'family build (upgrade from live main)')
-    regression(os.path.join(sto, 'index.html'), prev_store, 'App Store build (upgrade from live app-store)')
+    regression(os.path.join(fam, 'index.html'), prev_main, 'family build (upgrade from live main)', src)
+    regression(os.path.join(sto, 'index.html'), prev_store, 'App Store build (upgrade from live app-store)', src)
     if dry:
         print(f'[dry run] would commit "Release {ver}" as Zach and push it to main')
         return src
@@ -153,7 +154,7 @@ def store(ver, dry, ez_path, dry_src=None):
     if built != ver:
         fail(f'main is at version {built}, not {ver}. Release the family version first (or check the version number).')
     regression(os.path.join(sto, 'index.html'), git('show', 'origin/app-store:index.html'),
-               'App Store build (upgrade from live app-store)')
+               'App Store build (upgrade from live app-store)', src)
     main_sha = git('rev-parse', 'origin/main')
 
     say('Updating the app-store branch (generated output only)')
