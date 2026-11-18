@@ -893,7 +893,7 @@ function setFreq(id,k){var t=T(id);if(!t)return;
   if(k==='clock')t.at=[];else if(k==='times')t.needTimes=true;else if(k==='prn')t.prn=true;else if(k==='once'){t.once=true;t.date=t.date||bizDay();t.time=t.time||''}
   else if(k==='period')t.periods=S.periods.map(function(p){return p.id});
   else{t.unit=k;t.every=t.n*(k==='weeks'?7:k==='months'?30:1);t.last=t.last||0}}
-var FQ=[['period','Each time of day'],['clock','At set times'],['times','Times per day'],['days','Every X days'],['weeks','Every X weeks'],['months','Every X months'],['prn','As needed'],['once','One time']];
+var FQ=[['period','Each shift per day'],['clock','At set times'],['times','Times per day'],['days','Every X days'],['weeks','Every X weeks'],['months','Every X months'],['prn','As needed'],['once','One time']];
 function edit2(){
   var h='<div class="col"><div class="ch"><b>Tasks</b><small>'+S.tasks.length+' task'+(S.tasks.length===1?'':'s')+' · tap one to change it</small><button id="tadd" class="addbtn" style="margin-left:12px">+ Add task</button></div>';
   if(S.tasks.length>6)h+='<input type="search" id="tfind" placeholder="Find a task" aria-label="Find a task" value="'+esc(S.tfind||'')+'" style="width:100%;margin-bottom:6px">';
@@ -903,7 +903,7 @@ function edit2(){
       return'<button class="erow" data-te="'+t.id+'" data-tn="'+esc(t.name.toLowerCase())+'"><span class="en">'+esc(t.name)+'</span><span class="es">'+(ordTag(t)?'<span class="opill sm">'+ordTag(t)+'</span> ':'')+(ordTxt(t)?esc(ordTxt(t))+' · ':'')+esc(sumT(t))+(gg?' · How-to':'')+(nn?' · '+nn+' suppl'+(nn>1?'ies':'y'):'')+'</span><span class="ech" aria-hidden="true">›</span></button>'}).join('')+'</div></div>'});
   return h+'<p class="note" id="tnone" hidden>No tasks match.</p></div>';
 }
-var EGRP=[[['clock'],'At set times'],[['period'],'Each time of day'],[['times'],'Times per day'],[['days','weeks','months'],'Repeats every few days, weeks, or months'],[['prn'],'As needed'],[['once'],'One time']];
+var EGRP=[[['clock'],'At set times'],[['period'],'Each shift per day'],[['times'],'Times per day'],[['days','weeks','months'],'Repeats every few days, weeks, or months'],[['prn'],'As needed'],[['once'],'One time']];
 function sumT(t){var f=fq(t),dt=(f==='clock'||f==='period')&&dayTxt(t)?dayTxt(t)+' · ':'';return dt+sumT0(t)}
 function sumT0(t){var f=fq(t);
   if(f==='clock')return t.at.length?t.at.map(fmtT).join(' · '):'No times set';
@@ -960,6 +960,9 @@ function openNT(ctx){NTX={ctx:ctx||'today',hk:true};DRAFT={id:S.nid++,name:'',pe
   setFreq(DRAFT.id,can('sched')?'period':'once');S.teNewPend=null;S.teNew=DRAFT.id;S.teId=DRAFT.id;TEM[DRAFT.id]=false;$('tem').textContent='';
   drawTE();$('te').classList.add('show');setTimeout(function(){var i=document.querySelector('#te [data-n]');if(i)try{i.focus({preventScroll:true})}catch(x){}},80)}
 function cancelNT(){var ctx=NTX&&NTX.ctx;if(ctx==='first'&&NTX.hk!==false)S.setupHours=true;DRAFT=null;NTX=null;S.teNew=null;$('te').classList.remove('show');if(ctx==='first'){S.firstRun=false;S.tab='menu';render()}}
+/* tap outside a new task: close it like Cancel; if a name was typed, check first so it isn't lost by accident */
+function tapOutNT(){var i=document.querySelector('#te [data-n]'),n=(i?i.value:DRAFT.name||'').trim();if(!n){cancelNT();return}
+  askConfirm('Discard this new task?','“'+n+'” hasn’t been added yet.','Discard',cancelNT);$('cfx').textContent='Keep editing'}
 function saveNT(){var t=DRAFT;if(!t)return;var ni=document.querySelector('#te [data-n]');if(ni)t.name=ni.value.trim();var f=fq(t),er='';
   if(!t.name)er='Type a name for the task.';
   else if(f==='clock'&&!(t.at||[]).length)er='Add at least one time.';
@@ -1796,6 +1799,7 @@ var MDOWN=null,KEEP=['emed','ge','tour','fr','rk','ft','ah','sh','tb','tc'];if(E
 document.addEventListener('pointerdown',function(e){MDOWN=e.target},true);
 document.addEventListener('click',function(e){var m=e.target;if(!m.classList||!m.classList.contains('modal')||!m.classList.contains('show')||MDOWN!==m)return;
   if(KEEP.indexOf(m.id)>-1)return;
+  if(m.id==='te'&&DRAFT&&S.teId===DRAFT.id){tapOutNT();return}
   if(m.id==='te'&&teBlocked())return;
   if(m.id==='tp'){tpClose(true);return}
   if(m.id==='due'){ackDue();return}
@@ -1896,7 +1900,7 @@ function logPrn(id,force){var t=T(id);if(!t)return;var hs=t.hist||(t.hist=[]),la
 function undoPrn(id){var t=T(id);if(!t||!t.hist||!t.hist.length)return;t.hist.pop();use(t.id,-1);lg('Undid',t.name+' (as needed)',{tid:t.id});render()}
 /* ---- confirm, backup reminder, keep awake ---- */
 var CF=null;
-function askConfirm(title,msg,ok,fn,safe){CF=fn;$('cft').textContent=title;$('cfm').textContent=msg;$('cfok').textContent=ok;$('cfok').className='cfok'+(safe?' go':'');$('cf').classList.add('show')}
+function askConfirm(title,msg,ok,fn,safe){CF=fn;$('cft').textContent=title;$('cfx').textContent='Cancel';$('cfm').textContent=msg;$('cfok').textContent=ok;$('cfok').className='cfok'+(safe?' go':'');$('cf').classList.add('show')}
 function bkBanner(){var now=Date.now(),mo=30*864e5;
   if(!isOwner()||S.bkOff||!S.tasks.length||(S.bkSnooze&&now<S.bkSnooze))return'';
   if(S.lastBackup&&now-S.lastBackup<mo)return'';if(!S.lastBackup&&now-(S.since||now)<7*864e5)return'';
