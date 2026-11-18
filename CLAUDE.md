@@ -8,51 +8,60 @@ EZAide is a care checklist web app for families and caregivers looking after som
 - Keep replies short. Lead with what changed and what he needs to do. Show screenshots of UI changes (before/after) when you can.
 - If a request is ambiguous and expensive to redo, ask one short question first. Otherwise build it and say which reading you took.
 
-## The two branches (never mix them up)
+## One codebase, two versions
 
-| Branch | What it is | Served at |
-| --- | --- | --- |
-| `main` | The family version used on Zach's own iPad | GitHub Pages: https://zacharyminer10.github.io/Zeke-care/ |
-| `app-store` | EZAide for the App Store (prepared for a future Capacitor wrapper (no native project yet), 7-day trial label, alerts prompt, disclaimer, generic examples) | Not served by Pages; copied to the tester site (below) |
+There is **one** `index.html` / `sw.js`. Built from it:
 
-- **Never merge `app-store` into `main`.** Changes flow one way: main → app-store.
-- Main must keep `KEY='zeke-care-board.v1'`, `app:'zeke-care-board'` in backups, and `CACHE = 'zeke-care-' + VERSION` in sw.js. Changing them makes the family iPad look empty.
-- The App Store version keeps `KEY='ezaide.v1'`, `app:'ezaide'` (still accepting `zeke-care-board` backups in `okSnap`), `CACHE = 'ezaide-' + VERSION`.
+| Version | Storage key / backup id / SW cache | Lives on | Served at |
+| --- | --- | --- | --- |
+| Family (Zach's own iPad) | `zeke-care-board.v1` / `zeke-care-board` / `zeke-care-` | `main` (the source files themselves) | GitHub Pages: https://zacharyminer10.github.io/Zeke-care/ |
+| App Store (EZAide: disclaimer, alerts prompt, 7-day trial label, About & disclaimer, generic examples; prepared for a future Capacitor wrapper, no native project yet) | `ezaide.v1` / `ezaide` (also accepts `zeke-care-board` backups) / `ezaide-` | `app-store` branch, **generated output only** | Tester site https://ezaide.app/app/ (copied into the `zacharyminer10/ezaide` repo) |
+
+- **The edition block** at the top of the `<script>` in `index.html` (`var ED={id:'family',store:false,...}` between `/* ==== EDITION ==== */` and `/* ==== END EDITION ==== */`) holds everything that differs: storage key, backup id and file name, and the wording that differs ("He’s sleeping" vs "Sleeping", the 911 alert, "with his care", tour/guide examples). The App Store values are in `store/edition.js`.
+- **App Store-only features** live in `index.html` and are switched on by `ED.store`: pop-ups `dc` (disclaimer) and `na` (alerts prompt), the trial label `#trl`, the About & disclaimer button/sheet (Privacy policy / Help and support / Email us links), the sign-up note under the code box, the "A quick note" tour step, the first-run order (shifts → disclaimer → recovery key → first task, no tour), `dc`/`na` in `KEEP`, the native bridge (`NAT`, `EZStore`, `storeHooks()`). Their markup is added by `storeDom()`; their CSS only matches App Store elements or `[data-ed="store"]`. With `store:false` none of it runs or appears.
+- When adding something App Store-only: gate it with `if(ED.store)`; wording that differs goes in **both** edition blocks. Never write a storage key, backup id or cache name anywhere else.
+- `tools/build.py` swaps the edition block for `store/edition.js` and renames the SW cache, writing `dist/family/` and `dist/store/` (with `privacy.html` from `store/`). It **refuses** if the family build isn't `zeke-care-board.v1` / `zeke-care-board` / `zeke-care-`, if the App Store build isn't the `ezaide` equivalents, or if the App Store build contains "Zeke", "He’s" or "Care Board"; it checks the text and then reads the real values in a browser.
+- **Never edit, merge into or cherry-pick on `app-store`.** `tools/release.py` replaces its files with the build each release. Never merge `app-store` into `main`.
+- Changing main's storage key, backup id or cache name makes the family iPad look empty.
 
 ## Files
 
-- `index.html`: the whole app (HTML + CSS + ES5 JavaScript) in one large file with long lines.
+- `index.html`: the whole app (HTML + CSS + ES5 JavaScript) in one large file with long lines. It is the family version as-is.
 - `sw.js`: service worker. Bumping `VERSION` is what makes installed iPads see an update.
-- `manifest.webmanifest`, `icon-180.png`, `icon-192.png`, `icon-512.png`.
-- `tests/regression.py`: Playwright + Chromium regression suite. Keep it **identical on both branches** (it handles the App Store-only pop-ups).
+- `manifest.webmanifest`, `icon-180.png`, `icon-192.png`, `icon-512.png` (shared by both versions).
+- `store/edition.js` (App Store edition block), `store/privacy.html` (App Store privacy policy; the live copy is `privacy.html` in the ezaide repo).
+- `tools/build.py`, `tools/release.py` (below). `dist/` is build output and is not committed.
+- `tests/regression.py`: Playwright + Chromium regression suite; runs on either build (`--html`). The `ED` tests check each version's key, App Store pieces and first-run order.
+- `tests/stylecheck/`: proves a change leaves the look unchanged (see its README).
 
 ## How Zach likes changes to happen
 
 1. Work on a branch, not straight on `main`.
-2. Run the tests (below) and show Zach screenshots of anything visual.
+2. Run the tests on both builds (below) and show Zach screenshots of anything visual.
 3. **Only release when Zach says "release"** (or clearly says to ship/push it live). Until then nothing goes to `main`, `app-store`, or the tester site.
 4. Urgent bug: fix it, then ask whether to release it right away as a point release (e.g. 1.19.1).
 
-## Release checklist
+## Release
 
-1. In `index.html` set `var VER='x.y'`; in `sw.js` set `const VERSION = 'x.y'`.
-2. Run `python3 tests/regression.py` (it also checks upgrading from the last committed version). Everything must PASS.
-3. Commit **as Zach**: `git -c user.name="Zach" -c user.email="zacharyminer10@users.noreply.github.com" commit ...`. Push `main`. Check the Pages deploy finished: `gh api repos/zacharyminer10/zeke-care/actions/runs`.
-4. Merge into `app-store`:
-   - `git fetch origin +refs/heads/app-store:refs/remotes/origin/app-store` (make sure the ref is current), then `git checkout -B app-store origin/app-store && git merge --no-ff --no-commit origin/main`.
-   - `sw.js` always conflicts: keep the EZAide header and `CACHE = 'ezaide-' + VERSION` with the new version.
-   - `index.html`: keep the App Store pieces (storage key/app id above, trial label `#trl` under the screen title, `storeHooks()` in `render()`, About & disclaimer with its Privacy policy / Help and support / Email us links, disclaimer `dc` and alerts `na` pop-ups in `KEEP`, the "Your shifts · these hours are right" checkbox in the first-task step, generic examples) and apply main's functional change on top. **Ask Zach before resolving anything that changes the App Store version's own design.**
-   - Afterwards: no conflict markers; no "Care Board", "Zeke", "He’s" in index.html (the `zeke-care-board` backup check is intentional); run `python3 tests/regression.py --prev <app-store's previous index.html>`; commit "Merge main (x.y) into app-store"; push.
-5. Update the tester site: in the `zacharyminer10/ezaide` repo, copy app-store's `index.html` and `sw.js` (and `manifest.webmanifest`/icons if they changed) into `app/`. Keep the `<meta name="robots" content="noindex">` line right after `<head>`. Commit as Zach and push. That repo serves https://ezaide.app (and https://ezaide.app/app/ for testers); its Cloudflare DNS records must stay "DNS only".
-6. Tell Zach: on the iPad, ⚙ → **Check for updates** → **Update now**. Testers get it the same way.
+Only when Zach says "release". The session needs **both repos**: `zacharyminer10/zeke-care` and `zacharyminer10/ezaide` (checked out next to each other).
 
-A release session needs **both repos** selected: `zacharyminer10/zeke-care` and `zacharyminer10/ezaide`.
+```
+python3 tools/release.py x.y --notes "short list of changes"
+```
+
+It does the whole checklist and stops at the first problem: bump `VER` (index.html) and `VERSION` (sw.js) → build both versions → regression tests on both, with upgrade checks from what is live on `main` and `app-store` → commit as Zach → push `main` → wait for the Pages deploy → build the App Store version from `origin/main` → test it → replace the `app-store` branch's files with the build (one commit on top) → copy it into `app/` of the ezaide repo with `<meta name="robots" content="noindex">` right after `<head>` → push → wait for that deploy.
+
+- `--family-only` / `--store-only` split it (e.g. ship the family version, wait for Zach to confirm his iPad, then ship the App Store version). `--dry-run` does everything except commit/push.
+- Commits are made as Zach (`Zach <zacharyminer10@users.noreply.github.com>`). The ezaide repo serves https://ezaide.app; its Cloudflare DNS records must stay "DNS only".
+- Afterwards tell Zach: on the iPad, ⚙ → **Check for updates** → **Update now**. Testers get it the same way.
+- Urgent bug: fix it, then ask whether to release it right away as a point release (e.g. 1.19.1).
 
 ## Running the tests
 
-- `python3 tests/regression.py` from the repo root. Optional `--prev OLD.html` checks that data from an older version upgrades cleanly.
-- Needs Python Playwright with Chromium (`pip install playwright` then `python3 -m playwright install chromium`). If the browser download is blocked by the environment's network settings, say so plainly and tell Zach what to change, rather than skipping the tests.
+- `python3 tools/build.py`, then `python3 tests/regression.py --html dist/family/index.html` and `--html dist/store/index.html`. Add `--prev OLD.html` to check that data from an older version upgrades cleanly (family against `git show origin/main:index.html`, App Store against `git show origin/app-store:index.html`). Without `--html` it tests `./index.html` against the last commit.
+- Needs Python Playwright with Chromium (`pip install playwright` then `python3 -m playwright install chromium`; a preinstalled `/opt/pw-browsers/chromium` is used if present). If the browser download is blocked by the environment's network settings, say so plainly and tell Zach what to change, rather than skipping the tests.
 - Some tests fake the clock; tests that add a task to one shift only should put it in every shift (or fix the clock), or they fail depending on the time of day.
+- Look changes: `tests/stylecheck/snap.py` (see its README) on both builds.
 
 ## Code gotchas learned the hard way
 

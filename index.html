@@ -191,6 +191,11 @@ nav button,nav button.on,.pill,.tag,.sec,.who button.on,.rs button.on,.tchip,.up
 .tpok,.toast button,.vb button,.upd button,.cfok,.pad button{font-weight:600}
 .task .box{font-weight:600}
 
+/* ---- Store edition only (see ED in the script): trial status + alert prompt ---- */
+.trl{font-size:13px;color:var(--mut);margin-left:10px;padding:2px 9px;border:1px solid var(--line);border-radius:999px;white-space:nowrap}.trl[hidden]{display:none}
+.ttl .trl{margin:5px 0 0;align-self:flex-start;font-size:12px;padding:1px 8px}
+/* ---- Store: disclaimer ---- */
+[data-ed="store"] .tpok:disabled{opacity:.45;cursor:not-allowed}
 /* ---- Setup: shifts step ---- */
 .sfn{background:var(--dubg);color:var(--due);border:1px solid var(--due);border-radius:12px;padding:10px 14px;margin:0 0 12px;line-height:1.45;font-size:15px}
 .sfn b{font-weight:600}
@@ -643,27 +648,23 @@ button.tyb{cursor:pointer}
 <div style="display:flex;gap:8px"><button id="tcx">Cancel</button><button id="tcok" class="tpok">Copy</button></div></div></div>
 <div class="modal" id="tp"><div class="card" style="max-width:380px"><h2 id="tpt">Pick a time</h2><p class="note" id="tps" style="margin:0 0 4px"></p><p class="tpv" id="tpv" aria-live="polite"></p><div class="tpw"><div class="tpc" id="tph" aria-label="Hour"></div><div class="tpc" id="tpm" aria-label="Minute"></div><div class="tpc" id="tpa" aria-label="AM or PM"></div></div><p class="note" style="text-align:center;margin:4px 0 10px">Scroll to the time, then tap ✓ to save it.</p><p class="note" id="tpe" style="color:var(--bad);text-align:center" aria-live="polite"></p><div style="display:flex;gap:8px"><button id="tpx">Cancel</button><button id="tpok" class="tpok" aria-label="Save this time">✓</button></div></div></div>
 <script>
+/* ==== EDITION ====
+   This file is the FAMILY version (main, Zach's iPad, GitHub Pages). tools/build.py makes the App Store
+   version by swapping this whole block for store/edition.js. Never put App Store values here: a different
+   key makes the family iPad look empty. App Store-only features are switched on by ED.store. */
+var ED={id:'family',store:false,
+  key:'zeke-care-board.v1',app:'zeke-care-board',apps:['zeke-care-board'],backup:'zeke-care-backup',
+  alert:'Call 911 first if he is in distress.',sleep:'He’s sleeping',care:'with his care',
+  ex:{done:'Clean G-tube site',hold:'Humidification check',howto:'Change trach ties',guide:'Trach tie change'}};
+/* ==== END EDITION ==== */
+if(ED.store)storeDom();
 var VER='1.19.2';
 var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
 var S={
-  tab:'today',who:'',people:[{name:'Zach',pin:'1111'},{name:'Wife',pin:'2222'},{name:'Nurse',pin:'3333'}],pend:null,pin:{for:'',buf:''},reason:'',
+  tab:'today',who:'',people:[],pend:null,pin:{for:'',buf:''},reason:'',
   periods:[{id:'day',name:'Day',start:'07:00',end:'21:00'},{id:'night',name:'Night',start:'21:00',end:'07:00'}],
-  tasks:[
-    {id:1,name:'Check and clean trach stoma',periods:['day','night'],every:0},
-    {id:2,name:'Humidification check',periods:['day','night'],every:0},
-    {id:3,name:'Clean G-tube site',periods:['day'],every:0},
-    {id:4,name:'Wash feeding syringes',periods:['day','night'],every:0},
-    {id:5,name:'Suction supplies stocked',periods:['night'],every:0},
-    {id:6,name:'Change trach ties',periods:[],every:3,last:3,guide:'g1'},
-    {id:7,name:'Change feeding extension set',periods:[],every:7,last:5},
-    {id:8,name:'Emergency kit check',periods:[],every:7,last:2},
-    {id:9,name:'Feeding',periods:[],every:0,at:['08:00','11:00','14:00','17:00','20:00','23:00']},
-    {id:11,name:'Replace trach tube',periods:[],every:30,n:1,unit:'months',last:12},
-    {id:14,name:'Call equipment company about tubing (sample)',periods:[],every:0,once:true,date:'',time:''},
-    {id:15,name:'Pick up supplies from pharmacy (sample)',periods:[],every:0,once:true,date:'+3',time:''},
-    {id:12,name:'Medication (sample)',periods:[],every:0,at:['08:00','20:00'],grace:30}
-  ],
-  done:{},cdone:{},cnt:{},adminPin:'1234',adminOk:false,stock:[{id:1,name:'Suction catheters',qty:12,low:5,link:null},{id:2,name:'Trach ties',qty:3,low:2,link:6},{id:3,name:'Feeding syringes',qty:9,low:4,link:4},{id:4,name:'Split gauze',qty:20,low:6,link:1}],moves:[],log:[],logf:'',logt:'',emer:{alert:'Call 911 first if he is in distress.',contacts:[{n:'Emergency',p:'911'},{n:'Hospital (sample)',p:''},{n:'Specialty clinic (sample)',p:''},{n:'Home nursing agency (sample)',p:''},{n:'Equipment company (sample)',p:''}],tell:'Sample. Replace with your own: home address, his name and age, his main diagnoses, trach and G-tube details, and any allergies.',plan:'Sample. Replace with the emergency steps from his care team, one per line.'},last:Date.now(),idle:120,resetAt:'07:00',dayKey:'',nid:20
+  tasks:[],
+  done:{},cdone:{},cnt:{},adminPin:'1234',adminOk:false,stock:[],moves:[],log:[],logf:'',logt:'',emer:{alert:ED.alert,contacts:[{n:'Emergency',p:'911'}],tell:'',plan:''},last:Date.now(),idle:120,resetAt:'07:00',dayKey:'',nid:20
 };
 var $=function(id){return document.getElementById(id)};
 function mins(t){var p=t.split(':');return +p[0]*60+ +p[1]}
@@ -848,7 +849,7 @@ function openTimed(id,x){var t=T(id);if(!t)return;S.pend=null;$('pmrw').style.di
   $('pmb').innerHTML=canEditT()?'':'<p class="note" style="margin:0 0 8px">Only owners and managers who can edit tasks can change its time.</p>';$('pm').classList.add('show')}
 function openOnce(id){var t=T(id);if(!t)return;S.pend=null;$('pmrw').style.display='none';pmHead(t,'Move this task','One-time task'+(t.time?' at '+fmtT(t.time):'')+'. Moving it changes the day it’s due.','Changes this one-time task');$('pmb').innerHTML='<p class="sec">Another day</p><button data-po="'+id+'">Push to tomorrow</button>';$('pm').classList.add('show')}
 function openIv(id){var t=T(id);if(!t)return;S.pend=null;$('pmrw').style.display='none';pmHead(t,'Move this task',fl(t)+'. Pushing it a day starts the count from tomorrow.');$('pmb').innerHTML='<p class="sec">Another day</p><button data-pi="'+id+'">Push to tomorrow</button>';$('pm').classList.add('show')}
-var RS=['He’s sleeping','Waiting on supplies','Needs a second person','Other'];
+var RS=[ED.sleep,'Waiting on supplies','Needs a second person','Other'];
 function hhmm(ts){var d=new Date(ts);return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
 function openPush(tid,from){
   var t=T(tid);if(!t)return;
@@ -929,7 +930,7 @@ function drawTE(){var t=T(S.teId);if(!t){$('te').classList.remove('show');return
   else if(f==='prn')h+='<p class="note">Minimum time between</p><label class="c"><input type="number" min="0" step="0.5" value="'+(t.gap||0)+'" data-gap="'+t.id+'" aria-label="Hours between" style="width:80px"> hours (0 = no limit)</label>';
   else if(f==='once')h+='<p class="note">When</p><div class="rs" style="align-items:center"><input type="date" value="'+t.date+'" data-od="'+t.id+'" aria-label="Date"><button class="tchip'+(S.flash===t.id+'@'+t.time?' new':'')+'" data-otp="'+t.id+'">'+(t.time?fmtT(t.time):'Pick a time')+'</button>'+(t.time?'<button data-otc="'+t.id+'">Any time</button>':'')+'</div>';
   if(dr&&!canEditT())h+='<p class="note" style="margin-top:8px">Owners and managers can add tasks that repeat.</p>';
-  if(lim){h+='</div>';ntFoot(t);$('teb').innerHTML=h;return}
+  if(lim){h+='</div>';ntFoot(t);$('teb').innerHTML=h+ftHours(t);return}
   h+='</div><div class="tegrp">'+ordSection(t).replace('<div class="tesec">','<div>')+'</div>';
   var nd=needsOf(t),g=guideOf(t),nx=(t.extras||[]).length,mo=TEM[t.id]!=null?TEM[t.id]:!!(nd.length||nx||g||(f==='clock'&&t.grace&&t.grace!==60));
   var sum=[nd.length?nd.length+' suppl'+(nd.length===1?'y':'ies'):'',nx?nx+' to have ready':'',g?'how-to':''].filter(Boolean).join(' · ');
@@ -944,7 +945,7 @@ function drawTE(){var t=T(S.teId);if(!t){$('te').classList.remove('show');return
     h+='<p class="tegt">Also have ready <span style="color:var(--mut);text-transform:none;letter-spacing:0;font-weight:400">· not counted</span></p>'+(nx?'<div class="rs" style="margin-bottom:6px">'+t.extras.map(function(x,i){return'<span class="xchip">'+esc(x)+'<button class="tx" data-exd="'+t.id+'|'+i+'" aria-label="Remove '+esc(x)+'">×</button></span>'}).join('')+'</div>':'')+'<div class="addrow"><input type="text" id="exn" maxlength="40" placeholder="e.g. Wet washcloth" aria-label="Something to have ready"><button data-exa="'+t.id+'" style="flex:none">Add</button></div>';
     h+='<div class="tero" style="margin-top:12px"><span>How-to guide</span><select data-tg="'+t.id+'" aria-label="How-to guide"><option value="">None</option>'+S.guides.map(function(x){return'<option value="'+x.id+'"'+(g&&g.id===x.id?' selected':'')+'>'+esc(x.title)+'</option>'}).join('')+(can('guides')?'<option value="__new">Write a new guide…</option>':'')+'</select></div>';
     h+='</div>'}
-  ntFoot(t);$('teb').innerHTML=h;$('tedel').dataset.del=t.id}
+  ntFoot(t);$('teb').innerHTML=h+ftHours(t);$('tedel').dataset.del=t.id}
 function ntFoot(t){var dr=t===DRAFT,first=dr&&NTX&&NTX.ctx==='first';$('tet').textContent=dr?(first?'Add your first task':'Add task'):t.name;$('tek').hidden=!first;
   $('tedel').hidden=dr;$('tedone').hidden=dr;$('tecan').hidden=!dr;$('teadd').hidden=!dr;$('tecan').textContent=first?'Skip for now':'Cancel';if(!dr)$('tem').textContent=''}
 /* ---- 1.19.1: keep pop-ups (and their titles) above the iPad keyboard ---- */
@@ -953,10 +954,12 @@ if(window.visualViewport){visualViewport.addEventListener('resize',vvFit);visual
 document.addEventListener('focusin',function(e){var el=e.target,c=el&&el.closest&&el.closest('.modal .card');if(!c)return;
   setTimeout(function(){if(!c.scrollTop||document.activeElement!==el)return;var off=el.getBoundingClientRect().bottom-c.getBoundingClientRect().top+c.scrollTop;if(off+12<=c.clientHeight)c.scrollTop=0},350)});
 /* ---- 1.19: one Add task pop-up everywhere (Today, All tasks, first task) ---- */
-function openNT(ctx){NTX={ctx:ctx||'today'};DRAFT={id:S.nid++,name:'',periods:[],every:0,n:3,times:0,prn:false,last:0,needs:[]};
+function ftHours(t){if(t!==DRAFT||!NTX||NTX.ctx!=='first')return'';
+  return'<div class="tegrp"><p class="tegt">Your shifts</p><label style="display:flex;gap:10px;align-items:flex-start;cursor:pointer;line-height:1.4"><input type="checkbox" id="fthk"'+(NTX.hk!==false?' checked':'')+' style="width:20px;height:20px;flex:none;margin-top:1px"><span>'+esc(S.periods.map(function(x){return x.name+' '+fmtT(x.start)+' to '+fmtT(x.end)}).join(' · '))+'<span class="meta" style="display:block">These hours are right. You can change them later in Menu → Times of day.</span></span></label></div>'}
+function openNT(ctx){NTX={ctx:ctx||'today',hk:true};DRAFT={id:S.nid++,name:'',periods:[],every:0,n:3,times:0,prn:false,last:0,needs:[]};
   setFreq(DRAFT.id,can('sched')?'period':'once');S.teNewPend=null;S.teNew=DRAFT.id;S.teId=DRAFT.id;TEM[DRAFT.id]=false;$('tem').textContent='';
   drawTE();$('te').classList.add('show');setTimeout(function(){var i=document.querySelector('#te [data-n]');if(i)try{i.focus({preventScroll:true})}catch(x){}},80)}
-function cancelNT(){var ctx=NTX&&NTX.ctx;DRAFT=null;NTX=null;S.teNew=null;$('te').classList.remove('show');if(ctx==='first'){S.firstRun=false;S.tab='menu';render()}}
+function cancelNT(){var ctx=NTX&&NTX.ctx;if(ctx==='first'&&NTX.hk!==false)S.setupHours=true;DRAFT=null;NTX=null;S.teNew=null;$('te').classList.remove('show');if(ctx==='first'){S.firstRun=false;S.tab='menu';render()}}
 function saveNT(){var t=DRAFT;if(!t)return;var ni=document.querySelector('#te [data-n]');if(ni)t.name=ni.value.trim();var f=fq(t),er='';
   if(!t.name)er='Type a name for the task.';
   else if(f==='clock'&&!(t.at||[]).length)er='Add at least one time.';
@@ -964,7 +967,7 @@ function saveNT(){var t=DRAFT;if(!t)return;var ni=document.querySelector('#te [d
   else if(f==='times'&&(t.needTimes||!t.times))er='Enter how many times a day.';
   else if(f==='once'&&(!t.date||t.date<bizDay()))er='Pick today or a later date.';
   if(er){$('tem').textContent=er;if(!t.name&&ni)try{ni.focus()}catch(x){}return}
-  var ctx=NTX?NTX.ctx:'today';t.by=S.who;S.tasks.push(t);DRAFT=null;NTX=null;S.teNew=null;$('tem').textContent='';$('te').classList.remove('show');
+  var ctx=NTX?NTX.ctx:'today';if(ctx==='first'&&NTX.hk!==false)S.setupHours=true;t.by=S.who;S.tasks.push(t);DRAFT=null;NTX=null;S.teNew=null;$('tem').textContent='';$('te').classList.remove('show');
   lg('Added task',t.name+' ('+(f==='once'?'one-time, '+(t.date===bizDay()?'today':dlabel(t.date))+(t.time?' at '+fmtT(t.time):''):(FQ.filter(function(o){return o[0]===f})[0]||['',''])[1].toLowerCase())+(ctx==='first'?', first task':'')+')',{tid:t.id});
   if(ctx==='first')S.firstRun=false;
   if(ctx==='edit'){render();var er0=document.querySelector('[data-te="'+t.id+'"]');if(er0){er0.classList.add('flashtile');try{er0.scrollIntoView({block:'center',behavior:'smooth'})}catch(x){}}return}
@@ -1111,7 +1114,7 @@ function admin(){fresh=false;
   h+='<div class="row"><span style="flex:1;min-width:200px"><b>Setup checklist</b><span class="meta">Show the step-by-step setup list in the Menu again</span></span><button id="setupre">Show checklist</button></div>';
   h+='<div class="row"><span style="flex:1;min-width:200px"><b>Start fresh</b><span class="meta">Erases all tasks, supplies, people, and the log on this iPad. Download a backup first.</span></span><button id="fresh" style="color:var(--bad)">Start fresh</button></div>';
   return h+'<p class="note" id="admmsg" aria-live="polite"></p></div>'}
-function render(keep){head();if(keep)return;setTimeout(function(){if($('te').classList.contains('show'))drawTE();if(S.tab==='edit')applyFind();if(S.tab==='log')applyLogQ()},0);var back=['edit','periods','people','admin','typ'].indexOf(S.tab)>-1?'<button data-t="menu" style="margin-bottom:12px">← Menu</button>':'';$('main').innerHTML=back+(S.tab==='today'?today():S.tab==='week'?week():S.tab==='menu'?menu():S.tab==='edit'?edit2():S.tab==='stock'?stock():S.tab==='log'?logv():S.tab==='library'?library():S.tab==='periods'?periods():S.tab==='admin'?admin():S.tab==='typ'?typEdit():people())}
+function render(keep){head();if(ED.store)storeHooks();if(keep)return;setTimeout(function(){if($('te').classList.contains('show'))drawTE();if(S.tab==='edit')applyFind();if(S.tab==='log')applyLogQ()},0);var back=['edit','periods','people','admin','typ'].indexOf(S.tab)>-1?'<button data-t="menu" style="margin-bottom:12px">← Menu</button>':'';$('main').innerHTML=back+(S.tab==='today'?today():S.tab==='week'?week():S.tab==='menu'?menu():S.tab==='edit'?edit2():S.tab==='stock'?stock():S.tab==='log'?logv():S.tab==='library'?library():S.tab==='periods'?periods():S.tab==='admin'?admin():S.tab==='typ'?typEdit():people())}
 document.addEventListener('click',function(e){
   var b=e.target.closest('button');if(!b)return;
   if(!S.who&&(b.dataset.pr||b.dataset.pv||b.dataset.k||b.dataset.i||b.dataset.o||b.dataset.po||b.dataset.ct||b.dataset.c||b.dataset.mv||b.dataset.pi||b.dataset.undo||b.dataset.undomv)){needWho();return}
@@ -1208,6 +1211,10 @@ document.addEventListener('click',function(e){
   if(b.id==='rkcopy'){copyKey();return}
   if(b.id==='rkok'){doneKey();return}
   if(b.id==='rknew'){if(!can('owner'))return;showKey();return}
+  if(ED.store){if(b.id==='dcok'){acceptDC();return}
+    if(b.id==='nayes'){answerNA(true);return}
+    if(b.id==='nano'){answerNA(false);return}
+    if(b.id==='abt'){$('st').classList.remove('show');openAbout();return}}
   if(b.id==='frrs'){$('rsf').value='';$('rsf').click();return}
   if(b.id==='tournext'){if(TOUR.i<TOUR.c.length-1){TOUR.i++;drawTour()}else endTour();return}
   if(b.id==='tourback'){if(TOUR.i>0){TOUR.i--;drawTour()}return}
@@ -1300,6 +1307,7 @@ document.addEventListener('click',function(e){
 document.addEventListener('input',function(e){if(DRAFT&&e.target.dataset&&e.target.dataset.n==DRAFT.id){DRAFT.name=e.target.value;if(e.target.value.trim())$('tem').textContent=''}if(e.target.id==='tfind')applyFind();if(e.target.id==='logq'){var lv=e.target.value;clearTimeout(window._lqt);window._lqt=setTimeout(function(){S.logq=lv;S.logCap=300;S._lqf=true;render()},250)}});
 document.addEventListener('keydown',function(e){if(e.key!=='Enter')return;var id=e.target.id;if(id==='qcv'){e.preventDefault();saveQC()}else if(id==='exn'){e.preventDefault();addExtra(S.teId,e.target.value);setTimeout(function(){try{$('exn').focus()}catch(x){}},30)}else if(id==='rck'){e.preventDefault();checkRC()}else if(id==='rcn2'){e.preventDefault();saveRC()}});
 document.addEventListener('change',function(e){
+  if(e.target.id==='fthk'&&NTX){NTX.hk=e.target.checked;return}
   if(e.target.id==='rsf'){var f=e.target.files&&e.target.files[0];if(!f)return;var fr=new FileReader();fr.onload=function(){var bk=null;try{bk=JSON.parse(fr.result)}catch(x){}
     if(!okSnap(bk)){$('stmsg').textContent='That file is not an EZAide backup. Nothing was changed.';return}
     var go=function(){var ok=applySnap(bk);if(ok){LREPL=true;S.last=Date.now();maybeReset();save();fillSt();$('stmsg').textContent='Restored. Sign in again from the Who’s here menu.';$('fr').classList.remove('show');render();if(S.people.length)needWho();else openFR()}};
@@ -1365,6 +1373,45 @@ document.addEventListener('pointermove',function(e){if(lp.t&&(Math.abs(e.clientX
 document.addEventListener('contextmenu',function(e){if(e.target.closest('.task'))e.preventDefault()});
 document.addEventListener('click',function(e){if(lp.fired){lp.fired=false;e.stopImmediatePropagation();e.preventDefault()}},true);
 ['pointerdown','keydown','input'].forEach(function(n){document.addEventListener(n,function(){S.last=Date.now()},true)});
+
+/* ---- store (App Store version only, ED.store): native bridge, alert permission, trial status ----
+   NAT is the native app (Capacitor) when running from the App Store build; null in the web version.
+   EZStore.trialStart is set by the purchase layer (Phase 4) from Apple's record of the trial item. */
+var NAT=ED.store&&(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform())?Capacitor.Plugins:null;
+if(ED.store)window.EZStore=window.EZStore||{trialStart:0,unlocked:false};
+function anyOpen(){return !!document.querySelector('.modal.show')}
+function storeHooks(){
+  // ask for alerts the first time a task has a set time, once
+  if(!S.notifAsked&&S.people.length&&S.tasks.some(function(t){return t.at&&t.at.length})&&!anyOpen())setTimeout(function(){if(!S.notifAsked&&!anyOpen())$('na').classList.add('show')},700);
+  // quiet trial status during the 7-day trial
+  var el=$('trl'),st=window.EZStore;if(!el)return;
+  if(!st.trialStart||st.unlocked){el.hidden=true;return}
+  var left=Math.ceil((st.trialStart+7*864e5-Date.now())/864e5);
+  if(left<1){el.hidden=true;return}
+  el.textContent='Free trial · '+left+(left===1?' day':' days')+' left';el.hidden=false}
+function answerNA(yes){S.notifAsked=true;S.notif=yes?'on':'off';$('na').classList.remove('show');save();
+  lg('Changed','Alerts '+(yes?'turned on':'left off')+(S.who?' by '+S.who:''));
+  if(yes&&NAT&&NAT.LocalNotifications){try{NAT.LocalNotifications.requestPermissions().then(function(r){if(r&&r.display!=='granted'){S.notif='denied';save()}})}catch(x){}}}
+/* ---- store: disclaimer, about, checklist groups, first-run order ---- */
+var DCNEXT=null;
+function openDC(next){DCNEXT=next||null;$('dcck').checked=false;$('dcok').disabled=true;$('dc').classList.add('show')}
+function acceptDC(){if(!$('dcck').checked)return;S.disc={by:S.who||'',at:Date.now()};lg('Changed','Disclaimer accepted'+(S.who?' by '+S.who:''));$('dc').classList.remove('show');save();var f=DCNEXT;DCNEXT=null;if(f)f();else render()}
+if(ED.store)document.addEventListener('change',function(e){if(e.target&&e.target.id==='dcck')$('dcok').disabled=!e.target.checked});
+function firstRunNext(){var p=S.people.filter(function(x){return x.name===S.who})[0];if(p)p.toured=true;save();if(!S.tasks.length)openFT();else render()}
+function openAbout(){var P=['EZAide is a general-purpose organizational tool for families and caregivers to record and track routine care tasks. It is not a medical device and is not intended to diagnose, treat, cure, monitor, or prevent any disease or condition.',
+  'Task names, times, doses, and instructions are entered by the people using the app. EZAide does not check them for accuracy. You are responsible for confirming that all information matches the instructions from your care team and the labels on medications and supplies.',
+  'Reminders and “due” indicators depend on the device being on, charged, and allowed to send notifications. They may be delayed or missed. Don’t use EZAide as the only way to make sure a medication, feed, or treatment happens on time.',
+  'All information is stored only on this device and is not sent to us. If the device is lost, reset, or damaged without a backup, your information can’t be recovered.',
+  'EZAide does not replace the judgment of caregivers, nurses, or doctors. In an emergency, call 911 or your local emergency number.'];
+  var acc=S.disc&&S.disc.at?'<p class="note">Accepted'+(S.disc.by?' by '+esc(S.disc.by):'')+' on '+new Date(S.disc.at).toLocaleDateString()+'.</p>':'';
+  showSheet('About & disclaimer',P.map(function(x){return'<p style="line-height:1.45;margin:0 0 10px">'+x+'</p>'}).join('')+acc+'<p style="margin:4px 0 10px;display:flex;gap:18px;flex-wrap:wrap"><a href="https://ezaide.app/privacy.html" target="_blank" rel="noopener" style="color:var(--acc)">Privacy policy</a><a href="https://ezaide.app" target="_blank" rel="noopener" style="color:var(--acc)">Help and support</a><a href="mailto:ezaide.app@gmail.com" style="color:var(--acc)">Email us</a></p><p class="note">EZAide · Version '+VER+'</p>')}
+/* ---- store: markup only the App Store version has (trial label, About button, sign-up note, alert + disclaimer pop-ups) ---- */
+function storeDom(){var q=function(id){return document.getElementById(id)};document.documentElement.setAttribute('data-ed','store');
+  q('clock').insertAdjacentHTML('afterend','<span class="trl" id="trl" hidden></span>');
+  q('tourre').insertAdjacentHTML('afterend','<button id="abt" class="gact">About &amp; disclaimer</button>');
+  q('frp').insertAdjacentHTML('afterend','<p class="note" style="margin-top:6px">You’ll use this to sign in each time. Everyone who uses the board gets their own.</p>');q('frh').setAttribute('aria-label','Your code hint');
+  q('rc').insertAdjacentHTML('afterend','<div class="modal" id="na"><div class="card" style="max-width:440px"><h2>Want an alert when it’s due?</h2><p style="line-height:1.45;margin:0 0 14px">EZAide can send a notification at the set time, even if the app is closed. You can change which alerts you get any time in Admin settings.</p><div style="display:flex;gap:8px;align-items:center"><button id="nano" style="background:transparent;border-color:transparent;color:var(--mut)">Not now</button><span style="flex:1"></span><button id="nayes" class="tpok" style="flex:none;font-size:16px;padding:8px 20px">Turn on alerts</button></div></div></div>'+
+    '<div class="modal" id="dc"><div class="card" style="max-width:520px"><h2>Before you start</h2><p style="line-height:1.45;margin:0 0 10px">EZAide is a checklist and tracking aid for caregivers. It is not a medical device and does not give medical advice, diagnose, or treat any condition.</p><ul style="margin:0 0 12px;padding-left:20px;line-height:1.45"><li>Always follow the instructions from your care team and the labels on prescriptions and supplies. If EZAide ever differs from them, they are right.</li><li>Reminders can be missed if the device is off, muted, out of battery, or notifications are turned off. Don’t rely on the app as your only reminder for medications or feeds.</li><li>Your information is stored only on this device. Back it up regularly from ⚙ Settings.</li><li><b>In an emergency, call 911.</b></li></ul><label style="display:flex;gap:10px;align-items:flex-start;margin:0 0 14px;cursor:pointer;line-height:1.4"><input type="checkbox" id="dcck" style="width:22px;height:22px;flex:none;margin-top:1px"><span>I understand EZAide is a tracking aid, not a substitute for medical care or professional judgment.</span></label><button id="dcok" class="tpok" style="width:100%;font-size:17px" disabled>Continue</button></div></div>')}
 /* ---- 1.13: opened in Safari instead of the Home Screen app ---- */
 function inSafariTab(){try{var ios=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
   var standalone=navigator.standalone===true||(window.matchMedia&&matchMedia('(display-mode: standalone)').matches);
@@ -1703,23 +1750,25 @@ function openFT(){openNT('first')}
 function showHint(msg){clearTimeout(UNDO.t);UNDO.fn=null;$('toastt').textContent=msg;$('toastu').hidden=true;$('toast').hidden=false;UNDO.t=setTimeout(function(){hideUndo();$('toastu').hidden=false},7000)}
 /* ---- 1.7.1: empty first run ---- */
 function blankState(){S.orders=[];S.tasks=[];S.stock=[];S.guides=[];S.people=[];S.log=[];LREPL=true;S.keepDays=182;S.moves=[];S.done={};S.cdone={};S.cnt={};
-  S.emer={alert:'Call 911 first if he is in distress.',contacts:[{n:'Emergency',p:'911'}],tell:'',plan:''};
+  S.emer={alert:ED.alert,contacts:[{n:'Emergency',p:'911'}],tell:'',plan:''};
   S.who='';S.adminOk=false;S.adminPin='1234';S.adminSet=false;S.rkey='';S.ahint='';S.firstRun=false;S.setup=true;S.setupHours=false;S.lastBackup=0;S.bkSnooze=0;S.since=Date.now();S.nid=20;S.dayKey=bizDay();S.tab='today';S.viewP=null}
 function openFR(){var sn=$('frsf');if(sn)sn.innerHTML=safariNote('fr');['frn','frp','frh'].forEach(function(id){$(id).value=''});$('fre').textContent='';$('fr').classList.add('show');setTimeout(function(){try{$('frn').focus()}catch(x){}},80)}
 function saveFR(){var n=$('frn').value.trim(),pc=$('frp').value.trim(),hv=$('frh').value.trim(),er='';
   if(!n)er='Enter your name.';else if(!/^\d{4}$/.test(pc))er='Your code needs to be 4 digits.';else if(hintBad(hv,pc))er='The hint can’t include your code.';
   if(er){$('fre').textContent=er;return}
-  S.people=[{name:n,pin:pc,role:'owner',hint:hv}];S.who=n;S.adminOk=true;S.last=Date.now();S.tab='menu';S.firstRun=true;$('fr').classList.remove('show');save();render();openShifts(function(){showKey(maybeTour)})}
+  S.people=[{name:n,pin:pc,role:'owner',hint:hv}];S.who=n;S.adminOk=true;S.last=Date.now();S.tab='menu';S.firstRun=true;$('fr').classList.remove('show');save();render();openShifts(function(){if(ED.store)openDC(function(){showKey(firstRunNext)});else showKey(maybeTour)})}
 /* ---- 1.7: welcome tour + setup checklist ---- */
 var TOUR=null;
 function tourCards(n){var tile=function(name,meta,tag,done,extra){return'<div class="trow" style="margin:0"><div class="task'+(done?' done':'')+'" style="cursor:default"><span class="box">'+(done?'✓':'')+'</span><span class="nm">'+name+'<span class="meta">'+meta+'</span></span>'+(tag||'')+'</div>'+(extra||'')+'</div>'};
-  return[
-  {t:'Welcome, '+esc(n),b:'This board keeps everyone on the same page with his care. Here’s a one-minute look at how it works.',v:'<div class="shifts" style="position:static;padding:0;margin:0"><div class="sh on" style="min-height:0"><span class="shn">Day<span class="pill">Now</span></span><span class="shh">7 AM to 9 PM</span><span class="shb"><span class="tag">6 left</span></span></div><div class="sh" style="min-height:0"><span class="shn">Night</span><span class="shh">9 PM to 7 AM</span><span class="shb"><span class="tag">4 left</span></span></div></div><p class="note" style="margin:8px 0 0">The shift happening now is highlighted. Tap the other one to look ahead.</p>'},
-  {t:'Tap to check things off',b:'Tap a task when it’s done. Your name and the time are saved with it. Tapped the wrong one? Tap <b>Undo</b> at the bottom of the screen right away. Later, tap the task and choose <b>Undo this check-off</b>. Tapping a finished task never undoes it by accident.',v:tile('Clean G-tube site','You at 9:12 AM','<span class="tag ok">Done</span>',true)},
-  {t:'Hold a task to move or edit it',b:'Press and hold a task to move it later today, to the other shift, or to tomorrow. Owners and managers can also edit the task from there. You can add a reason, like “He’s sleeping.”',v:tile('Humidification check','Tap when done, hold for options','')},
+  var c=[
+  {t:'Welcome, '+esc(n),b:'This board keeps everyone on the same page '+ED.care+'. Here’s a one-minute look at how it works.',v:'<div class="shifts" style="position:static;padding:0;margin:0"><div class="sh on" style="min-height:0"><span class="shn">Day<span class="pill">Now</span></span><span class="shh">7 AM to 9 PM</span><span class="shb"><span class="tag">6 left</span></span></div><div class="sh" style="min-height:0"><span class="shn">Night</span><span class="shh">9 PM to 7 AM</span><span class="shb"><span class="tag">4 left</span></span></div></div><p class="note" style="margin:8px 0 0">The shift happening now is highlighted. Tap the other one to look ahead.</p>'},
+  {t:'Tap to check things off',b:'Tap a task when it’s done. Your name and the time are saved with it. Tapped the wrong one? Tap <b>Undo</b> at the bottom of the screen right away. Later, tap the task and choose <b>Undo this check-off</b>. Tapping a finished task never undoes it by accident.',v:tile(ED.ex.done,'You at 9:12 AM','<span class="tag ok">Done</span>',true)},
+  {t:'Hold a task to move or edit it',b:'Press and hold a task to move it later today, to the other shift, or to tomorrow. Owners and managers can also edit the task from there. You can add a reason, like “'+ED.sleep+'.”',v:tile(ED.ex.hold,'Tap when done, hold for options','')},
   {t:'Watch the tags',b:'Feeds and meds show their time until it comes up, then <b>Due now</b>, then <b>Overdue</b> if they’re missed.',v:'<div class="rs" style="margin:0"><span class="tag ok">2 PM</span><span class="tag" style="font-weight:600">Due now</span><span class="tag bad">Overdue</span></div>'},
-  {t:'How-to and supplies',b:'A <b>How-to</b> or <b>Supplies</b> button next to a task shows the steps and what you’ll need. Count supplies in the <b>Inventory</b> tab with − and +, or tap the number to type a count.',v:tile('Change trach ties','Every 3 days','<span class="tag">Due today</span>',false,'<span class="push infob" style="display:grid;place-items:center">How-to</span>')},
-  {t:'In an emergency',b:'The red <b>Emergency</b> button at the top is always there, with phone numbers, what to tell 911, and the plan. You can replay this tour any time from ⚙ Settings.',v:'<div style="display:flex;justify-content:center"><span class="sos" style="display:inline-block;padding:8px 16px;border-radius:10px;border:1px solid var(--sosln)">Emergency</span></div>'}]}
+  {t:'How-to and supplies',b:'A <b>How-to</b> or <b>Supplies</b> button next to a task shows the steps and what you’ll need. Count supplies in the <b>Inventory</b> tab with − and +, or tap the number to type a count.',v:tile(ED.ex.howto,'Every 3 days','<span class="tag">Due today</span>',false,'<span class="push infob" style="display:grid;place-items:center">How-to</span>')},
+  {t:'In an emergency',b:'The red <b>Emergency</b> button at the top is always there, with phone numbers, what to tell 911, and the plan. You can replay this tour any time from ⚙ Settings.',v:'<div style="display:flex;justify-content:center"><span class="sos" style="display:inline-block;padding:8px 16px;border-radius:10px;border:1px solid var(--sosln)">Emergency</span></div>'}];
+  if(ED.store)c.splice(c.length-1,0,{t:'A quick note',b:'EZAide helps the team keep track of care tasks, but it’s not medical advice. Always follow the care plan and medication labels. If something here doesn’t match them, follow the care plan and let the family know.',v:'<p class="note" style="margin:0;text-align:center">A tracking aid, not a medical device.</p>'});
+  return c}
 function maybeTour(){var p=S.people.filter(function(x){return x.name===S.who})[0];if(p&&!p.toured)openTour()}
 function openTour(){TOUR={i:0,c:tourCards(S.who||'there')};drawTour();$('tour').classList.add('show')}
 function drawTour(){var c=TOUR.c[TOUR.i],n=TOUR.c.length,last=TOUR.i===n-1;
@@ -1727,6 +1776,8 @@ function drawTour(){var c=TOUR.c[TOUR.i],n=TOUR.c.length,last=TOUR.i===n-1;
   $('tourd').innerHTML=TOUR.c.map(function(_,j){return'<span class="tdot'+(j===TOUR.i?' on':'')+'"></span>'}).join('');
   $('tourback').hidden=TOUR.i===0;$('tourskip').hidden=last;$('tournext').textContent=last?'Got it':'Next'}
 function endTour(){setTimeout(shiftAsk,250);var p=S.people.filter(function(x){return x.name===S.who})[0];if(p)p.toured=true;$('tour').classList.remove('show');TOUR=null;if(S.firstRun&&S.adminOk&&!S.tasks.length)openFT()}
+function sgroup(it,f){var E=['code','people','tasks','emer'],a=it.filter(function(x){return E.indexOf(x[0])>-1}),b=it.filter(function(x){return E.indexOf(x[0])<0});
+  return'<p class="note" style="margin:4px 0 2px">Essentials</p>'+a.map(f).join('')+(b.length?'<p class="note" style="margin:14px 0 2px">When you have a minute</p>'+b.map(f).join(''):'')}
 function setupItems(){var e=S.emer||{contacts:[]};return[
   ['code','Save a recovery key','So a forgotten owner code can be reset',!!S.rkey,'rkey'],
   ['people','Add everyone else who’ll use this','Family and each nurse, or let them add themselves from Who’s here',S.people.length>1,'people'],
@@ -1737,11 +1788,11 @@ function setupItems(){var e=S.emer||{contacts:[]};return[
   ['bkp','Save your first backup','The iPad holds the only copy of your data',!!S.lastBackup,'bkp']]}
 function setupCard(full){var it=setupItems(),done=it.filter(function(x){return x[3]}).length;if(done===it.length){S.setup=false;return''}
   if(!full)return'<div class="vb" style="background:var(--panel2);color:var(--tx);border:1px solid var(--acc)"><span>Finish setting up the board · <b>'+done+' of '+it.length+'</b> done</span><button data-t="menu" style="background:var(--acc);color:var(--onacc)">Open checklist</button></div>';
-  return'<div class="col" style="margin-bottom:12px;border-color:var(--acc)"><div class="ch"><b>Set up the board</b><small>'+done+' of '+it.length+' done</small></div><div class="elist">'+it.map(function(x){return'<div class="srow"><span class="box" style="width:26px;height:26px;border-radius:8px;'+(x[3]?'background:var(--ok);border-color:var(--ok);color:var(--onok)':'')+'">'+(x[3]?'✓':'')+'</span><span class="sname"'+(x[3]?' style="color:var(--mut);text-decoration:line-through"':'')+'>'+x[1]+'<span class="meta" style="text-decoration:none">'+x[2]+'</span></span>'+(x[3]?'':(x[0]==='hours'?'<button data-sgo="periods">Check hours</button><button data-sok="hours">They’re right</button>':'<button data-sgo="'+x[4]+'">'+(x[0]==='bkp'?'Save backup':'Go')+'</button>'))+'</div>'}).join('')+'</div><button data-shide="1" style="margin-top:10px;background:transparent;border-color:transparent;color:var(--mut);padding-left:0">Hide this checklist</button></div>'}
+  return'<div class="col" style="margin-bottom:12px;border-color:var(--acc)"><div class="ch"><b>Set up the board</b><small>'+done+' of '+it.length+' done</small></div><div class="elist">'+sgroup(it,function(x){return'<div class="srow"><span class="box" style="width:26px;height:26px;border-radius:8px;'+(x[3]?'background:var(--ok);border-color:var(--ok);color:var(--onok)':'')+'">'+(x[3]?'✓':'')+'</span><span class="sname"'+(x[3]?' style="color:var(--mut);text-decoration:line-through"':'')+'>'+x[1]+'<span class="meta" style="text-decoration:none">'+x[2]+'</span></span>'+(x[3]?'':(x[0]==='hours'?'<button data-sgo="periods">Check hours</button><button data-sok="hours">They’re right</button>':'<button data-sgo="'+x[4]+'">'+(x[0]==='bkp'?'Save backup':'Go')+'</button>'))+'</div>'})+'</div><button data-shide="1" style="margin-top:10px;background:transparent;border-color:transparent;color:var(--mut);padding-left:0">Hide this checklist</button></div>'}
 /* ---- 1.14: the pop-up opened last is always on top ---- */
 var MZ=20;try{var MO=new MutationObserver(function(ms){ms.forEach(function(m){var el=m.target,on=el.classList.contains('show');if(on&&!el._up){el._up=1;el.style.zIndex=++MZ}else if(!on&&el._up){el._up=0;el.style.zIndex='';if(!document.querySelector('.modal.show'))MZ=20}})});[].forEach.call(document.querySelectorAll('.modal'),function(el){MO.observe(el,{attributes:true,attributeFilter:['class']})})}catch(e){}
 /* ---- 1.6: tap outside a pop-up to close it ---- */
-var MDOWN=null,KEEP=['emed','ge','tour','fr','rk','ft','ah','sh','tb','tc'];
+var MDOWN=null,KEEP=['emed','ge','tour','fr','rk','ft','ah','sh','tb','tc'];if(ED.store)KEEP.push('dc','na');
 document.addEventListener('pointerdown',function(e){MDOWN=e.target},true);
 document.addEventListener('click',function(e){var m=e.target;if(!m.classList||!m.classList.contains('modal')||!m.classList.contains('show')||MDOWN!==m)return;
   if(KEEP.indexOf(m.id)>-1)return;
@@ -1790,7 +1841,7 @@ function library(){var gs=S.guides.slice().sort(function(a,b){return a.title.loc
 var GE=null;
 function openGE(gid,pre){var g=gid?S.guides.filter(function(x){return x.id===gid})[0]:null;$('ti').classList.remove('show');
   GE={id:g?g.id:null,title:g?g.title:'',steps:g?g.steps:'',tasks:S.tasks.filter(function(t){return g&&t.guide===g.id}).map(function(t){return t.id})};if(pre&&GE.tasks.indexOf(pre)<0)GE.tasks.push(pre);
-  var h='<p class="note" style="margin-top:0">Title</p><input type="text" id="gtt" value="'+esc(GE.title)+'" placeholder="e.g. Trach tie change" style="width:100%;margin-bottom:10px">';
+  var h='<p class="note" style="margin-top:0">Title</p><input type="text" id="gtt" value="'+esc(GE.title)+'" placeholder="e.g. '+ED.ex.guide+'" style="width:100%;margin-bottom:10px">';
   h+='<p class="note">Steps (one per line)</p><textarea id="gst" style="min-height:180px" placeholder="Wash hands&#10;Gather supplies&#10;…">'+esc(GE.steps)+'</textarea>';
   h+='<p class="note">Show this guide on these tasks</p><div style="display:flex;flex-wrap:wrap;gap:6px 14px;margin-bottom:10px">'+S.tasks.map(function(t){var og=guideOf(t);return'<label class="c"><input type="checkbox" data-gtk="'+t.id+'"'+(GE.tasks.indexOf(t.id)>-1?' checked':'')+'>'+esc(t.name)+(og&&og.id!==GE.id?' <span style="font-size:13px">(now: '+esc(og.title)+')</span>':'')+'</label>'}).join('')+'</div>';
   $('get').textContent=g?'Edit guide':'New guide';$('geb').innerHTML=h;$('gee').textContent='';
@@ -1889,9 +1940,9 @@ function drawEmEd(){var h='<p class="note" style="margin-top:0">Top message (sho
   $('emf').innerHTML=h}
 function emRead(){EM.alert=$('ema').value.trim();EM.tell=$('emt').value;EM.plan=$('empl').value;EM.contacts=EM.contacts.map(function(c,i){var a=$('emf').querySelector('[data-emn="'+i+'"]'),b=$('emf').querySelector('[data-emp="'+i+'"]');return{n:a?a.value.trim():c.n,p:b?b.value.trim():c.p}})}
 /* ---- local persistence (this device only) ---- */
-var KEY='zeke-care-board.v1',TRANSIENT=['viewPrev','tyd','tyv','wkv','teNew','teNewPend','prevKey','tab','who','pend','pin','reason','adminOk','viewP','viewFrom','logf','logt','logi','logq','logd','logd1','logd2','logSpan','logCap','_lqf','flash'],saved=false,lastSave=null;
-function snap(full){var o={};Object.keys(S).forEach(function(k){if(TRANSIENT.indexOf(k)>-1)return;if(k==='log'){if(full||!LDBOK)o.log=cleanLog(S.log);return}o[k]=S[k]});return{app:'zeke-care-board',v:1,at:new Date().toISOString(),theme:document.documentElement.dataset.theme||'dark',state:o}}
-function okSnap(d){return !!(d&&d.app==='zeke-care-board'&&d.state&&Array.isArray(d.state.tasks)&&Array.isArray(d.state.periods)&&d.state.periods.length&&Array.isArray(d.state.people)&&d.state.people.length)}
+var KEY=ED.key,TRANSIENT=['viewPrev','tyd','tyv','wkv','teNew','teNewPend','prevKey','tab','who','pend','pin','reason','adminOk','viewP','viewFrom','logf','logt','logi','logq','logd','logd1','logd2','logSpan','logCap','_lqf','flash'],saved=false,lastSave=null;
+function snap(full){var o={};Object.keys(S).forEach(function(k){if(TRANSIENT.indexOf(k)>-1)return;if(k==='log'){if(full||!LDBOK)o.log=cleanLog(S.log);return}o[k]=S[k]});return{app:ED.app,v:1,at:new Date().toISOString(),theme:document.documentElement.dataset.theme||'dark',state:o}}
+function okSnap(d){return !!(d&&ED.apps.indexOf(d.app)>-1&&d.state&&Array.isArray(d.state.tasks)&&Array.isArray(d.state.periods)&&d.state.periods.length&&Array.isArray(d.state.people)&&d.state.people.length)}
 function applySnap(d){if(!okSnap(d))return false;
   Object.keys(d.state).forEach(function(k){S[k]=d.state[k]});
   (S.log||[]).forEach(function(r){r.ts=new Date(r.ts)});
@@ -1903,6 +1954,7 @@ var loaded=load();if(!S.since)S.since=Date.now();
 if(!loaded){blankState()}
 else{S.who='';S.last=Date.now();maybeReset()}
 migrate15();if(!S.orders)S.orders=[];if(S.keepDays==null)S.keepDays=182;if(!S.dueMode)S.dueMode='sound';if(!S.idleV){S.idleV=2;if(S.idle)S.idle=60}S.alerted=S.alerted||{};logInit();
+if(ED.store&&S.people.length&&!S.disc)setTimeout(function(){openDC()},400);
 ['click','change','pointerup','keyup'].forEach(function(n){document.addEventListener(n,function(){setTimeout(save,0)})});
 setInterval(save,5000);document.addEventListener('visibilitychange',function(){if(document.hidden)save()});window.addEventListener('pagehide',save);
 try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
@@ -1920,7 +1972,7 @@ try{if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)&&!/clau
     setInterval(function(){checkUpdate(false)},30*60000)}).catch(function(){});
   navigator.serviceWorker.addEventListener('controllerchange',function(){if(!HADCTRL){HADCTRL=true;return}if(RELOADING)return;RELOADING=true;save();location.reload()});
   document.addEventListener('visibilitychange',function(){if(!document.hidden)checkUpdate(false)})}}catch(e){}
-function saveBackup(){save();var dn=new Date(),name='zeke-care-backup-'+dn.getFullYear()+'-'+String(dn.getMonth()+1).padStart(2,'0')+'-'+String(dn.getDate()).padStart(2,'0')+'.json',txt=JSON.stringify(snap(true),null,1),f=null;
+function saveBackup(){save();var dn=new Date(),name=ED.backup+'-'+dn.getFullYear()+'-'+String(dn.getMonth()+1).padStart(2,'0')+'-'+String(dn.getDate()).padStart(2,'0')+'.json',txt=JSON.stringify(snap(true),null,1),f=null;
   var done=function(){S.lastBackup=Date.now();S.bkSnooze=0;save();if(S.tab==='today')render();$('stmsg').textContent='Backup ready. Choose Save to Files and keep it somewhere other than this iPad too (iCloud Drive or email it to yourself).'};
   var dl=function(){var bl=new Blob([txt],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(bl);a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},4000);done()};
   try{f=new File([txt],name,{type:'application/json'})}catch(x){}

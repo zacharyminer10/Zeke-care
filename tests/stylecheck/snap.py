@@ -68,7 +68,7 @@ if __name__ == '__main__':
     snap, errors = {}, []
     srv, U = R.serve(os.path.dirname(os.path.abspath(html)))
     with sync_playwright() as p:
-        b = p.chromium.launch()
+        b = p.chromium.launch(executable_path=R.CHROME, args=['--no-sandbox']) if R.CHROME else p.chromium.launch()
         for vn, w, hgt in VIEWS:
             ctx = b.new_context(viewport={'width': w, 'height': hgt}, reduced_motion='reduce')
             pg = ctx.new_page(); pg.on('pageerror', lambda e: errors.append(str(e)))

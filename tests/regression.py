@@ -1,8 +1,9 @@
 """Care board regression suite.
 
-Run from the repo root before every release (works on main and app-store):
+Run from the repo root before every release (works on both versions, family and App Store):
     python3 tests/regression.py            # tests ./index.html, upgrade from the last commit
     python3 tests/regression.py --prev OLD.html
+    python3 tests/regression.py --html dist/store/index.html --prev OLD_STORE.html   # test a build
 
 Needs Python Playwright and a Chromium/Chrome. Exits 1 if anything fails.
 """
@@ -10,7 +11,7 @@ import sys, os, json, threading, subprocess, tempfile, shutil, http.server, sock
 from playwright.sync_api import sync_playwright
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-CHROME = next((p for p in ['/usr/bin/google-chrome', '/usr/bin/chromium', '/usr/bin/chromium-browser'] if os.path.exists(p)), None)
+CHROME = next((p for p in ['/usr/bin/google-chrome', '/usr/bin/chromium', '/usr/bin/chromium-browser', '/opt/pw-browsers/chromium'] if os.path.exists(p)), None)
 results = []
 
 def check(name, ok, detail=''):
@@ -45,6 +46,8 @@ def code(pg, digits):
 def setup(pg, url, name='Owner', pin='1111'):
     pg.goto(url); pg.wait_for_timeout(250)
     pg.fill('#frn', name); pg.fill('#frp', pin); pg.click('#frok'); clear(pg)
+    # App Store version: answer its one-time "Want an alert?" question now so it can't pop up mid-test (ED10 tests it)
+    pg.evaluate("if(typeof answerNA==='function'&&!S.notifAsked){S.notifAsked=true;save()}")
 
 def main():
     prev = None
@@ -52,8 +55,9 @@ def main():
     else:
         try: prev = subprocess.run(['git', '-C', ROOT, 'show', 'HEAD:index.html'], capture_output=True, text=True, check=True).stdout
         except Exception: prev = None
+    html = sys.argv[sys.argv.index('--html') + 1] if '--html' in sys.argv else os.path.join(ROOT, 'index.html')
     tmp = tempfile.mkdtemp()
-    shutil.copy(os.path.join(ROOT, 'index.html'), os.path.join(tmp, 'index.html'))
+    shutil.copy(html, os.path.join(tmp, 'index.html'))
     if prev: open(os.path.join(tmp, 'prev.html'), 'w').write(prev)
     srv, U = serve(tmp)
     with sync_playwright() as p:
@@ -588,6 +592,41 @@ def main():
         check('MI1 Emergency info icon is the same size as the others and centered', bx[0] == bx[2] and bx[1] == bx[3] and bx[4] < 1.5 and bx[5] < 1.5, bx)
 
         check('N17 no script errors (1.18)', not ek, '; '.join(ek[:3]))
+
+        # ED. one codebase, two versions: the edition block decides the storage key and the App Store-only pieces
+        pe, ee = page(viewport={'width': 1080, 'height': 810})
+        pe.goto(U + 'index.html'); pe.wait_for_timeout(250)
+        store = pe.evaluate('ED.store')
+        check('ED1 storage key and backup id match the edition', pe.evaluate("KEY===ED.key&&snap().app===ED.app") and pe.evaluate('KEY') == ('ezaide.v1' if store else 'zeke-care-board.v1') and pe.evaluate("snap().app") == ('ezaide' if store else 'zeke-care-board'))
+        check('ED2 App Store pieces only in the App Store version', pe.evaluate("['dc','na','trl','abt'].every(function(i){return !!document.getElementById(i)===ED.store})&&(KEEP.indexOf('dc')>-1)===ED.store&&tourCards('x').some(function(c){return c.t==='A quick note'})===ED.store"))
+        check('ED3 both versions accept a family backup; only the App Store one accepts its own', pe.evaluate("okSnap({app:'zeke-care-board',state:{tasks:[],periods:[1],people:[1]}})") and pe.evaluate("okSnap({app:'ezaide',state:{tasks:[],periods:[1],people:[1]}})") == store)
+        pe.fill('#frn', 'Eve'); pe.fill('#frp', '1212'); pe.click('#frok'); pe.wait_for_timeout(200)
+        if pe.is_visible('#sh'):
+            if pe.locator('#sh [data-shn="2"]').count(): pe.click('#sh [data-shn="2"]')
+            pe.click('#shok'); pe.wait_for_timeout(200)
+        if store:
+            check('ED4 App Store first run: disclaimer, then recovery key, then first task (no tour)', pe.is_visible('#dc') and not pe.is_visible('#rk'))
+            pe.check('#dcck'); pe.click('#dcok'); pe.wait_for_timeout(150); ok = pe.is_visible('#rk')
+            pe.click('#rkok'); pe.wait_for_timeout(200); ok = ok and not pe.is_visible('#tour') and pe.is_visible('#te')
+            check('ED5 ...recovery key, then straight to the first task', ok)
+        else:
+            check('ED4 family first run: recovery key, then the welcome tour', pe.is_visible('#rk') and pe.locator('#dc').count() == 0)
+            pe.click('#rkok'); pe.wait_for_timeout(200); ok = pe.is_visible('#tour')
+            pe.click('#tourskip'); pe.wait_for_timeout(400)
+            check('ED5 ...then the first task', ok and pe.is_visible('#te'))
+        check('ED6 first task step shows the shifts with "These hours are right" ticked', pe.is_visible('#fthk') and pe.is_checked('#fthk') and 'these hours are right' in pe.inner_text('#te').lower())
+        pe.click('#tecan'); pe.wait_for_timeout(200)
+        pe.evaluate('S.setupHours=false;openFT()'); pe.wait_for_timeout(150); pe.uncheck('#fthk'); pe.click('#tecan'); pe.wait_for_timeout(200)
+        check('ED7 hours not confirmed yet + box unticked: they stay on the setup checklist', pe.evaluate('!S.setupHours'))
+        pe.evaluate('openFT()'); pe.wait_for_timeout(150); pe.click('#tecan'); pe.wait_for_timeout(200)
+        check('ED8 box ticked: the hours count as checked', pe.evaluate('S.setupHours===true'))
+        pe.evaluate("S.tab='menu';render()"); pe.wait_for_timeout(150)
+        m = pe.inner_text('#main').lower()
+        check('ED9 setup checklist is grouped: Essentials, then When you have a minute', 'essentials' in m and 'when you have a minute' in m and m.index('essentials') < m.index('when you have a minute'))
+        pe.evaluate("S.tasks.push({id:9901,name:'Med ED',periods:[],every:0,at:['08:00'],needs:[]});S.tab='today';render()"); pe.wait_for_timeout(1200)
+        check('ED10 App Store version asks once about alerts when a task has a set time (family never does)', pe.is_visible('#na') == store)
+        if store: pe.click('#nano'); pe.wait_for_timeout(150)
+        check('ED11 no script errors (editions)', not ee, '; '.join(ee[:3]))
 
         # J. phone layout
         pg3, e3 = page(**p.devices['iPhone 13'])
