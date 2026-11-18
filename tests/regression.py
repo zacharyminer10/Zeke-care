@@ -537,6 +537,28 @@ def main():
         check('KB4 keyboard down, the pop-up uses the full screen again', abs(pv.evaluate("document.querySelector('#te .card').getBoundingClientRect().height") - 767) < 40)
         check('KB5 no script errors (keyboard)', not ev, '; '.join(ev[:3]))
 
+        # TD. 1.19.1: "N times a day" tasks move to Done, and Yesterday works with one Day shift
+        pn, en = page(viewport={'width': 1080, 'height': 810}); pn.clock.install(time=datetime.datetime(2026, 11, 12, 9, 30))
+        pn.goto(U + 'index.html'); pn.wait_for_timeout(250); pn.fill('#frn', 'Dad'); pn.fill('#frp', '1212'); pn.click('#frok'); pn.wait_for_timeout(200)
+        if pn.is_visible('#sh'): pn.click('#sh [data-shn="1"]'); pn.click('#shok')
+        clear(pn)
+        pn.evaluate("S.periods=S.periods.slice(0,1);S.periods[0].name='Day';['Brush TD','Drops TD'].forEach(function(n){S.tasks.push({id:S.nid++,name:n,periods:[],every:0,n:3,times:2,prn:false,last:0,needs:[]})});S.tab='today';render()")
+        bt, dt = pn.evaluate("['Brush TD','Drops TD'].map(n=>S.tasks.filter(t=>t.name===n)[0].id)")
+        grp_of = lambda tid: pn.evaluate(f"(()=>{{var e=document.querySelector('main [data-c=\"{tid}\"]'),t=e&&e.closest('.tiles');return t&&t.previousElementSibling?t.previousElementSibling.firstChild.textContent:''}})()")
+        pn.click(f'[data-c="{bt}"]'); pn.wait_for_timeout(150)
+        check('TD1 one of two check-offs stays in Anytime', grp_of(bt).lower().startswith('anytime'))
+        pn.click(f'[data-c="{bt}"]'); pn.click(f'[data-c="{dt}"]'); pn.wait_for_timeout(150)
+        check('TD2 both check-offs done moves it to Done', grp_of(bt) == 'Done' and grp_of(dt).lower().startswith('anytime'))
+        pn.click('[data-shv="prev"]', force=True); pn.wait_for_timeout(150)
+        check('TD3 Yesterday with nothing saved explains why instead of doing nothing', pn.is_visible('#toast') and 'Nothing saved from yesterday' in pn.inner_text('#toast') and not pn.evaluate("S.viewPrev"))
+        pn.clock.run_for(24 * 3600 * 1000); pn.wait_for_timeout(300); pn.evaluate("render()"); clear(pn)
+        pn.click('[data-shv="prev"]'); pn.wait_for_timeout(150)
+        check('TD4 next day, Yesterday opens', pn.evaluate("S.viewPrev") is True)
+        check('TD5 Yesterday shows the finished task as done and the half-done one as missed', pn.locator(f'[data-pv="n|{bt}"].done').count() == 1 and pn.locator(f'[data-pv="n|{dt}"].over').count() == 1 and '1 of 2' in pn.inner_text(f'[data-pv="n|{dt}"]'))
+        pn.click(f'[data-pv="n|{dt}"]'); pn.wait_for_timeout(150)
+        check('TD6 a missed one can be checked off late from Yesterday', pn.locator(f'[data-pv="n|{dt}"].done').count() == 1 and pn.evaluate("S.log[0].a==='Logged'&&/Drops TD.*late/.test(S.log[0].d)"))
+        check('TD7 no script errors (times a day / yesterday)', not en, '; '.join(en[:3]))
+
         # LD. 1.19: filter the log by date
         pl, el_ = page(viewport={'width': 1080, 'height': 810}); pl.clock.install(time=datetime.datetime(2026, 11, 17, 10, 0))
         setup(pl, U + 'index.html', 'Lee', '5151'); pl.evaluate("S.people.forEach(p=>p.toured=true)")

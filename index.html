@@ -325,6 +325,7 @@ button.tyb{cursor:pointer}
 .ldates{display:inline-flex;gap:10px;flex-wrap:wrap;align-items:center}.ldates input[type=date]{min-height:40px}
 /* 1.19.1: pop-ups fit the visible area above the on-screen keyboard (iPad) */
 .modal{top:var(--vvt,0px);bottom:auto;height:var(--vvh,100%)}.card{max-height:calc(var(--vvh,100vh) - 40px)}
+.shsw button.dim{opacity:.4}
 </style>
 </head>
 <body>
@@ -539,7 +540,7 @@ function today(){
   var nxL=nx?(night(nx)?'Tonight':esc(nx.name)):'Tomorrow';
   var onPv=S.viewPrev||(pv&&view&&view.p.id===pv.id),onNx=nx&&view&&view.p.id===nx.id,onCur=!onPv&&!onNx,mn=new Date().getHours()*60+new Date().getMinutes();
   var chl='<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>',chr='<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>';
-  var sw='<div class="shsw" role="group" aria-label="Shift"><button data-shv="prev" class="'+(onPv?'on':'')+'" aria-pressed="'+!!onPv+'"'+(!pv&&!yp?' disabled title="Nothing saved from the last shift yet"':'')+'>'+chl+pvL+'</button><button data-shv="cur" class="'+(onCur?'on':'')+'" aria-pressed="'+onCur+'">'+esc(cur.name)+(inP(cur,mn)?'<span class="nowdot" title="Now" aria-label="now"></span>':'')+'</button><button data-shv="next" class="'+(onNx?'on':'')+'" aria-pressed="'+!!onNx+'">'+nxL+chr+'</button></div>';
+  var sw='<div class="shsw" role="group" aria-label="Shift"><button data-shv="prev" class="'+(onPv?'on':!pv&&!yp?'dim':'')+'" aria-pressed="'+!!onPv+'"'+(!pv&&!yp?' aria-disabled="true"':'')+'>'+chl+pvL+'</button><button data-shv="cur" class="'+(onCur?'on':'')+'" aria-pressed="'+onCur+'">'+esc(cur.name)+(inP(cur,mn)?'<span class="nowdot" title="Now" aria-label="now"></span>':'')+'</button><button data-shv="next" class="'+(onNx?'on':'')+'" aria-pressed="'+!!onNx+'">'+nxL+chr+'</button></div>';
   var info='';
   if(S.viewPrev){var pm=prevModel(),pst=pm.missed.length;info='<span>'+dlabel(S.prevDay.key)+' · '+fmtT(yp.start)+' to '+fmtT(yp.end)+'</span>'+(pst?'<span class="tag bad">'+pst+' missed</span>':'<span class="tag ok">All done</span>')}
   else{var st=stats(view);info='<span>'+fmtT(view.p.start)+' to '+fmtT(view.p.end)+(view.p.early?' · started by '+esc(view.p.early.who):'')+'</span>'+(st.open===0?'<span class="tag ok">All done</span>':'<span class="tag">'+st.open+' left</span>'+(st.over?'<span class="tag bad">'+st.over+' overdue</span>':''))+(view.isNow&&!inP(cur,mn)?'<span class="tag up">After hours</span>':'')}
@@ -554,12 +555,12 @@ function today(){
   var sOpen=view.sls.filter(function(x){return !slotDone(x)}),sDone=view.sls.filter(slotDone);
   var dOpen=view.dueIv.filter(function(t){return !t.done}).map(ivTile).join('')+view.onceU.filter(function(t){return !t.done}).map(onceTile).join(''),dDone=view.dueIv.filter(function(t){return t.done}).map(ivTile).join('')+view.onceU.filter(function(t){return t.done}).map(onceTile).join('');
   var lOpen=view.list.filter(function(t){return !S.done[t.id+'|'+p.id]}).map(function(t){return rtTile(t,p)}).join(''),lDone=view.list.filter(function(t){return S.done[t.id+'|'+p.id]}).map(function(t){return rtTile(t,p)}).join('');
-  var cnt=view.cnts.map(cntTile).join('');
-  var done=sDone.map(function(x){return slotTile(x,p)}).join('')+dDone+lDone;
+  var cOk=function(t){return(S.cnt[t.id]||{n:0}).n>=t.times},cnt=view.cnts.filter(function(t){return !cOk(t)}).map(cntTile).join(''),cDone=view.cnts.filter(cOk).map(cntTile).join('');
+  var done=sDone.map(function(x){return slotTile(x,p)}).join('')+dDone+lDone+cDone;
   var prn=view.isNow?S.tasks.filter(function(t){return t.prn}).map(prnTile).join(''):'';
   var dlv=view.isNow&&supOn()?openOrders().filter(function(o){return o.expected<=bizDay()}).map(dlvTile).join(''):'';
   h+='<div class="col panel'+(view.isNow?' now':'')+'" aria-label="'+esc(p.name)+' tasks">';
-  if(!view.sls.length&&!dOpen&&!dDone&&!view.list.length&&!cnt&&!prn&&!dlv)h+='<p class="note">No tasks yet. Tap + Add task above.</p>';
+  if(!view.sls.length&&!dOpen&&!dDone&&!view.list.length&&!view.cnts.length&&!prn&&!dlv)h+='<p class="note">No tasks yet. Tap + Add task above.</p>';
   if(view.isNow){var urg=sOpen.filter(function(x){return slotDiff(x.x,mn)>=0}),up=sOpen.filter(function(x){return slotDiff(x.x,mn)<0}),nxx=up.length?up[0].x:null;
     var upn=urg.map(function(x){return slotTile(x,p)}).join('')+up.filter(function(x){return x.x===nxx}).map(function(x){return slotTile(x,p,true)}).join(''),later=up.filter(function(x){return x.x!==nxx}).map(function(x){return slotTile(x,p)}).join('');
     h+=grp('Deliveries',dlv)+grp('Up next',upn)+grp('Anytime '+wd,dOpen+cnt+lOpen)+grp('Later '+wd,later)+grp('As needed',prn)+grp('Done',done)}
@@ -580,14 +581,19 @@ function prevOK(){var P=S.prevDay;return !!(P&&P.periods&&P.periods.length&&P.ke
 function prevModel(){var P=S.prevDay,ps=P.periods,p=ps[ps.length-1],key=P.key,out={p:p,missed:[],done:[]};
   var own=function(m){var c=ps.filter(function(q){return inP(q,m)});c.sort(function(a,b){return perLen(a)-perLen(b)});return c[0]||ps[0]};
   S.tasks.forEach(function(t){if(t.every||t.once||t.prn)return;
+    if(t.times>0){if(P.cnt){var c=P.cnt[t.id]||{n:0},ok=c.n>=t.times;(ok?out.done:out.missed).push({kind:'n',key:String(t.id),t:t,when:'',d:ok?{who:c.who||'',time:c.last||'',late:c.late}:null,n:c.n,ord:9999})}return}
     (t.at||[]).forEach(function(x){if(own(mins(x)).id!==p.id||!slotOn(t,x,key))return;var k=t.id+'@'+x,d=(P.cdone||{})[k];(d?out.done:out.missed).push({kind:'c',key:k,t:t,when:fmtT(x),d:d,ord:mins(x)})});
     if(!(t.at&&t.at.length)&&!(t.times>0)&&t.periods.indexOf(p.id)>-1&&perOn(t,p,key)&&!(P.moves||[]).some(function(m){return m.tid===t.id&&m.from===p.id})){var k2=t.id+'|'+p.id,d2=(P.done||{})[k2];(d2?out.done:out.missed).push({kind:'r',key:k2,t:t,when:'',d:d2,ord:9999})}});
   var o=function(a,b){return offMin(a.ord===9999?1439+mins(S.resetAt):a.ord)-offMin(b.ord===9999?1439+mins(S.resetAt):b.ord)};out.missed.sort(o);out.done.sort(o);return out}
-function pvTile(x){var d=x.d;return'<div class="trow"><button class="task '+(d?'done':'over')+'" data-pv="'+x.kind+'|'+x.key+'"><span class="box">'+(d?'✓':'')+'</span><span class="nm">'+esc(x.t.name)+'<span class="meta">'+(d?'':x.when?'Missed':'Missed · not checked off')+'</span></span>'+(d?'<span class="tag ok dn">'+esc(d.who)+' · '+d.time+(d.late?' · late':'')+'</span>':x.when?'<span class="tag bad">'+x.when+'</span>':'')+'</button></div>'}
+function pvTile(x){var d=x.d;return'<div class="trow"><button class="task '+(d?'done':'over')+'" data-pv="'+x.kind+'|'+x.key+'">'+(x.kind==='n'?'<span class="box" style="width:auto;min-width:30px;padding:0 6px">'+x.n+'/'+x.t.times+'</span>':'<span class="box">'+(d?'✓':'')+'</span>')+'<span class="nm">'+esc(x.t.name)+'<span class="meta">'+(d?'':x.kind==='n'?'Missed · '+x.n+' of '+x.t.times+' done':x.when?'Missed':'Missed · not checked off')+'</span></span>'+(d?'<span class="tag ok dn">'+esc(d.who)+' · '+d.time+(d.late?' · late':'')+'</span>':x.when?'<span class="tag bad">'+x.when+'</span>':'')+'</button></div>'}
 function prevPanel(){var m=prevModel();var h='<div class="col panel" aria-label="'+esc(m.p.name)+' tasks, '+dlabel(S.prevDay.key)+'">';
   if(!m.missed.length&&!m.done.length)h+='<p class="note">Nothing was scheduled.</p>';
   h+=grp('Missed',m.missed.map(pvTile).join(''))+grp('Done',m.done.map(pvTile).join(''));return h+'</div>'}
-function togPrev(v){if(!prevOK()||!S.who)return;var P=S.prevDay,kind=v.split('|')[0],key=v.slice(2),bag=kind==='c'?(P.cdone=P.cdone||{}):(P.done=P.done||{}),tid=+key.split(/[@|]/)[0],t=T(tid);if(!t)return;
+function togPrev(v){if(!prevOK()||!S.who)return;
+  if(v.charAt(0)==='n'){var P0=S.prevDay,id=+v.slice(2),t0=T(id);if(!t0)return;P0.cnt=P0.cnt||{};var c=P0.cnt[id]||(P0.cnt[id]={n:0}),l0=t0.name+' · '+dlabel(P0.key);
+    if(c.n>=t0.times){showSheet(t0.name,'<p style="margin:0 0 6px;font-size:18px">✓ Done '+c.n+' of '+t0.times+' times. Last by <b>'+esc(c.who||'')+'</b> at '+esc(c.last||'')+(c.late?' (checked off late)':'')+'</p><p class="note">'+esc(l0)+'</p>');return}
+    c.n++;c.last=fmt(new Date());c.who=S.who;c.late=true;use(id);lg('Logged',l0+' · late',{tid:id});
+    showUndo('Logged late: '+t0.name+' ('+c.n+')',function(){if(!c.n)return;c.n--;use(id,-1);lg('Undid',l0,{tid:id});hideUndo();render()});render();return}var P=S.prevDay,kind=v.split('|')[0],key=v.slice(2),bag=kind==='c'?(P.cdone=P.cdone||{}):(P.done=P.done||{}),tid=+key.split(/[@|]/)[0],t=T(tid);if(!t)return;
   var lbl=t.name+(kind==='c'?' at '+fmtT(key.split('@')[1]):' ('+esc(P.periods[P.periods.length-1].name)+')')+' · '+dlabel(P.key);
   if(bag[key]){var d=bag[key];showSheet(t.name,'<p style="margin:0 0 6px;font-size:18px">✓ Done by <b>'+esc(d.who)+'</b> at '+esc(d.time)+(d.late?' (checked off late)':'')+'</p><p class="note">'+esc(lbl)+'</p>');return}
   bag[key]={who:S.who,time:fmt(new Date()),late:true};use(tid);lg('Completed',lbl+' · late',{tid:tid});
@@ -864,7 +870,7 @@ function missedList(skip,nk){var out=[];skip=skip||{};nk=nk||addDays(S.dayKey,1)
   S.moves.forEach(function(m){if(m.carry&&!S.done[m.tid+'|'+m.from]&&!skip[m.tid+'|'+m.from]&&T(m.tid))out.push(tn(m.tid)+' (moved to '+fmt(new Date(m.ts))+')')});
   return out}
 function maybeReset(d){var k=bizDay(d);if(!S.dayKey){S.dayKey=k;return false}if(k<=S.dayKey)return false;
-  var n=Math.max(1,Math.round((Date.parse(k)-Date.parse(S.dayKey))/864e5)),cm=carryMoves(k),miss=missedList(cm.skip,k),lbl=new Date(Date.parse(S.dayKey)).toLocaleDateString([],{weekday:'short',month:'short',day:'numeric',timeZone:'UTC'});S.prevDay={key:S.dayKey,periods:JSON.parse(JSON.stringify(curPeriods())),done:S.done,cdone:S.cdone,moves:S.moves};S.prevKey=S.dayKey;S.dayKey=k;
+  var n=Math.max(1,Math.round((Date.parse(k)-Date.parse(S.dayKey))/864e5)),cm=carryMoves(k),miss=missedList(cm.skip,k),lbl=new Date(Date.parse(S.dayKey)).toLocaleDateString([],{weekday:'short',month:'short',day:'numeric',timeZone:'UTC'});S.prevDay={key:S.dayKey,periods:JSON.parse(JSON.stringify(curPeriods())),done:S.done,cdone:S.cdone,cnt:S.cnt,moves:S.moves};S.prevKey=S.dayKey;S.dayKey=k;
   miss.reverse().forEach(function(d){S.log.unshift({ts:new Date(),who:'System',a:'Missed',d:d+' · '+lbl})});
   S.done={};S.cdone={};S.cnt={};S.moves=cm.moves;S.alerted={};if(cm.moves.length)S.log.unshift({ts:new Date(),who:'System',a:'Changed',d:cm.moves.length+' pushed task'+(cm.moves.length>1?'s':'')+' carried over to the new day: '+cm.moves.map(function(m){return tn(m.tid)+' at '+fmt(new Date(m.ts))}).join(', ')});S.tasks=S.tasks.filter(function(t){return !(t.once&&t.done)});
   S.tasks.forEach(function(t){if(t.every>0){var lf=t.every-t.last,dk=addDays(S.prevKey,lf);if(!t.done&&lf<=0&&t.missedFor!==dk){S.log.unshift({ts:new Date(),who:'System',a:'Missed',d:t.name+(dk===S.prevKey?'':' (due '+dlabel(dk)+')')+' · '+lbl,tid:t.id});t.missedFor=dk}t.last=t.done?n:t.last+n;t.done=null}});
@@ -891,7 +897,7 @@ document.addEventListener('click',function(e){
   var b=e.target.closest('button');if(!b)return;
   if(!S.who&&(b.dataset.pr||b.dataset.pv||b.dataset.k||b.dataset.i||b.dataset.o||b.dataset.po||b.dataset.ct||b.dataset.c||b.dataset.mv||b.dataset.pi||b.dataset.undo||b.dataset.undomv)){needWho();return}
   if(b.dataset.sh){var cn=nowP().id;S.viewP=b.dataset.sh===cn?null:b.dataset.sh;S.viewPrev=false;S.viewFrom=cn;render();return}
-  if(b.dataset.shv){var cps=curPeriods(),cc=nowP(),ix=0;cps.forEach(function(q,i){if(q.id===cc.id)ix=i});S.viewFrom=cc.id;S.viewP=null;S.viewPrev=false;
+  if(b.dataset.shv){if(b.getAttribute('aria-disabled')==='true'){showHint('Nothing saved from yesterday yet. The board saves each day when the next one starts, so it shows up here from your second day, as long as the app was opened the day before.');return}var cps=curPeriods(),cc=nowP(),ix=0;cps.forEach(function(q,i){if(q.id===cc.id)ix=i});S.viewFrom=cc.id;S.viewP=null;S.viewPrev=false;
     if(b.dataset.shv==='prev'){if(ix>0)S.viewP=cps[ix-1].id;else if(prevOK())S.viewPrev=true}
     else if(b.dataset.shv==='next'){if(ix<cps.length-1)S.viewP=cps[ix+1].id;else{render();openDay(1);return}}
     render();window.scrollTo(0,0);return}
