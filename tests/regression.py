@@ -614,6 +614,11 @@ def main():
         check('ED1 storage key and backup id match the edition', pe.evaluate("KEY===ED.key&&snap().app===ED.app") and pe.evaluate('KEY') == ('ezaide.v1' if store else 'zeke-care-board.v1') and pe.evaluate("snap().app") == ('ezaide' if store else 'zeke-care-board'))
         check('ED2 App Store pieces only in the App Store version', pe.evaluate("['dc','na','trl','abt'].every(function(i){return !!document.getElementById(i)===ED.store})&&(KEEP.indexOf('dc')>-1)===ED.store&&tourCards('x').some(function(c){return c.t==='A quick note'})===ED.store"))
         check('ED3 both versions accept a family backup; only the App Store one accepts its own', pe.evaluate("okSnap({app:'zeke-care-board',state:{tasks:[],periods:[1],people:[1]}})") and pe.evaluate("okSnap({app:'ezaide',state:{tasks:[],periods:[1],people:[1]}})") == store)
+        pe.locator('#frp').press_sequentially('ab12'); v1 = pe.input_value('#frp')
+        pe.fill('#frp', ''); pe.locator('#frp').press_sequentially('１２x３４'); v2 = pe.input_value('#frp')
+        pe.evaluate("(()=>{var i=document.getElementById('rcn');i.value='9a8b7c6d5';i.dispatchEvent(new Event('input',{bubbles:true}))})()"); v3 = pe.input_value('#rcn')
+        check('PN1 sign-in code boxes only take digits (letters dropped as you type)', v1 == '12' and v2 == '1234' and v3 == '9876', f'{v1!r} {v2!r} {v3!r}')
+        pe.fill('#frp', '')
         pe.fill('#frn', 'Eve'); pe.fill('#frp', '1212'); pe.click('#frok'); pe.wait_for_timeout(200)
         if pe.is_visible('#sh'):
             if pe.locator('#sh [data-shn="2"]').count(): pe.click('#sh [data-shn="2"]')
