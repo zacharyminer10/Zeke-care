@@ -809,9 +809,14 @@ function prevModel(){var P=S.prevDay,ps=P.periods,p=ps[ps.length-1],key=P.key,ou
     if(!(t.at&&t.at.length)&&!(t.times>0)&&t.periods.indexOf(p.id)>-1&&perOn(t,p,key)&&!(P.moves||[]).some(function(m){return m.tid===t.id&&m.from===p.id})){var k2=t.id+'|'+p.id,d2=(P.done||{})[k2];(d2?out.done:out.missed).push({kind:'r',key:k2,t:t,when:'',d:d2,ord:9999})}});
   var o=function(a,b){return offMin(a.ord===9999?1439+mins(S.resetAt):a.ord)-offMin(b.ord===9999?1439+mins(S.resetAt):b.ord)};out.missed.sort(o);out.done.sort(o);return out}
 function pvTile(x){var d=x.d;return'<div class="trow"><button class="task '+(d?'done':'over')+'" data-pv="'+x.kind+'|'+x.key+'">'+(x.kind==='n'?'<span class="box" style="width:auto;min-width:30px;padding:0 6px">'+x.n+'/'+x.t.times+'</span>':'<span class="box">'+(d?'✓':'')+'</span>')+'<span class="nm">'+esc(x.t.name)+'<span class="meta">'+(d?'':x.kind==='n'?'Missed · '+x.n+' of '+x.t.times+' done':x.when?'Missed':'Missed · not checked off')+'</span></span>'+(d?'<span class="tag ok dn">'+esc(d.who)+' · '+d.time+(d.late?' · late':'')+'</span>':x.when?'<span class="tag bad">'+x.when+'</span>':'')+'</button></div>'}
-function prevPanel(){var m=prevModel();var h='<div class="col panel" aria-label="'+esc(m.p.name)+' tasks, '+dlabel(S.prevDay.key)+'">';
-  if(!m.missed.length&&!m.done.length)h+='<p class="note">Nothing was scheduled.</p>';
-  h+=grp('Missed',m.missed.map(pvTile).join(''))+grp('Done',m.done.map(pvTile).join(''));return h+'</div>'}
+/* "As needed" tasks given during that shift (from each task's own history; nothing to check off late) */
+function prevPrn(){var P=S.prevDay,p=P.periods[P.periods.length-1],q=P.key.split('-'),a=mins(S.resetAt)+offMin(mins(p.start)),
+  t0=new Date(+q[0],+q[1]-1,+q[2],0,a).getTime(),t1=new Date(+q[0],+q[1]-1,+q[2],0,a+perLen(p)).getTime();
+  return S.tasks.filter(function(t){return t.prn}).map(function(t){return{t:t,h:(t.hist||[]).filter(function(x){return x.ts>=t0&&x.ts<t1})}}).filter(function(x){return x.h.length})}
+function prnPvTile(x){var n=x.h.length;return'<div class="trow"><div class="task done" style="cursor:default"><span class="box">✓</span><span class="nm">'+esc(x.t.name)+'<span class="meta">'+x.h.map(function(e){return esc(e.who)+' at '+fmt(new Date(e.ts))}).join(' · ')+'</span></span><span class="tag ok dn">'+(n===1?'1 time':n+' times')+'</span></div></div>'}
+function prevPanel(){var m=prevModel(),pr=prevPrn();var h='<div class="col panel" aria-label="'+esc(m.p.name)+' tasks, '+dlabel(S.prevDay.key)+'">';
+  if(!m.missed.length&&!m.done.length&&!pr.length)h+='<p class="note">Nothing was scheduled.</p>';
+  h+=grp('Missed',m.missed.map(pvTile).join(''))+grp('Done',m.done.map(pvTile).join(''))+grp('As needed',pr.map(prnPvTile).join(''));return h+'</div>'}
 function togPrev(v){if(!prevOK()||!S.who)return;
   if(v.charAt(0)==='n'){var P0=S.prevDay,id=+v.slice(2),t0=T(id);if(!t0)return;P0.cnt=P0.cnt||{};var c=P0.cnt[id]||(P0.cnt[id]={n:0}),l0=t0.name+' · '+dlabel(P0.key);
     if(c.n>=t0.times){showSheet(t0.name,'<p style="margin:0 0 6px;font-size:18px">✓ Done '+c.n+' of '+t0.times+' times. Last by <b>'+esc(c.who||'')+'</b> at '+esc(c.last||'')+(c.late?' (checked off late)':'')+'</p><p class="note">'+esc(l0)+'</p>');return}
