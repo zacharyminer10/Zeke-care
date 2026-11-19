@@ -1,0 +1,3 @@
+#!/bin/sh
+# Block commits that contain keys, passwords or personal details (tools/checksecrets.py).
+exec python3 "$(git rev-parse --show-toplevel)/tools/checksecrets.py" --staged

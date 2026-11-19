@@ -8,6 +8,24 @@ EZAide is a care checklist web app for families and caregivers looking after som
 - Keep replies short. Lead with what changed and what he needs to do. Show screenshots of UI changes (before/after) when you can.
 - If a request is ambiguous and expensive to redo, ask one short question first. Otherwise build it and say which reading you took.
 
+## Rule: no secrets or personal details, anywhere (both repos are public)
+
+Both `zeke-care` and `ezaide` are **public**: every file, every old version and every commit message can be read by anyone, including bots that scrape GitHub for keys. So, in files, commit messages, PRs, issues and comments, **never** put:
+
+- Keys, tokens, passwords or session cookies of any kind: Claude/Anthropic (`sk-ant-…`, `sessionKey`), GitHub, Google, Apple, Cloudflare, AWS, Stripe, Slack, OpenAI, private keys, `.env` / credential files.
+- Zach's personal details: his own email address (use `Zach <zacharyminer10@users.noreply.github.com>` for commits), phone numbers, home address, family members' details, or anything about his son's health beyond what is already public.
+- Real data from the app: backups, logs, screenshots of the real board, real names or codes of the people using it.
+
+The only email allowed in the code is the public support address `ezaide.app@gmail.com`. Test data uses made-up names and 555-01xx numbers.
+
+**Enforced by `tools/checksecrets.py`** (shows only the first few characters of anything it finds):
+- At the start of every session run `git config core.hooksPath .githooks`. The pre-commit and commit-msg hooks then block any commit whose files or message contain one of these.
+- `tools/build.py` refuses a build that contains one; `tools/release.py` re-checks this repo, the app-store branch and the tester site before each push.
+- Before pushing anything to the ezaide repo by hand: `python3 tools/checksecrets.py --repo ../ezaide`.
+- `python3 tools/checksecrets.py --history` checks every version ever committed; `python3 tests/secrets_selftest.py` proves the checker still catches each kind.
+- If something does get pushed: tell Zach at once. The key must be **revoked/rotated** (deleting the file isn't enough; it stays in the history and copies).
+- Never weaken or bypass the checker (`--no-verify`, editing the allowlist) to get a commit through; remove the secret instead.
+
 ## One codebase, two versions
 
 There is **one** `index.html` / `sw.js`. Built from it:
@@ -33,6 +51,7 @@ There is **one** `index.html` / `sw.js`. Built from it:
 - `tools/build.py`, `tools/release.py` (below). `dist/` is build output and is not committed.
 - `tests/regression.py`: Playwright + Chromium regression suite; runs on either build (`--html`). The `ED` tests check each version's key, App Store pieces and first-run order.
 - `tests/stylecheck/`: proves a change leaves the look unchanged (see its README).
+- `tools/checksecrets.py`, `.githooks/`, `tests/secrets_selftest.py`: the no-secrets rule (above).
 
 ## How Zach likes changes to happen
 

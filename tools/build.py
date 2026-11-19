@@ -11,6 +11,7 @@ The build refuses to finish (exit 1, nothing usable left in --out) if:
   - the family version doesn't use KEY 'zeke-care-board.v1', backup app 'zeke-care-board', CACHE 'zeke-care-'
   - the App Store version doesn't use 'ezaide.v1', 'ezaide' (still accepting 'zeke-care-board' backups), 'ezaide-'
   - the App Store version contains "Zeke", "He’s" or "Care Board"
+  - either version contains a key, password or personal detail (tools/checksecrets.py)
   - VER in index.html and VERSION in sw.js differ
 It checks the files as text, then opens each build in a real browser and reads the values the app actually uses.
 """
@@ -149,6 +150,13 @@ def build(src=ROOT, out=os.path.join(ROOT, 'dist'), browser=True, log=print):
     open(os.path.join(sto, 'index.html'), 'w', encoding='utf-8').write(shtml)
     open(os.path.join(sto, 'sw.js'), 'w', encoding='utf-8').write(ssw)
     shutil.copy(os.path.join(src, 'store', 'privacy.html'), sto)
+    sys.path.insert(0, os.path.join(ROOT, 'tools'))
+    import checksecrets as CS
+    leaks = CS.scan_dir(fam) + CS.scan_dir(sto)
+    if leaks:
+        shutil.rmtree(out, ignore_errors=True)
+        CS.report(leaks, 'the build')
+        raise BuildError('the build contains a key, password or personal detail (see the list above)')
     try:
         if browser:
             browser_check(fam, FAMILY)
