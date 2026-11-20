@@ -127,6 +127,10 @@ label.c{display:flex;gap:6px;align-items:center;color:var(--mut)}
 .note{color:var(--mut);font-size:14px;margin:6px 0 12px}
 .modal{position:fixed;inset:0;background:var(--scrim);display:none;place-items:center;padding:20px;z-index:20;top:var(--vvt,0px);bottom:auto;height:var(--vvh,100%)}
 .modal.show{display:grid}
+/* while a pop-up is open the page behind doesn't scroll or bounce, and scrolling a pop-up to its end doesn't carry on
+   into the page */
+html[data-mopen],html[data-mopen] body{overflow:hidden;overscroll-behavior:none}
+.modal .card{overscroll-behavior:contain}
 .modal .card{cursor:auto}
 .card{overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px;max-width:460px;width:100%;max-height:calc(var(--vvh,100vh) - 40px)}
 .card h2{margin:0 0 8px}
@@ -960,7 +964,8 @@ function drawTE(){var t=T(S.teId);if(!t){$('te').classList.remove('show');return
 function ntFoot(t){var dr=t===DRAFT,first=dr&&NTX&&NTX.ctx==='first';$('tet').textContent=dr?(first?'Add your first task':'Add task'):t.name;$('tek').hidden=!first;
   $('tedel').hidden=dr;$('tedone').hidden=dr;$('tecan').hidden=!dr;$('teadd').hidden=!dr;$('tecan').textContent=first?'Skip for now':'Cancel';if(!dr)$('tem').textContent=''}
 /* ---- 1.19.1: keep pop-ups (and their titles) above the iPad keyboard ---- */
-function vvFit(){var v=window.visualViewport,r=document.documentElement.style;if(!v)return;r.setProperty('--vvh',v.height+'px');r.setProperty('--vvt',v.offsetTop+'px')}
+/* only follow the visible area while the keyboard is up; otherwise iOS's bounce when dragging would move pop-ups the opposite way */
+function vvFit(){var v=window.visualViewport,r=document.documentElement.style;if(!v)return;var kb=v.height<window.innerHeight-120;r.setProperty('--vvh',(kb?v.height:window.innerHeight)+'px');r.setProperty('--vvt',(kb?v.offsetTop:0)+'px')}
 if(window.visualViewport){visualViewport.addEventListener('resize',vvFit);visualViewport.addEventListener('scroll',vvFit);vvFit()}
 document.addEventListener('focusin',function(e){var el=e.target,c=el&&el.closest&&el.closest('.modal .card');if(!c)return;
   setTimeout(function(){if(!c.scrollTop||document.activeElement!==el)return;var off=el.getBoundingClientRect().bottom-c.getBoundingClientRect().top+c.scrollTop;if(off+12<=c.clientHeight)c.scrollTop=0},350)});
@@ -1805,7 +1810,7 @@ function setupCard(full){var it=setupItems(),done=it.filter(function(x){return x
   if(!full)return'<div class="vb" style="background:var(--panel2);color:var(--tx);border:1px solid var(--acc)"><span>Finish setting up the board · <b>'+done+' of '+it.length+'</b> done</span><button data-t="menu" style="background:var(--acc);color:var(--onacc)">Open checklist</button></div>';
   return'<div class="col" style="margin-bottom:12px;border-color:var(--acc)"><div class="ch"><b>Set up the board</b><small>'+done+' of '+it.length+' done</small></div><div class="elist">'+sgroup(it,function(x){return'<div class="srow"><span class="box" style="width:26px;height:26px;border-radius:8px;'+(x[3]?'background:var(--ok);border-color:var(--ok);color:var(--onok)':'')+'">'+(x[3]?'✓':'')+'</span><span class="sname"'+(x[3]?' style="color:var(--mut);text-decoration:line-through"':'')+'>'+x[1]+'<span class="meta" style="text-decoration:none">'+x[2]+'</span></span>'+(x[3]?'':(x[0]==='hours'?'<button data-sgo="periods">Check hours</button><button data-sok="hours">They’re right</button>':'<button data-sgo="'+x[4]+'">'+(x[0]==='bkp'?'Save backup':'Go')+'</button>'))+'</div>'})+'</div><button data-shide="1" style="margin-top:10px;background:transparent;border-color:transparent;color:var(--mut);padding-left:0">Hide this checklist</button></div>'}
 /* ---- 1.14: the pop-up opened last is always on top ---- */
-var MZ=20;try{var MO=new MutationObserver(function(ms){ms.forEach(function(m){var el=m.target,on=el.classList.contains('show');if(on&&!el._up){el._up=1;el.style.zIndex=++MZ}else if(!on&&el._up){el._up=0;el.style.zIndex='';if(!document.querySelector('.modal.show'))MZ=20}})});[].forEach.call(document.querySelectorAll('.modal'),function(el){MO.observe(el,{attributes:true,attributeFilter:['class']})})}catch(e){}
+var MZ=20;try{var MO=new MutationObserver(function(ms){ms.forEach(function(m){var el=m.target,on=el.classList.contains('show');if(on&&!el._up){el._up=1;el.style.zIndex=++MZ}else if(!on&&el._up){el._up=0;el.style.zIndex='';if(!document.querySelector('.modal.show'))MZ=20}document.documentElement.toggleAttribute('data-mopen',!!document.querySelector('.modal.show'))})});[].forEach.call(document.querySelectorAll('.modal'),function(el){MO.observe(el,{attributes:true,attributeFilter:['class']})})}catch(e){}
 /* ---- 1.6: tap outside a pop-up to close it ---- */
 var MDOWN=null,KEEP=['emed','ge','tour','fr','rk','ft','ah','sh','tb','tc'];if(ED.store)KEEP.push('dc','na');
 document.addEventListener('pointerdown',function(e){MDOWN=e.target},true);

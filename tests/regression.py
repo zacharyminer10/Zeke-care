@@ -588,6 +588,11 @@ def main():
         check('KB3 with the keyboard up, the name box is on screen too', shown('#te [data-n]'))
         pv.evaluate("(()=>{var v=window.__vv;v.height=810;v.offsetTop=0;v.dispatchEvent(new Event('resize'))})()"); pv.wait_for_timeout(200)
         check('KB4 keyboard down, the pop-up uses the full screen again', abs(pv.evaluate("document.querySelector('#te .card').getBoundingClientRect().height") - 767) < 40)
+        pv.evaluate("(()=>{var v=window.__vv;v.offsetTop=-60;v.dispatchEvent(new Event('scroll'))})()"); pv.wait_for_timeout(150)
+        check('KB6 without the keyboard, a bounce of the page doesn’t move the pop-up', pv.evaluate("getComputedStyle(document.getElementById('te')).top") == '0px')
+        check('KB7 while a pop-up is open the page behind can’t scroll or bounce', pv.evaluate("document.documentElement.hasAttribute('data-mopen')&&getComputedStyle(document.documentElement).overflow==='hidden'&&getComputedStyle(document.body).overflow==='hidden'&&getComputedStyle(document.documentElement).overscrollBehaviorY==='none'&&getComputedStyle(document.querySelector('#te .card')).overscrollBehaviorY==='contain'"))
+        pv.click('#tecan'); pv.wait_for_timeout(200)
+        check('KB8 closing the pop-up lets the page scroll again', not pv.evaluate("document.documentElement.hasAttribute('data-mopen')") and pv.evaluate("getComputedStyle(document.documentElement).overflow") == 'visible')
         check('KB5 no script errors (keyboard)', not ev, '; '.join(ev[:3]))
 
         # TD. 1.19.1: "N times a day" tasks move to Done, and Yesterday works with one Day shift
