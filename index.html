@@ -521,6 +521,8 @@ input[type=date]:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 .cc .chev{color:var(--mut);display:grid;place-items:center}
 .cci{border-top:1px solid var(--line);padding:8px 10px 10px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .cci .trow{margin:0}
+.cci .task.moved{opacity:.75;border-style:dashed;background:transparent}
+.cci .task.moved .box{border-style:dashed;color:var(--mut);font-weight:600}
 @media (max-width:620px){.cci{grid-template-columns:1fr}.cc .tag{display:none}}
 .opt3{display:grid;gap:10px}
 .opt3 button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:14px 16px;text-align:left}
@@ -790,8 +792,8 @@ function slotOver(s,p){if(slotDone(s))return false;var now=new Date().getTime(),
 function stats(m){var open=0,over=0,p=m.p;
   m.dueIv.forEach(function(t){if(!t.done){open++;if(t.every-t.last<0)over++}});
   m.onceU.forEach(function(t){if(!t.done){open++;if(t.date<bizDay())over++}});
-  var cc={};m.sls.forEach(function(s){if(s.t.cares&&!s.m&&!s.o){var c=cc[s.x]||(cc[s.x]={open:false,over:false});if(!slotDone(s)){c.open=true;if(slotOver(s,p))c.over=true}return}if(!slotDone(s)){open++;if(slotOver(s,p))over++}});
-  Object.keys(cc).forEach(function(x){if(cc[x].open)open++;if(cc[x].over)over++});
+  m.sls.forEach(function(s){if(s.t.cares&&!s.m&&!s.o)return;if(!slotDone(s)){open++;if(slotOver(s,p))over++}});
+  careSplit(m.sls,p,new Date().getHours()*60+new Date().getMinutes()).cards.forEach(function(c){if(!c.done){open++;if(c.over)over++}});
   m.cnts.forEach(function(t){if((S.cnt[t.id]||{n:0}).n<t.times)open++});
   m.list.forEach(function(t){if(!S.done[t.id+'|'+p.id])open++});
   return{open:open,over:over}}
@@ -850,16 +852,50 @@ function caresScreen(){if(!CR||CR.ctx!=='manage')crNew('manage');var on=caresOn(
 function saveCaresManage(){var ts=crSorted();if(!ts.length){$('cre').textContent='Add at least one cares time.';return}var was=caresOn();careApply(ts);if(!S.dayMode||S.dayMode==='shifts')S.dayMode='both';S.setupHours=true;
   lg('Changed','Cares times '+(was?'changed':'turned on')+': '+careList().map(function(c){return fmtT(c.t)}).join(', '));CR=null;save();render();showHint(was?'Cares times saved.':'Cares are on. Set tasks to “At cares” to group them.')}
 /* board: one card per cares time; the current one opens, the rest open with a tap */
-function careSplit(sls,p,mn){var by={},order=[],plain=[];sls.forEach(function(x){if(x.t.cares&&!x.m&&!x.o){if(!by[x.x]){by[x.x]=[];order.push(x.x)}by[x.x].push(x)}else plain.push(x)});
-  return{plain:plain,cards:order.map(function(x){var it=by[x],d=it.filter(slotDone).length,dn=d===it.length,df=slotDiff(x,mn);return{x:x,items:it,n:it.length,d:d,done:dn,diff:df,over:!dn&&it.some(function(s0){return slotOver(s0,p)}),due:!dn&&df>=0}})}}
+function careSplit(sls,p,mn){var by={},order=[],plain=[],cm=S.cmv||{},add=function(x,it){if(!by[x]){by[x]=[];order.push(x)}by[x].push(it)};
+  sls.forEach(function(x){if(x.t.cares&&!x.m&&!x.o)add(x.x,{t:x.t,x:x.x});else plain.push(x)});
+  /* items moved here from an earlier cares: shown once (a note on the task's own item if it is already in this cares) */
+  Object.keys(cm).forEach(function(k){var tid=+k.split('@')[0],t=T(tid),y=cm[k].to,fr=k.split('@')[1];if(!t||!t.cares||perAt(mins(y)).id!==p.id)return;
+    var ex=(by[y]||[]).filter(function(i){return i.t.id===tid&&!i.v})[0];if(ex){ex.also=(ex.also||[]).concat(fr);return}add(y,{t:t,x:y,v:fr})});
+  var ps=mins(p.start);order.sort(function(a,b){return((mins(a)-ps+1440)%1440)-((mins(b)-ps+1440)%1440)});
+  return{plain:plain,cards:order.map(function(x){var it=by[x],live=it.filter(function(i){return !cm[i.t.id+'@'+x]}),d=live.filter(slotDone).length,dn=d===live.length,sh=(S.cshift||{})[x],ex=sh?sh.to:x,df=slotDiff(ex,mn);
+    return{x:x,ex:ex,sh:sh,items:it,n:live.length,d:d,mvd:it.length-live.length,done:dn,diff:df,over:!dn&&live.some(function(i){return !slotDone(i)&&df>=(i.t.grace||60)}),due:!dn&&df>=0}})}}
+function careAfter(x){var cs=careList().map(function(c){return c.t}),i=cs.indexOf(x);return i>-1&&i<cs.length-1?cs[i+1]:null}
+function pmReasons(){$('pmr').innerHTML=RS.map(function(r){return'<button data-rs="'+esc(r)+'" class="'+(S.reason===r?'on':'')+'">'+esc(r)+'</button>'}).join('')}
+/* hold an item: move it to the next cares (just today) or put it back */
+function openCareItem(tid,x){var t=T(tid);if(!t)return;var key=tid+'@'+x,mv=(S.cmv||{})[key],nx=careAfter(x),h='';
+  pmHead(t,'Move to the next cares',fmtT(x)+' cares · just for today. Its usual cares don’t change.');
+  if(mv)h+='<button data-cmb="'+key+'" class="pmback">↩ Put back in the '+fmtT(x)+' cares</button>';
+  else if(nx)h+='<button data-cmn="'+key+'">Move to the '+fmtT(nx)+' cares<small>'+((t.at||[]).indexOf(nx)>-1?'It’s already part of that cares, so it’s done once there':'It’s added to that cares for today')+'</small></button>';
+  else h+='<p class="note" style="margin:0 0 8px">This is the last cares of the day, so there’s no next one today.</p>';
+  S.pend={cm:[tid,x]};$('pmrw').style.display=mv||!nx?'none':'';pmReasons();$('pmb').innerHTML=h;$('pm').classList.add('show')}
+/* hold a cares card: move the whole cares later (just today) or put it back */
+function openCaresMove(x){var sh=(S.cshift||{})[x],now=Date.now(),h='';
+  $('pmk').textContent='Move this cares';$('pmt').textContent=fmtT(x)+' cares';$('pmsub').textContent='All of its items, just for today. Tomorrow it’s back at '+fmtT(x)+'.';$('pmerr').textContent='';$('pmed').innerHTML='';
+  if(sh)h+='<button data-cmback="'+x+'" class="pmback">↩ Put back to '+fmtT(x)+'</button>';
+  /* from now if it's already due, otherwise from its own time; options that would run into the next cares are left out */
+  var nm=new Date().getHours()*60+new Date().getMinutes(),cur=sh?sh.to:x,late=offMin(nm)>=offMin(mins(cur)),base=late?Math.ceil(nm/5)*5:mins(cur);
+  h+='<p class="sec">'+(late?'Later today':'Later than '+fmtT(cur))+'</p><div class="pmg">'+[[30,late?'In 30 min':'30 min later'],[60,late?'In 1 hour':'1 hour later'],[120,late?'In 2 hours':'2 hours later']].map(function(o){var v=hmM(base+o[0]);return careShiftErr(x,v)?'':'<button data-cmd="'+x+'|'+v+'"><b>'+o[1]+'</b><small>'+fmtT(v)+'</small></button>'}).join('')+'<button data-cmpk="'+x+'"><b>Pick a time</b><small>Earlier or later today</small></button></div>';
+  S.pend={cc:x};$('pmrw').style.display='';pmReasons();$('pmb').innerHTML=h;$('pm').classList.add('show')}
+function careShiftErr(x,v){var nm=new Date().getHours()*60+new Date().getMinutes(),nx=careAfter(x),cs=careList().map(function(c){return c.t}),pv=cs[cs.indexOf(x)-1];
+  if(offMin(mins(v))<offMin(nm))return'That time has already passed today.';
+  if(nx&&offMin(mins(v))>=offMin(mins(nx)))return'That’s at or after the '+fmtT(nx)+' cares. Move single items to the next cares instead.';
+  if(pv&&offMin(mins(v))<=offMin(mins(pv)))return'That’s before the '+fmtT(pv)+' cares.';return''}
+function setCareShift(x,v){var er=careShiftErr(x,v);if(er){$('pmerr').textContent=er;return false}S.cshift=S.cshift||{};S.cshift[x]={to:v,who:S.who,time:fmt(new Date()),reason:S.reason||''};
+  lg('Pushed',fmtT(x)+' cares moved to '+fmtT(v)+(S.reason?' · '+S.reason:''));S.reason='';S.pend=null;$('pm').classList.remove('show');render();return true}
 function careOpen(x,def){return S.cxo&&S.cxo[x]!=null?S.cxo[x]:def}
-function careItem(x){var key=x.t.id+'@'+x.x,dn=S.cdone[key];return'<div class="trow"><button class="task'+(dn?' done':'')+'" data-ct="'+key+'"'+(dn?'':' data-lpt="'+key+'"')+'><span class="box">'+(dn?'✓':'')+'</span><span class="nm">'+esc(x.t.name)+'<span class="meta"></span></span>'+(dn?'<span class="tag ok dn">'+esc(dn.who)+' · '+dn.time+(dn.late?' · late':'')+'</span>':'')+'</button></div>'}
+function careItem(x){var key=x.t.id+'@'+x.x,dn=S.cdone[key],mv=(S.cmv||{})[key];
+  if(mv)return'<div class="trow"><button class="task moved" data-ccm="'+key+'"><span class="box">→</span><span class="nm">'+esc(x.t.name)+'<span class="meta">Moved to the '+fmtT(mv.to)+' cares'+(mv.reason?' · '+esc(mv.reason):'')+'</span></span><span class="tag">'+fmtT(mv.to)+'</span></button></div>';
+  var note=x.v?'Moved here from the '+fmtT(x.v)+' cares':x.also?'Also moved here from the '+x.also.map(fmtT).join(', ')+' cares':'';
+  return'<div class="trow"><button class="task'+(dn?' done':'')+'" data-ct="'+key+'"'+(dn?'':' data-lpt="'+key+'"')+'><span class="box">'+(dn?'✓':'')+'</span><span class="nm">'+esc(x.t.name)+'<span class="meta">'+note+'</span></span>'+(dn?'<span class="tag ok dn">'+esc(dn.who)+' · '+dn.time+(dn.late?' · late':'')+'</span>':'')+'</button></div>'}
 function careCard(c,open){var st=c.done?'done':c.over?'over':c.due?'due':'',left=c.items.filter(function(x){return !slotDone(x)}).map(function(x){return x.t.name}),last=c.done?c.items.map(function(x){return S.cdone[x.t.id+'@'+x.x]}).filter(Boolean).pop():null;
-  var sub=c.done?'All done'+(last?' · '+esc(last.who)+' at '+last.time:''):c.d?c.d+' of '+c.n+' done'+(c.over||c.due?' · left: '+esc(left.join(', ')):''):esc(c.items.map(function(x){return x.t.name}).join(', '));
-  var tg=c.done?'':c.over?'<span class="tag bad">Overdue · '+fmtT(c.x)+'</span>':c.due?'<span class="tag" style="font-weight:700">Due now · '+fmtT(c.x)+'</span>':'<span class="tag up">'+fmtT(c.x)+(-c.diff<=120?' · '+soonTxt(-c.diff):'')+'</span>';
-  return'<div class="ccw '+st+'" data-cc="'+c.x+'"><button class="cc" data-cco="'+c.x+'" aria-expanded="'+!!open+'"><span class="cpg">'+c.d+'/'+c.n+'</span><span class="cnm"><b>'+fmtT(c.x)+' cares</b><small>'+sub+'</small></span>'+tg+'<span class="chev">'+(open?'<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg>':'<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>')+'</span></button>'+(open?'<div class="cci">'+c.items.map(careItem).join('')+'</div>':'')+'</div>'}
+  left=left.filter(function(n0,i){return !(S.cmv||{})[c.items.filter(function(x){return !slotDone(x)})[i].t.id+'@'+c.x]});
+  var sub=(c.sh?'Moved to '+fmtT(c.ex)+' · ':'')+(!c.n?'All moved to a later cares':c.done?'All done'+(last?' · '+esc(last.who)+' at '+last.time:''):c.d?c.d+' of '+c.n+' done'+(c.over||c.due?' · left: '+esc(left.join(', ')):''):esc(c.items.filter(function(x){return !(S.cmv||{})[x.t.id+'@'+c.x]}).map(function(x){return x.t.name}).join(', ')))+(c.mvd&&c.n?' · '+c.mvd+' moved':'');
+  var tg=c.done?'':c.over?'<span class="tag bad">Overdue · '+fmtT(c.ex)+'</span>':c.due?'<span class="tag" style="font-weight:700">Due now · '+fmtT(c.ex)+'</span>':'<span class="tag up">'+fmtT(c.ex)+(-c.diff<=120?' · '+soonTxt(-c.diff):'')+'</span>';
+  return'<div class="ccw '+st+'" data-cc="'+c.x+'"><button class="cc" data-cco="'+c.x+'"'+(c.done?'':' data-lpcc="'+c.x+'"')+' aria-expanded="'+!!open+'"><span class="cpg">'+c.d+'/'+c.n+'</span><span class="cnm"><b>'+fmtT(c.x)+' cares</b><small>'+sub+'</small></span>'+tg+'<span class="chev">'+(open?'<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg>':'<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>')+'</span></button>'+(open?'<div class="cci">'+c.items.map(careItem).join('')+'</div>':'')+'</div>'}
 function grpC(title,cards,tiles){if(!cards&&!tiles)return'';var n=(cards.match(/class="ccw/g)||[]).length+((tiles||'').match(/class="trow"/g)||[]).length;return'<p class="sec">'+title+(n?'<span class="sc">'+n+'</span>':'')+'</p>'+cards+(tiles?'<div class="tiles">'+tiles+'</div>':'')}
-function careDoneAt(x){var a=S.tasks.filter(function(t){return t.cares&&(t.at||[]).indexOf(x)>-1&&slotOn(t,x)});return a.length>0&&a.every(function(t){return !!S.cdone[t.id+'@'+x]})}
+function careDoneAt(x){var cm=S.cmv||{},k=S.tasks.filter(function(t){return t.cares&&(t.at||[]).indexOf(x)>-1&&slotOn(t,x)}).map(function(t){return t.id+'@'+x}).filter(function(q){return !cm[q]});
+  Object.keys(cm).forEach(function(q){var t=T(+q.split('@')[0]);if(t&&cm[q].to===x&&(t.at||[]).indexOf(x)<0&&!cm[t.id+'@'+x])k.push(t.id+'@'+x)});return k.length>0&&k.every(function(q){return !!S.cdone[q]})}
 function settleCard(x,q){var el=document.querySelector('main .panel [data-cc="'+x+'"]');if(!el){render();return}
   clearTimeout(SETTLE.t);SETTLE.until=Date.now()+1200;el.classList.remove('over','due');el.classList.add('done');
   var it=el.querySelector('[data-ct="'+q+'"]');if(it){it.classList.add('done');var bx=it.querySelector('.box');if(bx)bx.textContent='✓';it.insertAdjacentHTML('beforeend','<span class="tag ok dn">'+esc(S.who)+' · '+fmt(new Date())+'</span>')}
@@ -899,11 +935,11 @@ function today(){
   var dlv=view.isNow&&supOn()?openOrders().filter(function(o){return o.expected<=bizDay()}).map(dlvTile).join(''):'';
   h+='<div class="col panel'+(view.isNow?' now':'')+'" aria-label="'+esc(p.name)+' tasks">';
   if(!view.sls.length&&!dOpen&&!dDone&&!view.list.length&&!view.cnts.length&&!prn&&!pprn&&!dlv)h+='<p class="note">No tasks yet. Tap + Add task above.</p>';
-  if(view.isNow){var urg=sOpen.filter(function(x){return slotDiff(x.x,mn)>=0}),up=sOpen.filter(function(x){return slotDiff(x.x,mn)<0}),cu=cOpen.filter(function(c){return c.diff>=0}),cl=cOpen.filter(function(c){return c.diff<0}),nxx=null;
-    [up.length?up[0].x:null,cl.length?cl[0].x:null].forEach(function(x){if(x&&(nxx===null||slotDiff(x,mn)>slotDiff(nxx,mn)))nxx=x});
-    openX=cu.length?cu[cu.length-1].x:cl.length&&cl[0].x===nxx?nxx:null;
+  if(view.isNow){var urg=sOpen.filter(function(x){return slotDiff(x.x,mn)>=0}),up=sOpen.filter(function(x){return slotDiff(x.x,mn)<0}),cu=cOpen.filter(function(c){return c.diff>=0}),cl=cOpen.filter(function(c){return c.diff<0}),nxc=null;cl.forEach(function(c){if(!nxc||c.diff>nxc.diff)nxc=c});
+    var nxp=up.length?slotDiff(up[0].x,mn):-1e9,nxd=Math.max(nxp,nxc?nxc.diff:-1e9),nxx=up.length&&nxp===nxd?up[0].x:null;if(nxc&&nxc.diff!==nxd)nxc=null;
+    openX=cu.length?cu[cu.length-1].x:nxc?nxc.x:null;
     var upn=urg.map(function(x){return slotTile(x,p)}).join('')+up.filter(function(x){return x.x===nxx}).map(function(x){return slotTile(x,p,true)}).join(''),later=up.filter(function(x){return x.x!==nxx}).map(function(x){return slotTile(x,p)}).join('');
-    h+=grp('Deliveries',dlv)+grpC('Up next',cardsH(cu.concat(cl.filter(function(c){return c.x===nxx}))),upn)+grp('Anytime '+wd,dOpen+cnt+lOpen)+grpC('Later '+wd,cardsH(cl.filter(function(c){return c.x!==nxx})),later)+grp('As needed',prn)+grpC('Done',cardsH(cDn),done)}
+    h+=grp('Deliveries',dlv)+grpC('Up next',cardsH(cu.concat(nxc?[nxc]:[])),upn)+grp('Anytime '+wd,dOpen+cnt+lOpen)+grpC('Later '+wd,cardsH(cl.filter(function(c){return c!==nxc})),later)+grp('As needed',prn)+grpC('Done',cardsH(cDn),done)}
   else if(past)h+=grpC('Not done',cardsH(cOpen),sOpen.map(function(x){return slotTile(x,p)}).join('')+dOpen+lOpen)+grpC('Done',cardsH(cDn),done)+grp('As needed',pprn);
   else h+=grp('Anytime',dOpen+cnt+lOpen)+grpC('Scheduled',cardsH(cOpen),sOpen.map(function(x){return slotTile(x,p)}).join(''))+grpC('Done',cardsH(cDn),done);
   h+='</div>';
@@ -922,8 +958,9 @@ function prevModel(){var P=S.prevDay,ps=P.periods,p=ps[ps.length-1],key=P.key,ou
   var own=function(m){var c=ps.filter(function(q){return inP(q,m)});c.sort(function(a,b){return perLen(a)-perLen(b)});return c[0]||ps[0]};
   S.tasks.forEach(function(t){if(t.every||t.once||t.prn)return;
     if(t.times>0){if(P.cnt){var c=P.cnt[t.id]||{n:0},ok=c.n>=t.times;(ok?out.done:out.missed).push({kind:'n',key:String(t.id),t:t,when:'',d:ok?{who:c.who||'',time:c.last||'',late:c.late}:null,n:c.n,ord:9999})}return}
-    (t.at||[]).forEach(function(x){if(own(mins(x)).id!==p.id||!slotOn(t,x,key))return;var k=t.id+'@'+x,d=(P.cdone||{})[k];(d?out.done:out.missed).push({kind:'c',key:k,t:t,when:fmtT(x),d:d,ord:mins(x)})});
+    (t.at||[]).forEach(function(x){if(own(mins(x)).id!==p.id||!slotOn(t,x,key))return;var k=t.id+'@'+x,d=(P.cdone||{})[k];if((P.cmv||{})[k])return;(d?out.done:out.missed).push({kind:'c',key:k,t:t,when:fmtT(x),d:d,ord:mins(x)})});
     if(!(t.at&&t.at.length)&&!(t.times>0)&&t.periods.indexOf(p.id)>-1&&perOn(t,p,key)&&!(P.moves||[]).some(function(m){return m.tid===t.id&&m.from===p.id})){var k2=t.id+'|'+p.id,d2=(P.done||{})[k2];(d2?out.done:out.missed).push({kind:'r',key:k2,t:t,when:'',d:d2,ord:9999})}});
+  Object.keys(P.cmv||{}).forEach(function(k){var t=T(+k.split('@')[0]),y=P.cmv[k].to;if(!t||own(mins(y)).id!==p.id||(t.at||[]).indexOf(y)>-1||P.cmv[t.id+'@'+y])return;var k2=t.id+'@'+y,d=(P.cdone||{})[k2];(d?out.done:out.missed).push({kind:'c',key:k2,t:t,when:fmtT(y),d:d,ord:mins(y)})});
   var o=function(a,b){return offMin(a.ord===9999?1439+mins(S.resetAt):a.ord)-offMin(b.ord===9999?1439+mins(S.resetAt):b.ord)};out.missed.sort(o);out.done.sort(o);return out}
 function pvTile(x){var d=x.d;return'<div class="trow"><button class="task '+(d?'done':'over')+'" data-pv="'+x.kind+'|'+x.key+'">'+(x.kind==='n'?'<span class="box" style="width:auto;min-width:30px;padding:0 6px">'+x.n+'/'+x.t.times+'</span>':'<span class="box">'+(d?'✓':'')+'</span>')+'<span class="nm">'+esc(x.t.name)+'<span class="meta">'+(d?'':x.kind==='n'?'Missed · '+x.n+' of '+x.t.times+' done':x.when?'Missed':'Missed · not checked off')+'</span></span>'+(d?'<span class="tag ok dn">'+esc(d.who)+' · '+d.time+(d.late?' · late':'')+'</span>':x.when?'<span class="tag bad">'+x.when+'</span>':'')+'</button></div>'}
 /* look-back views: "As needed" tasks given during a shift (from each task's own history) and Every-X / One-time tasks
@@ -1226,7 +1263,8 @@ function bizDay(d){var x=new Date((d||new Date()).getTime()-mins(S.resetAt)*6000
 function missedList(skip,nk){var out=[];skip=skip||{};nk=nk||addDays(S.dayKey,1);
   S.tasks.forEach(function(t){
     if(t.once&&!t.done&&t.date<nk&&!t.missedLogged){out.push(t.name+(t.time?' at '+fmtT(t.time):' (one-time)'));t.missedLogged=true}
-    (t.at||[]).forEach(function(x){if(!S.cdone[t.id+'@'+x]&&slotOn(t,x,S.dayKey))out.push(t.name+' at '+fmtT(x))});
+    (t.at||[]).forEach(function(x){if(!S.cdone[t.id+'@'+x]&&!(S.cmv||{})[t.id+'@'+x]&&slotOn(t,x,S.dayKey))out.push(t.name+' at '+fmtT(x))});
+    if(t.cares)Object.keys(S.cmv||{}).forEach(function(k){if(+k.split('@')[0]!==t.id)return;var y=S.cmv[k].to;if((t.at||[]).indexOf(y)>-1||S.cdone[t.id+'@'+y]||S.cmv[t.id+'@'+y])return;out.push(t.name+' at '+fmtT(y)+' (moved from the '+fmtT(k.split('@')[1])+' cares)')});
     if(t.times>0){var c=(S.cnt[t.id]||{n:0}).n;if(c<t.times)out.push(t.name+' ('+c+' of '+t.times+')')}
     if(!t.every&&!(t.at&&t.at.length)&&!(t.times>0)&&t.periods.length)t.periods.forEach(function(pid){var pp=S.periods.filter(function(z){return z.id===pid})[0];if(pp&&!perOn(t,pp,S.dayKey))return;
       var mv=S.moves.filter(function(m){return m.tid===t.id&&m.from===pid})[0];
@@ -1235,9 +1273,9 @@ function missedList(skip,nk){var out=[];skip=skip||{};nk=nk||addDays(S.dayKey,1)
   S.moves.forEach(function(m){if(m.carry&&!S.done[m.tid+'|'+m.from]&&!skip[m.tid+'|'+m.from]&&T(m.tid))out.push(tn(m.tid)+' (moved to '+fmt(new Date(m.ts))+')')});
   return out}
 function maybeReset(d){var k=bizDay(d);if(!S.dayKey){S.dayKey=k;return false}if(k<=S.dayKey)return false;
-  var n=Math.max(1,Math.round((Date.parse(k)-Date.parse(S.dayKey))/864e5)),cm=carryMoves(k),miss=missedList(cm.skip,k),lbl=new Date(Date.parse(S.dayKey)).toLocaleDateString([],{weekday:'short',month:'short',day:'numeric',timeZone:'UTC'});S.prevDay={key:S.dayKey,periods:JSON.parse(JSON.stringify(curPeriods())),done:S.done,cdone:S.cdone,cnt:S.cnt,moves:S.moves,iv:S.tasks.filter(function(t){return(t.every>0||t.once)&&t.done}).map(function(t){return{id:t.id,name:t.name,f:t.once?'One time':fl(t),d:t.done}})};S.prevKey=S.dayKey;S.dayKey=k;
+  var n=Math.max(1,Math.round((Date.parse(k)-Date.parse(S.dayKey))/864e5)),cm=carryMoves(k),miss=missedList(cm.skip,k),lbl=new Date(Date.parse(S.dayKey)).toLocaleDateString([],{weekday:'short',month:'short',day:'numeric',timeZone:'UTC'});S.prevDay={key:S.dayKey,periods:JSON.parse(JSON.stringify(curPeriods())),done:S.done,cdone:S.cdone,cnt:S.cnt,moves:S.moves,cmv:S.cmv||{},iv:S.tasks.filter(function(t){return(t.every>0||t.once)&&t.done}).map(function(t){return{id:t.id,name:t.name,f:t.once?'One time':fl(t),d:t.done}})};S.prevKey=S.dayKey;S.dayKey=k;
   miss.reverse().forEach(function(d){S.log.unshift({ts:new Date(),who:'System',a:'Missed',d:d+' · '+lbl})});
-  S.done={};S.cdone={};S.cnt={};S.cxo={};S.moves=cm.moves;S.alerted={};if(cm.moves.length)S.log.unshift({ts:new Date(),who:'System',a:'Changed',d:cm.moves.length+' pushed task'+(cm.moves.length>1?'s':'')+' carried over to the new day: '+cm.moves.map(function(m){return tn(m.tid)+' at '+fmt(new Date(m.ts))}).join(', ')});S.tasks=S.tasks.filter(function(t){return !(t.once&&t.done)&&!(t.appt&&t.date<k)});
+  S.done={};S.cdone={};S.cnt={};S.cxo={};S.cmv={};S.cshift={};S.moves=cm.moves;S.alerted={};if(cm.moves.length)S.log.unshift({ts:new Date(),who:'System',a:'Changed',d:cm.moves.length+' pushed task'+(cm.moves.length>1?'s':'')+' carried over to the new day: '+cm.moves.map(function(m){return tn(m.tid)+' at '+fmt(new Date(m.ts))}).join(', ')});S.tasks=S.tasks.filter(function(t){return !(t.once&&t.done)&&!(t.appt&&t.date<k)});
   S.tasks.forEach(function(t){if(t.every>0){var lf=t.every-t.last,dk=addDays(S.prevKey,lf);if(!t.done&&lf<=0&&t.missedFor!==dk){S.log.unshift({ts:new Date(),who:'System',a:'Missed',d:t.name+(dk===S.prevKey?'':' (due '+dlabel(dk)+')')+' · '+lbl,tid:t.id});t.missedFor=dk}t.last=t.done?n:t.last+n;t.done=null}});
   return true}
 function setResetAt(v){if(v===S.resetAt)return;var was=S.resetAt;S.resetAt=v;if(bizDay()>S.dayKey)maybeReset();lgc('New day now starts at '+fmtT(v)+' (was '+fmtT(was)+')')}
@@ -1403,6 +1441,16 @@ document.addEventListener('click',function(e){
   if(b.dataset.crr){var crr=b.dataset.crr;CR.times=CR.times.filter(function(x){return x!==crr});if(CR.first===crr)CR.first=crSorted()[0]||CR.first;CR.custom=true;crRedraw();return}
   if(b.id==='crsave'){if(!can('owner'))return;saveCaresManage();return}
   if(b.id==='croff'){if(!can('owner'))return;askConfirm('Turn off cares?','Tasks set to “At cares” won’t show on the board until you give them other times.','Turn off',function(){S.cares=[];S.dayMode='shifts';careSync();CR=null;lg('Changed','Cares turned off');render()});return}
+  if(b.dataset.ccm){var cmk=b.dataset.ccm.split('@');S.reason='';openCareItem(+cmk[0],cmk[1]);return}
+  if(b.dataset.cmn){if(needWho())return;var cmn=b.dataset.cmn,cmp=cmn.split('@'),cmt=T(+cmp[0]),cnx=careAfter(cmp[1]);if(!cmt||!cnx)return;S.cmv=S.cmv||{};S.cmv[cmn]={to:cnx,who:S.who,time:fmt(new Date()),reason:S.reason||''};
+    lg('Pushed',cmt.name+' ('+fmtT(cmp[1])+' cares) to the '+fmtT(cnx)+' cares'+(S.reason?' · '+S.reason:''),{tid:cmt.id});S.reason='';S.pend=null;$('pm').classList.remove('show');render();showHint(cmt.name+' moved to the '+fmtT(cnx)+' cares.');return}
+  if(b.dataset.cmb){if(needWho())return;var cmb=b.dataset.cmb,cbp=cmb.split('@'),cbt=T(+cbp[0]),cto=(S.cmv||{})[cmb];if(!cbt||!cto)return;
+    if(S.cdone[cbt.id+'@'+cto.to]&&(cbt.at||[]).indexOf(cto.to)<0){$('pmerr').textContent='It was already done at the '+fmtT(cto.to)+' cares.';return}
+    var chain=cmb;while(S.cmv[chain]){var nxk=cbt.id+'@'+S.cmv[chain].to;delete S.cmv[chain];chain=nxk}
+    lg('Changed',cbt.name+' put back in the '+fmtT(cbp[1])+' cares',{tid:cbt.id});S.pend=null;$('pm').classList.remove('show');render();return}
+  if(b.dataset.cmd){if(needWho())return;var cmd=b.dataset.cmd.split('|');setCareShift(cmd[0],cmd[1]);return}
+  if(b.dataset.cmpk){if(needWho())return;var cpk=b.dataset.cmpk;openTP({title:'Move the '+fmtT(cpk)+' cares to',check:function(v){return careShiftErr(cpk,v)},ok:function(v){setCareShift(cpk,v)}});return}
+  if(b.dataset.cmback){if(needWho())return;var cbk=b.dataset.cmback;if(S.cshift)delete S.cshift[cbk];lg('Changed',fmtT(cbk)+' cares put back to '+fmtT(cbk));S.pend=null;$('pm').classList.remove('show');render();return}
   if(b.dataset.cco){var cco=b.dataset.cco,ccw=b.closest('.ccw');S.cxo=S.cxo||{};S.cxo[cco]=!(ccw&&ccw.querySelector('.cci'));render();return}
   if(b.dataset.ccw){var ccx=b.dataset.ccw.split('|'),tc=T(ccx[0]);if(!tc||!can('sched'))return;var cids=careList().map(function(c){return c.id}),ccur=tc.cw&&tc.cw.length?tc.cw.slice():cids.slice();
     if(ccx[1]==='all')ccur=cids.slice();else{var cix=ccur.indexOf(ccx[1]);if(cix>-1){if(ccur.length===1){showHint('Pick at least one cares.');return}ccur.splice(cix,1)}else ccur.push(ccx[1])}
@@ -1438,7 +1486,7 @@ document.addEventListener('click',function(e){
   if(b.id==='addi'){if(!can('stock'))return;var nm2=$('newi').value.trim();if(!nm2)return;var nq2=$('newq')?$('newq').value.trim():'';S.stock.push({id:S.nid++,name:nm2,qty:Math.max(0,Math.round(+nq2)||0),low:2,nc:nq2===''});render();return}
   if(b.dataset.pk){if(e.detail===0)pinKey(b.dataset.pk);return}
   if(b.id==='pinx'){$('pin').classList.remove('show');return}
-  if(b.dataset.rs){S.reason=S.reason===b.dataset.rs?'':b.dataset.rs;if(S.pend)openPush(S.pend.tid,S.pend.from);return}
+  if(b.dataset.rs){S.reason=S.reason===b.dataset.rs?'':b.dataset.rs;if(S.pend){if(S.pend.cm)openCareItem(S.pend.cm[0],S.pend.cm[1]);else if(S.pend.cc)openCaresMove(S.pend.cc);else openPush(S.pend.tid,S.pend.from)}return}
   if(b.dataset.ppd){if(!can('owner'))return;var _i=+b.dataset.ppd,_p=S.people[_i];if(!_p||_p.name===S.who||(_p.role==='owner'&&owners().length<=1))return;askConfirm('Remove this person?','“'+_p.name+'” won’t be able to sign in anymore. Their past check-offs stay in the log.','Remove person',function(){var ix=S.people.indexOf(_p);if(ix>-1)S.people.splice(ix,1);lg('Changed','Removed '+_p.name);render()});return}
   if(b.dataset.prs){if(!can('owner'))return;var _q=S.people[+b.dataset.prs];if(!_q)return;askConfirm('Reset '+_q.name+'’s code?','Their current code stops working. They’ll choose a new one the next time they sign in.','Reset code',function(){_q.pin=null;_q.mustReset=true;lg('Changed',_q.name+'’s code was reset');render()},true);return}
   if(b.dataset.pmy){setCodePad(S.who,true,'Choose a new code, '+S.who);return}
@@ -1516,7 +1564,7 @@ var lp={t:null,x:0,y:0,fired:false};
 function lpCancel(){clearTimeout(lp.t);lp.t=null}
 document.addEventListener('pointerdown',function(e){
   lp.fired=false;
-  var b=e.target.closest('.task');if(!b||!(b.dataset.lp||b.dataset.lpm||b.dataset.lpi||b.dataset.lpc||b.dataset.lpd||b.dataset.lpo||b.dataset.lpr||b.dataset.lpt))return;
+  var b=e.target.closest('.task,.cc');if(!b||!(b.dataset.lp||b.dataset.lpm||b.dataset.lpi||b.dataset.lpc||b.dataset.lpd||b.dataset.lpo||b.dataset.lpr||b.dataset.lpt||b.dataset.lpcc))return;
   lp.x=e.clientX;lp.y=e.clientY;lpCancel();
   lp.t=setTimeout(function(){
     lp.fired=true;lp.t=null;if(!S.who){needWho();return}
@@ -1524,7 +1572,8 @@ document.addEventListener('pointerdown',function(e){
     else if(b.dataset.lpo){openOnce(b.dataset.lpo)}
     else if(b.dataset.lpd){var a2=b.dataset.lpd.split('|');S.reason='';openPush(+a2[0],a2[1])}
     else if(b.dataset.lpm){var c=b.dataset.lpm.split('|'),mm0=S.moves.filter(function(m){return m.tid===+c[0]&&m.to===c[1]})[0];S.reason='';if(mm0)openPush(+c[0],mm0.from)}
-    else if(b.dataset.lpt){var ct=b.dataset.lpt.split('@');openTimed(+ct[0],ct[1])}
+    else if(b.dataset.lpt){var ct=b.dataset.lpt.split('@'),ctt=T(+ct[0]);S.reason='';if(ctt&&ctt.cares)openCareItem(+ct[0],ct[1]);else openTimed(+ct[0],ct[1])}
+    else if(b.dataset.lpcc){S.reason='';openCaresMove(b.dataset.lpcc)}
     else if(b.dataset.lpc){decC(b.dataset.lpc)}
     else if(b.dataset.lpr){undoPrn(b.dataset.lpr)}
     else openIv(b.dataset.lpi);
@@ -1532,7 +1581,7 @@ document.addEventListener('pointerdown',function(e){
 });
 document.addEventListener('pointermove',function(e){if(lp.t&&(Math.abs(e.clientX-lp.x)>10||Math.abs(e.clientY-lp.y)>10))lpCancel()});
 ['pointerup','pointercancel'].forEach(function(n){document.addEventListener(n,lpCancel)});
-document.addEventListener('contextmenu',function(e){if(e.target.closest('.task'))e.preventDefault()});
+document.addEventListener('contextmenu',function(e){if(e.target.closest('.task,.cc'))e.preventDefault()});
 document.addEventListener('click',function(e){if(lp.fired){lp.fired=false;e.stopImmediatePropagation();e.preventDefault()}},true);
 ['pointerdown','keydown','input'].forEach(function(n){document.addEventListener(n,function(){S.last=Date.now()},true)});
 /* sign-in code boxes take digits only (an iPad keyboard can switch to letters; sign-in later is a number pad) */
@@ -1678,8 +1727,10 @@ function dueItems(){var now=Date.now(),nm=new Date().getHours()*60+new Date().ge
     (t.at||[]).forEach(function(x){var q=t.id+'@'+x;if(t.cares||S.cdone[q]||!slotOn(t,x))return;var d=slotDiff(x,nm);
       if(d>=0&&d<Math.max(win,t.grace||60))out.push({key:'c:'+q+':'+S.dayKey,name:t.name,when:fmtT(x),ord:ordTxt(t),kind:'ct',ref:q})});
     if(t.once&&!t.done&&t.time&&t.date===bizDay()){var ts=onceTs(t),d2=(now-ts)/60000;if(d2>=0&&d2<win)out.push({key:'o:'+t.id+':'+t.date,name:t.name,when:fmtT(t.time),kind:'o',ref:String(t.id)})}});
-  var cd={},co=[];S.tasks.forEach(function(t){if(!t.cares)return;(t.at||[]).forEach(function(x){if(S.cdone[t.id+'@'+x]||!slotOn(t,x))return;var d=slotDiff(x,nm);if(d>=0&&d<Math.max(win,t.grace||60)){if(!cd[x]){cd[x]=[];co.push(x)}cd[x].push(t.name)}})});
-  co.forEach(function(x){out.push({key:'cc:'+x+':'+S.dayKey,name:fmtT(x)+' cares',when:fmtT(x),ord:cd[x].join(', '),kind:'cc',ref:x})});
+  var cd={},co=[],cmv=S.cmv||{},cpush=function(x,t){var ex=(S.cshift||{})[x]?S.cshift[x].to:x,d=slotDiff(ex,nm);if(d>=0&&d<Math.max(win,t.grace||60)){if(!cd[x]){cd[x]=[];co.push(x)}cd[x].push(t.name)}};
+  S.tasks.forEach(function(t){if(!t.cares)return;(t.at||[]).forEach(function(x){var k=t.id+'@'+x;if(S.cdone[k]||cmv[k]||!slotOn(t,x))return;cpush(x,t)})});
+  Object.keys(cmv).forEach(function(k){var t=T(+k.split('@')[0]),y=cmv[k].to;if(!t||!t.cares||S.cdone[t.id+'@'+y]||cmv[t.id+'@'+y]||(t.at||[]).indexOf(y)>-1)return;cpush(y,t)});
+  co.forEach(function(x){var ex=(S.cshift||{})[x]?S.cshift[x].to:x;out.push({key:'cc:'+x+':'+ex+':'+S.dayKey,name:fmtT(x)+' cares',when:fmtT(ex),ord:cd[x].join(', '),kind:'cc',ref:x})});
   S.moves.forEach(function(m){if(m.to!=='at')return;var k=m.tid+'|'+m.from,d3=(now-m.ts)/60000;if(S.done[k]||!T(m.tid))return;if(d3>=0&&d3<win)out.push({key:'m:'+k+':'+m.ts,name:tn(m.tid),when:fmt(new Date(m.ts)),kind:'k',ref:k})});
   return out}
 function otherModal(){return [].some.call(document.querySelectorAll('.modal.show'),function(m){return m.id!=='due'})}

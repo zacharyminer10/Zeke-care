@@ -805,6 +805,44 @@ def main():
         check('CA20 Both: the day shift shows its cares (8 AM to 8 PM), the night ones are under Night', pb.evaluate("[...document.querySelectorAll('main .ccw')].map(e=>e.dataset.cc).join()") == '08:00,12:00,16:00,20:00')
         check('CA21 no script errors (cares, both)', not eb, '; '.join(eb[:3]))
 
+        # CM. moving cares: one item to the next cares, or a whole cares later (just today)
+        pv2, ev2 = page(viewport={'width': 1080, 'height': 810})
+        pv2.clock.set_fixed_time(_dt.datetime(2026, 11, 20, 11, 5))
+        setup(pv2, U + 'index.html', 'Mia', '5454')
+        pv2.evaluate("""S.people.forEach(p=>p.toured=true);S.setup=false;S.dueMode='off';S.notifAsked=true;S.periods=[{id:'day',name:'All day',start:'06:00',end:'06:00'}];S.resetAt='06:00';S.dayKey=bizDay();S.dayMode='cares';
+          careApply(['08:00','11:00','14:00','17:00','20:00','00:00','04:00']);var c20=careList().filter(x=>x.t==='20:00')[0].id;
+          S.tasks.push({id:8801,name:'Suction CM',periods:[],every:0,cares:true,cw:[],at:[],needs:[]},{id:8802,name:'Temp CM',periods:[],every:0,cares:true,cw:[],at:[],needs:[]},{id:8803,name:'Ties CM',periods:[],every:0,cares:true,cw:[c20],at:[],needs:[]});
+          careSync();S.cdone['8801@08:00']={who:'Mia',time:'8:01 AM'};S.cdone['8802@08:00']={who:'Mia',time:'8:02 AM'};S.cxo={};S.tab='today';render()""")
+        def hold(sel):
+            pv2.evaluate('hideUndo()'); pv2.locator(sel).scroll_into_view_if_needed(); pv2.wait_for_timeout(100); bb = pv2.locator(sel).bounding_box(); pv2.mouse.move(bb['x'] + 30, bb['y'] + bb['height'] / 2); pv2.mouse.down(); pv2.wait_for_timeout(650); pv2.mouse.up(); pv2.wait_for_timeout(150)
+        hold('[data-ct="8802@11:00"]')
+        check('CM1 holding an item in a cares offers “Move to the 2 PM cares” with a reason', pv2.is_visible('#pm') and pv2.locator('#pm [data-cmn="8802@11:00"]').count() == 1 and '2 PM cares' in pv2.inner_text('#pm') and pv2.locator('#pm [data-rs]').count() >= 3)
+        pv2.locator('#pm [data-rs]').first.click(); pv2.click('#pm [data-cmn="8802@11:00"]'); pv2.wait_for_timeout(150)
+        check('CM2 it shows as moved in the 11 AM cares (not counted there) and is logged with the reason', pv2.locator('[data-cc="11:00"] [data-ccm="8802@11:00"]').count() == 1 and pv2.inner_text('[data-cc="11:00"] .cpg') == '0/1' and '1 moved' in pv2.inner_text('[data-cc="11:00"] .cc') and pv2.evaluate("S.cmv['8802@11:00'].to==='14:00'&&!!S.cmv['8802@11:00'].reason&&S.log[0].a==='Pushed'&&S.log[0].d.indexOf('to the 2 PM cares')>-1"))
+        pv2.click('[data-cco="14:00"]'); pv2.wait_for_timeout(150)
+        check('CM3 the 2 PM cares has it once, noting it was also moved there', pv2.inner_text('[data-cc="14:00"] .cpg') == '0/2' and pv2.locator('[data-cc="14:00"] [data-ct="8802@14:00"]').count() == 1 and 'Also moved here from the 11 AM cares' in pv2.inner_text('[data-cc="14:00"]'))
+        pv2.click('[data-cco="11:00"]') if pv2.locator('[data-cc="11:00"] .cci').count() == 0 else None
+        pv2.click('[data-cc="11:00"] [data-ct="8801@11:00"]'); pv2.wait_for_timeout(1500)
+        check('CM4 with the rest done, the 11 AM cares counts as done (the moved item doesn’t hold it open)', 'done' in pv2.get_attribute('[data-cc="11:00"]', 'class'))
+        pv2.evaluate("openCareItem(8803,'20:00')"); pv2.click('#pm [data-cmn="8803@20:00"]'); pv2.wait_for_timeout(150); pv2.click('[data-cco="00:00"]'); pv2.wait_for_timeout(150)
+        check('CM5 an item that isn’t in the next cares is added to it for today', pv2.inner_text('[data-cc="00:00"] .cpg') == '0/3' and 'Moved here from the 8 PM cares' in pv2.inner_text('[data-cc="00:00"]') and pv2.locator('[data-cc="20:00"] .cpg').inner_text() == '0/2')
+        pv2.evaluate("openCareItem(8803,'20:00')"); pv2.wait_for_timeout(100); ok6 = pv2.locator('#pm [data-cmb="8803@20:00"]').count() == 1
+        pv2.click('#pm [data-cmb="8803@20:00"]'); pv2.wait_for_timeout(150)
+        check('CM6 Put back returns it to its own cares', ok6 and pv2.evaluate("!S.cmv['8803@20:00']") and pv2.inner_text('[data-cc="00:00"] .cpg') == '0/2')
+        pv2.evaluate("openCareItem(8803,'20:00')"); pv2.click('#pm [data-cmn="8803@20:00"]'); pv2.wait_for_timeout(100)
+        hold('[data-cc="17:00"] .cc')
+        check('CM7 holding a cares card offers moving the whole cares later', pv2.is_visible('#pm') and 'move this cares' in pv2.inner_text('#pm').lower() and pv2.locator('#pm [data-cmd^="17:00|"]').count() == 3 and pv2.locator('#pm [data-cmd="17:00|17:30"]').count() == 1 and 'later than 5 pm' in pv2.inner_text('#pm').lower())
+        pv2.click('#pm [data-cmpk="17:00"]'); pv2.wait_for_timeout(100); pv2.evaluate("(function(){var o=TP.o;$('tp').classList.remove('show');TP.o=null;o.ok('17:40')})()"); pv2.wait_for_timeout(150)
+        check('CM8 the 5 PM cares moved to 5:40 for today: its card says so and uses the new time', pv2.evaluate("S.cshift['17:00'].to==='17:40'") and 'Moved to 5:40 PM' in pv2.inner_text('[data-cc="17:00"] .cc') and '5:40 PM' in pv2.inner_text('[data-cc="17:00"] .tag'))
+        check('CM9 a cares can’t be moved to or past the next cares', 'after the 8 PM cares' in pv2.evaluate("careShiftErr('17:00','20:30')"))
+        hold('[data-cc="17:00"] .cc'); pv2.click('#pm [data-cmback="17:00"]'); pv2.wait_for_timeout(150)
+        check('CM10 Put back returns the cares to 5 PM', pv2.evaluate("!S.cshift['17:00']") and 'Moved to' not in pv2.inner_text('[data-cc="17:00"] .cc'))
+        pv2.clock.set_fixed_time(_dt.datetime(2026, 11, 21, 7, 0)); pv2.evaluate("maybeReset()")
+        miss = pv2.evaluate("S.log.filter(r=>r.a==='Missed').map(r=>r.d).join(' | ')")
+        check('CM11 next day: moved items aren’t missed at their old cares; one never done at its new cares is', 'Temp CM at 11 AM' not in miss and 'Temp CM at 2 PM' in miss and 'Ties CM at 12 AM (moved from the 8 PM cares)' in miss and 'Ties CM at 8 PM' not in miss, miss[:400])
+        check('CM12 moves are cleared for the new day', pv2.evaluate("!Object.keys(S.cmv).length&&!Object.keys(S.cshift).length"))
+        check('CM13 no script errors (moving cares)', not ev2, '; '.join(ev2[:3]))
+
         # J. phone layout
         pg3, e3 = page(**p.devices['iPhone 13'])
         setup(pg3, U + 'index.html', 'Pat', '4444')
