@@ -687,6 +687,24 @@ def main():
         if store: pe.click('#nano'); pe.wait_for_timeout(150)
         check('ED11 no script errors (editions)', not ee, '; '.join(ee[:3]))
 
+        # SU. a supply can be added without counting it yet
+        pu, eu = page(viewport={'width': 1080, 'height': 810})
+        setup(pu, U + 'index.html', 'Sue', '3434'); pu.evaluate("S.people.forEach(p=>p.toured=true);S.setup=false;S.tab='stock';render()")
+        pu.click('#supnew'); pu.wait_for_timeout(150)
+        check('SU1 New supply starts with both numbers blank and says they’re optional', pu.input_value('#nsq') == '' and pu.input_value('#nsl') == '' and 'optional' in pu.inner_text('#ns') and pu.inner_text('#nsok') == 'Add supply')
+        pu.fill('#nsn', 'Gauze SU'); pu.click('#nsok'); pu.wait_for_timeout(150)
+        row = pu.locator('.srow', has_text='Gauze SU')
+        check('SU2 it’s added with “?” and “Not counted yet”, and isn’t flagged low', pu.evaluate("(()=>{var i=S.stock.filter(x=>x.name==='Gauze SU')[0];return !!i&&i.nc===true&&!isLow(i)})()") and row.locator('.sq').inner_text() == '?' and 'Not counted yet' in row.inner_text() and 'low' not in (row.get_attribute('class') or '') and ' low' not in pu.inner_text('.ch small'))
+        pu.evaluate("(()=>{var i=S.stock.filter(x=>x.name==='Gauze SU')[0];S.tasks.push({id:4501,name:'Dress SU',periods:S.periods.map(p=>p.id),every:0,needs:[{sid:i.id,use:1}]})})()")
+        check('SU3 a task using it isn’t marked “Out”', pu.evaluate("needsOf(T(4501)).every(x=>!isOut(x))"))
+        row.locator('[data-sq$="|1"]').click(); pu.wait_for_timeout(150)
+        check('SU4 tapping + on an uncounted supply asks for the count (blank) instead of guessing', pu.is_visible('#qc') and pu.input_value('#qcv') == '')
+        pu.fill('#qcv', '5'); pu.click('#qcok'); pu.wait_for_timeout(150)
+        check('SU5 once counted it’s a normal supply', pu.evaluate("(()=>{var i=S.stock.filter(x=>x.name==='Gauze SU')[0];return i.qty===5&&!i.nc})()") and row.locator('.sq').inner_text() == '5' and pu.evaluate("S.log.some(r=>r.a==='Inventory'&&r.d.indexOf('Gauze SU: not counted → 5')===0)"))
+        pu.click('#supnew'); pu.fill('#nsn', 'Tape SU'); pu.fill('#nsq', '0'); pu.click('#nsok'); pu.wait_for_timeout(150)
+        check('SU6 a supply entered as 0 on hand is counted (and shows low)', pu.evaluate("(()=>{var i=S.stock.filter(x=>x.name==='Tape SU')[0];return i.qty===0&&!i.nc&&isLow(i)})()"))
+        check('SU7 no script errors (supplies)', not eu, '; '.join(eu[:3]))
+
         # J. phone layout
         pg3, e3 = page(**p.devices['iPhone 13'])
         setup(pg3, U + 'index.html', 'Pat', '4444')
