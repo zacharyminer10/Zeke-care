@@ -503,6 +503,19 @@ input[type=date]:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 @media (prefers-reduced-motion:no-preference){
   .task.pop .box{animation:boxpop .38s cubic-bezier(.3,1.6,.5,1)}
   .task.pop{animation:popglow .7s ease-out}
+.apptb{display:flex;gap:14px;align-items:center;width:100%;text-align:left;margin:0 0 12px;padding:14px 16px;border-radius:16px;background:color-mix(in srgb,var(--acc) 14%,var(--panel));border:1px solid var(--acc);color:var(--tx)}
+.apptb .apic{flex:none;width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:var(--acc);color:var(--onacc)}
+.apptb .apm{display:flex;flex-direction:column;gap:2px;min-width:0}
+.apptb small{color:var(--acc);font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.apptb b{font-size:19px;font-weight:600}
+.apptb .apm>span{color:var(--mut);font-size:15px}
+.apptb.past{background:var(--panel2);border-color:var(--line)}
+.apptb.past .apic{background:var(--panel);color:var(--mut)}
+.apptb.past small{color:var(--mut)}
+.wki.wkap{flex-direction:column;gap:0}
+.wki.wkap>span{display:flex;align-items:center;gap:5px;color:var(--acc);font-weight:600;white-space:normal}
+.wki.wkap>small{padding-left:19px}
+.wki.wkap svg{width:14px;height:14px;flex:none}
 .trow.leaving{opacity:0;transform:scale(.97);transition:opacity .25s ease,transform .25s ease;pointer-events:none}
 @media (prefers-reduced-motion:reduce){.trow.leaving{transition:none}}
 }
@@ -756,8 +769,14 @@ function futRow(t,key,iv){var dd=dayDiff(bizDay(),key),d=t.done;
   var meta=iv?(d?'Done early':fl(t)+' · tap if done early'):'One-time'+(t.time?' at '+fmtT(t.time):'');
   var tag=d?'<span class="tag ok dn">'+esc(d.who)+' · '+d.time+'</span>':'<span class="tag fin">'+(dd===1?'Tomorrow':'In '+dd+' days')+'</span>';
   return'<div class="trow">'+(iv?'<button class="task fut'+(d?' done':'')+'" data-i="'+t.id+'">':'<div class="task fut" style="cursor:default">')+chip+'<span class="nm">'+(iv?esc(t.name):'<span class="tn">'+esc(t.name)+'</span>')+'<span class="meta">'+meta+'</span></span>'+tag+(iv?'</button>':'</div>')+'</div>'}
+/* appointments: a banner at the top of Today on the day (no check-off) and a mark on This week */
+function appts(key){return S.tasks.filter(function(t){return t.appt&&t.date===key}).sort(function(a,b){return(a.time||'').localeCompare(b.time||'')})}
+function apptWhen(t){var nw=new Date(),d=mins(t.time)-(nw.getHours()*60+nw.getMinutes());return d>0?soonTxt(d):d>-60?'now':'earlier today'}
+function apptBanner(){var a=appts(bizDay());if(!a.length)return'';
+  return a.map(function(t){var past=apptWhen(t)==='earlier today';return'<button class="apptb'+(past?' past':'')+'" data-appt="'+t.id+'"><span class="apic">'+ICO.week+'</span><span class="apm"><small>Appointment today · '+fmtT(t.time)+' · '+apptWhen(t)+'</small><b>'+esc(t.name)+'</b>'+(t.where||t.goer?'<span>'+[t.where?esc(t.where):'',t.goer?esc(t.goer)+' is going':''].filter(Boolean).join(' · ')+'</span>':'')+'</span></button>'}).join('')}
+function apptSheet(t){showSheet(t.name,'<p style="margin:0 0 6px;font-size:18px">'+dlabel(t.date)+' at '+fmtT(t.time)+'</p>'+(t.where?'<p style="margin:0 0 6px">'+esc(t.where)+'</p>':'')+'<p class="note">'+(t.goer?esc(t.goer)+' is going.':'Who’s going isn’t decided yet.')+'</p>')}
 function today(){
-  var cur=nowP(),h=safariNote('board')+(S.setup&&can('owner')?setupCard(false):'')+bkBanner();var lowi=S.stock.filter(function(i){return isLow(i)});if(!supOn())lowi=[];var lown=lowi.filter(function(i){return !onOrder(i.id)});
+  var cur=nowP(),h=safariNote('board')+(S.setup&&can('owner')?setupCard(false):'')+bkBanner()+apptBanner();var lowi=S.stock.filter(function(i){return isLow(i)});if(!supOn())lowi=[];var lown=lowi.filter(function(i){return !onOrder(i.id)});
   var lowb=lowi.length?'<button class="lowchip'+(lown.length?'':' calm')+'" data-t="stock" title="'+esc(lowi.map(function(i){return i.name}).join(', '))+'">'+ICO.warn+'<span>'+(lown.length?lown.length+' suppl'+(lown.length===1?'y':'ies')+' low: '+lown.map(function(i){return esc(i.name)}).join(', '):lowi.length+' low, all on order')+'</span></button>':'';
   var ps=curPeriods(),ci=0;ps.forEach(function(q,i){if(q.id===cur.id)ci=i});
   if(S.viewP&&(S.viewFrom!==cur.id||!ps.some(function(q){return q.id===S.viewP})))S.viewP=null;
@@ -902,13 +921,14 @@ function dueSec(t){var td=bizDay(),due=ivDue(t),nw=S.teNew===t.id,h='<div class=
   h+='<div class="ndue">'+ops.map(function(o){return'<button data-ndq="'+t.id+'|'+o[0]+'" class="'+(df===o[0]?'on':'')+'">'+o[1]+'</button>'}).join('')+'<input type="date" min="'+td+'" value="'+(df<0?td:due)+'" data-nd="'+t.id+'" aria-label="Pick a date"></div>';
   return h+'<p class="ndl">'+(df<0?'Overdue since '+dlabel(due):df===0?'Due today':'Due '+dlabel(due))+'</p></div>'}
 function fl(t){var n=t.n||t.every,u=t.unit||'days';return n===1?'Every '+u.slice(0,-1):'Every '+n+' '+u}
-function fq(t){return t.once?'once':t.at&&t.at.length?'clock':t.times>0||t.needTimes?'times':t.prn?'prn':t.every>0||t.needN?(t.unit||'days'):'period'}
+function fq(t){return t.appt?'appt':t.once?'once':t.at&&t.at.length?'clock':t.times>0||t.needTimes?'times':t.prn?'prn':t.every>0||t.needN?(t.unit||'days'):'period'}
 function setFreq(id,k){var t=T(id);if(!t)return;
-  t.times=0;t.needTimes=false;t.needN=false;t.once=false;t.prn=false;t.every=0;t.unit=null;t.periods=[];t.at=[];
+  t.times=0;t.needTimes=false;t.needN=false;t.once=false;t.appt=false;t.prn=false;t.every=0;t.unit=null;t.periods=[];t.at=[];
   if(k==='clock')t.at=[];else if(k==='times')t.needTimes=true;else if(k==='prn')t.prn=true;else if(k==='once'){t.once=true;t.date=t.date||bizDay();t.time=t.time||''}
+  else if(k==='appt'){t.appt=true;t.date=t.date||bizDay();t.time=t.time||''}
   else if(k==='period')t.periods=S.periods.map(function(p){return p.id});
   else{t.unit=k;t.n=0;t.every=0;t.needN=true;t.last=t.last||0}}
-var FQ=[['period','Once per shift'],['clock','At set times'],['times','Times per day'],['days','Every X days'],['weeks','Every X weeks'],['months','Every X months'],['prn','As needed'],['once','One time']];
+var FQ=[['period','Once per shift'],['clock','At set times'],['times','Times per day'],['days','Every X days'],['weeks','Every X weeks'],['months','Every X months'],['prn','As needed'],['once','One time'],['appt','Appointment']];
 function edit2(){
   var h='<div class="col"><div class="ch"><b>Tasks</b><small>'+S.tasks.length+' task'+(S.tasks.length===1?'':'s')+' · tap one to change it</small><button id="tadd" class="addbtn" style="margin-left:12px">+ Add task</button></div>';
   if(S.tasks.length>6)h+='<input type="search" id="tfind" placeholder="Find a task" aria-label="Find a task" value="'+esc(S.tfind||'')+'" style="width:100%;margin-bottom:6px">';
@@ -918,7 +938,7 @@ function edit2(){
       return'<button class="erow" data-te="'+t.id+'" data-tn="'+esc(t.name.toLowerCase())+'"><span class="en">'+esc(t.name)+'</span><span class="es">'+(ordTag(t)?'<span class="opill sm">'+ordTag(t)+'</span> ':'')+(ordTxt(t)?esc(ordTxt(t))+' · ':'')+esc(sumT(t))+(gg?' · How-to':'')+(nn?' · '+nn+' suppl'+(nn>1?'ies':'y'):'')+'</span><span class="ech" aria-hidden="true">›</span></button>'}).join('')+'</div></div>'});
   return h+'<p class="note" id="tnone" hidden>No tasks match.</p></div>';
 }
-var EGRP=[[['clock'],'At set times'],[['period'],'Once per shift'],[['times'],'Times per day'],[['days','weeks','months'],'Repeats every few days, weeks, or months'],[['prn'],'As needed'],[['once'],'One time']];
+var EGRP=[[['clock'],'At set times'],[['period'],'Once per shift'],[['times'],'Times per day'],[['days','weeks','months'],'Repeats every few days, weeks, or months'],[['prn'],'As needed'],[['once'],'One time'],[['appt'],'Appointments']];
 function sumT(t){var f=fq(t),dt=(f==='clock'||f==='period')&&dayTxt(t)?dayTxt(t)+' · ':'';return dt+sumT0(t)}
 function sumT0(t){var f=fq(t);
   if(f==='clock')return t.at.length?t.at.map(fmtT).join(' · '):'No times set';
@@ -926,6 +946,7 @@ function sumT0(t){var f=fq(t);
   if(f==='times')return t.needTimes?'Times per day not set':t.times+' times per day';
   if(f==='prn')return 'Whenever needed'+(t.gap?' · at least '+t.gap+'h apart':'');
   if(f==='once')return(t.date?dlabel(t.date):'No date')+(t.time?' at '+fmtT(t.time):'');
+  if(f==='appt')return'Appointment · '+(t.date?dlabel(t.date):'No date')+(t.time?' at '+fmtT(t.time):'')+(t.where?' · '+t.where:'')+(t.goer?' · '+t.goer+' going':'');
   return t.needN?'Every ? '+(t.unit||'days')+' (not set)':fl(t)}
 function applyFind(){var q=$('tfind');if(!q)return;var v=q.value.trim().toLowerCase(),any=false;S.tfind=q.value;
   [].forEach.call(document.querySelectorAll('.egrp'),function(g){var vis=0;[].forEach.call(g.querySelectorAll('.erow'),function(r){var on=!v||r.dataset.tn.indexOf(v)>-1;r.hidden=!on;if(on)vis++});g.hidden=!vis;if(vis)any=true});
@@ -944,8 +965,12 @@ function drawTE(){var t=T(S.teId);if(!t){$('te').classList.remove('show');return
   else if(f==='days'||f==='weeks'||f==='months')h+='<p class="note">Repeats</p><label class="c">Every <input type="number" min="1" inputmode="numeric" value="'+(t.needN?'':(t.n||t.every))+'" placeholder="#" data-e="'+t.id+'" aria-label="Every"'+(t.needN?' class="bad"':'')+'> '+f+'</label>'+(t.needN?'<p class="note tmerr" style="color:var(--bad);margin-top:4px">Enter how many '+f+'. It won’t show on the board until you do.</p>':dueSec(t));
   else if(f==='prn')h+='<p class="note">Minimum time between</p><label class="c"><input type="number" min="0" step="0.5" inputmode="decimal" value="'+(t.gap||'')+'" placeholder="#" data-gap="'+t.id+'" aria-label="Hours between" style="width:80px"> hours (leave blank for no limit)</label>';
   else if(f==='once')h+='<p class="note">When</p><div class="rs" style="align-items:center"><input type="date" value="'+t.date+'" data-od="'+t.id+'" aria-label="Date"><button class="tchip'+(S.flash===t.id+'@'+t.time?' new':'')+'" data-otp="'+t.id+'">'+(t.time?fmtT(t.time):'Pick a time')+'</button>'+(t.time?'<button data-otc="'+t.id+'">Any time</button>':'')+'</div>';
+  else if(f==='appt')h+='<p class="note">When</p><div class="rs" style="align-items:center"><input type="date" value="'+t.date+'" min="'+bizDay()+'" data-od="'+t.id+'" aria-label="Date"><button class="tchip'+(S.flash===t.id+'@'+t.time?' new':'')+'" data-otp="'+t.id+'">'+(t.time?fmtT(t.time):'Pick a time')+'</button></div>'+
+    '<p class="note">Where</p><input type="text" maxlength="80" value="'+esc(t.where||'')+'" placeholder="e.g. Children’s Hospital, 3rd floor clinic" data-awh="'+t.id+'" aria-label="Where" style="width:100%">'+
+    '<p class="note">Who’s going</p><select data-ago="'+t.id+'" aria-label="Who’s going" style="width:100%"><option value="">Not decided yet</option>'+S.people.map(function(q){return'<option'+(t.goer===q.name?' selected':'')+'>'+esc(q.name)+'</option>'}).join('')+(t.goer&&!S.people.some(function(q){return q.name===t.goer})?'<option selected>'+esc(t.goer)+'</option>':'')+'</select>'+
+    '<p class="note" style="margin-top:8px">Shows at the top of Today on the day and on This week. Nothing to check off; it leaves the board the next day.</p>';
   if(dr&&!canEditT())h+='<p class="note" style="margin-top:8px">Owners and managers can add tasks that repeat.</p>';
-  if(lim){h+='</div>';ntFoot(t);$('teb').innerHTML=h;return}
+  if(lim||f==='appt'){h+='</div>';ntFoot(t);$('teb').innerHTML=h;return}
   h+='</div><div class="tegrp">'+ordSection(t).replace('<div class="tesec">','<div>')+'</div>';
   var nd=needsOf(t),g=guideOf(t),nx=(t.extras||[]).length,mo=TEM[t.id]!=null?TEM[t.id]:!!(nd.length||nx||g||(f==='clock'&&t.grace&&t.grace!==60));
   var sum=[nd.length?nd.length+' suppl'+(nd.length===1?'y':'ies'):'',nx?nx+' to have ready':'',g?'how-to':''].filter(Boolean).join(' · ');
@@ -977,20 +1002,22 @@ function cancelNT(){var ctx=NTX&&NTX.ctx;DRAFT=null;NTX=null;S.teNew=null;$('te'
 /* tap outside a new task: close it like Cancel; if a name was typed, check first so it isn't lost by accident */
 function tapOutNT(){var i=document.querySelector('#te [data-n]'),n=(i?i.value:DRAFT.name||'').trim();if(!n){cancelNT();return}
   askConfirm('Discard this new task?','“'+n+'” hasn’t been added yet.','Discard',cancelNT);$('cfx').textContent='Keep editing'}
-function saveNT(){var t=DRAFT;if(!t)return;var ni=document.querySelector('#te [data-n]');if(ni)t.name=ni.value.trim();var f=fq(t),er='';
+function saveNT(){var t=DRAFT;if(!t)return;var ni=document.querySelector('#te [data-n]');if(ni)t.name=ni.value.trim();var awi=document.querySelector('#te [data-awh]');if(awi)t.where=awi.value.trim();var f=fq(t),er='';
   if(!t.name)er='Type a name for the task.';
   else if(f==='clock'&&!(t.at||[]).length)er='Add at least one time.';
   else if(f==='period'&&!t.periods.length)er='Pick at least one shift.';
   else if(f==='times'&&(t.needTimes||!t.times))er='Enter how many times a day.';
   else if(/^(days|weeks|months)$/.test(f)&&(t.needN||!t.every))er='Enter how many '+f+'.';
   else if(f==='once'&&(!t.date||t.date<bizDay()))er='Pick today or a later date.';
+  else if(f==='appt'&&(!t.date||t.date<bizDay()))er='Pick today or a later date.';
+  else if(f==='appt'&&!t.time)er='Pick a time for the appointment.';
   if(er){$('tem').textContent=er;if(!t.name&&ni)try{ni.focus()}catch(x){}return}
   var ctx=NTX?NTX.ctx:'today';t.by=S.who;S.tasks.push(t);DRAFT=null;NTX=null;S.teNew=null;$('tem').textContent='';$('te').classList.remove('show');
-  lg('Added task',t.name+' ('+(f==='once'?'one-time, '+(t.date===bizDay()?'today':dlabel(t.date))+(t.time?' at '+fmtT(t.time):''):(FQ.filter(function(o){return o[0]===f})[0]||['',''])[1].toLowerCase())+(ctx==='first'?', first task':'')+')',{tid:t.id});
+  lg('Added task',t.name+' ('+(f==='once'||f==='appt'?(f==='appt'?'appointment, ':'one-time, ')+(t.date===bizDay()?'today':dlabel(t.date))+(t.time?' at '+fmtT(t.time):''):(FQ.filter(function(o){return o[0]===f})[0]||['',''])[1].toLowerCase())+(ctx==='first'?', first task':'')+')',{tid:t.id});
   if(ctx==='first')S.firstRun=false;
   if(ctx==='edit'){render();var er0=document.querySelector('[data-te="'+t.id+'"]');if(er0){er0.classList.add('flashtile');try{er0.scrollIntoView({block:'center',behavior:'smooth'})}catch(x){}}return}
   S.tab='today';S.viewP=null;if(f==='clock'){var own=perAt(mins(t.at[0]));if(own&&own.id!==nowP().id){S.viewP=own.id;S.viewFrom=nowP().id}}
-  render();var el=document.querySelector('[data-k^="'+t.id+'|"],[data-ct^="'+t.id+'@"],[data-pr="'+t.id+'"],[data-o="'+t.id+'"],[data-i="'+t.id+'"],[data-c="'+t.id+'"]');
+  render();var el=document.querySelector('[data-appt="'+t.id+'"],[data-k^="'+t.id+'|"],[data-ct^="'+t.id+'@"],[data-pr="'+t.id+'"],[data-o="'+t.id+'"],[data-i="'+t.id+'"],[data-c="'+t.id+'"]');
   if(el){el.classList.add('flashtile');try{el.scrollIntoView({block:'center',behavior:'smooth'})}catch(x){}}
   if(ctx==='first')showHint('That’s your task. Tap it when it’s done; hold it for more options.');
   else if(!el)showHint('“'+t.name+'” added. '+(f==='once'&&t.date!==bizDay()?'It shows up on '+dlabel(t.date)+'.':'It isn’t on today’s board. Find it in Manage → All tasks.'))}
@@ -1064,6 +1091,7 @@ function weekTasks(){var h='<div class="wkgrid">';
     ms.forEach(function(m){m.sls.forEach(function(x){var o=x.t.order;if(o&&o.kind==='feed')feeds++;else if(o&&o.kind==='med')meds++;if(x.o)spec.push([x.t.name,'One-time · '+fmtT(x.x)])});
       m.dueIv.forEach(function(t){spec.push([t.name,k===0&&t.done?'Done':k===0&&t.every-t.last<0?'Overdue':fl(t)])});m.onceU.forEach(function(t){spec.push([t.name,k===0&&t.date<bizDay()?'Overdue':'One-time'])})});
     if(k===1)S.moves.forEach(function(m){if(m.to==='tomorrow'&&T(m.tid))spec.push([tn(m.tid),'Pushed from today'])});
+    appts(addDays(bizDay(),k)).forEach(function(t){spec.unshift([t.name,'Appointment · '+fmtT(t.time),1])});
     var wk0=addDays(bizDay(),k);if(supOn())openOrders().forEach(function(o){if(k===0?o.expected<=wk0:o.expected===wk0)spec.unshift(['Delivery · '+oLabel(o),o.items.length+' item'+(o.items.length===1?'':'s')+(k===0&&o.expected<wk0?' · late':'')])});
     var key=addDays(bizDay(),k),nm=k===0?'Today':k===1?'Tomorrow':WDN[keyWd(key)];
     h+='<button class="wkc'+(k===0?' now':'')+'" data-wday="'+k+'"><span class="wkh"><b>'+nm+'</b><small>'+new Date(Date.parse(key)).toLocaleDateString([],{month:'short',day:'numeric',timeZone:'UTC'})+'</small></span>';
@@ -1072,7 +1100,7 @@ function weekTasks(){var h='<div class="wkgrid">';
       else tag='<span class="tag ok">'+(n?n+' task'+(n===1?'':'s'):'Nothing')+'</span>';
       h+='<span class="wkr"><span>'+esc(m.p.name)+'</span><span class="wkt">'+tag+'</span></span>'});
     if(feeds||meds)h+='<span class="wkhl">'+(feeds?'<span class="opill">Feed</span> '+feeds+' feed'+(feeds===1?'':'s'):'')+(feeds&&meds?' · ':'')+(meds?'<span class="opill">Med</span> '+meds+' med'+(meds===1?'':'s'):'')+'</span>';
-    if(spec.length)h+='<span class="wkx">'+spec.slice(0,4).map(function(x){return'<span class="wki"><span>'+esc(x[0])+'</span><small>'+esc(x[1])+'</small></span>'}).join('')+(spec.length>4?'<small class="wkm">+'+(spec.length-4)+' more</small>':'')+'</span>';
+    if(spec.length)h+='<span class="wkx">'+spec.slice(0,4).map(function(x){return'<span class="wki'+(x[2]?' wkap':'')+'"><span>'+(x[2]?ICO.week:'')+esc(x[0])+'</span><small>'+esc(x[1])+'</small></span>'}).join('')+(spec.length>4?'<small class="wkm">+'+(spec.length-4)+' more</small>':'')+'</span>';
     h+='<span class="wkgo">See the day ›</span></button>'}
   return h+'</div><p class="note">Counts match the board: the same tasks, shifts, and days. Tap a day to see everything on it.</p>'}
 function wdRow(time,name,t,tag,done){return'<div class="wdi'+(done?' done':'')+'"><span class="wdt">'+time+'</span><span class="wdn">'+esc(name)+(t&&ordTxt(t)?'<span class="wdo">'+esc(ordTxt(t))+'</span>':'')+'</span>'+(tag||'')+'</div>'}
@@ -1085,6 +1113,7 @@ function openDay(k){var ms=dayModels(k),td=k===0,h='',ok='<span class="tag ok">D
     m.onceU.forEach(function(t){var dn=td&&!!t.done;h+=wdRow('Any time',t.name+' (one-time)',t,dn?ok:td&&t.date<bizDay()?ov:'',dn)});
     m.cnts.forEach(function(t){var c=td?(S.cnt[t.id]||{n:0}).n:0;h+=wdRow('Any time',t.name,t,'<span class="tag'+(td&&c>=t.times?' ok':'')+'">'+(td?c+' of '+t.times:t.times+' times')+'</span>',td&&c>=t.times)});
     m.list.forEach(function(t){var dn=td&&!!S.done[t.id+'|'+m.p.id];h+=wdRow('This shift',t.name,t,dn?ok:'',dn)})});
+  var ap=appts(addDays(bizDay(),k));if(ap.length)h='<p class="sec">Appointments</p>'+ap.map(function(t){return wdRow(fmtT(t.time),t.name+(t.where?' · '+t.where:'')+(t.goer?' · '+t.goer+' going':''),null,'')}).join('')+h;
   var dk=addDays(bizDay(),k),dl=(supOn()?openOrders():[]).filter(function(o){return k===0?o.expected<=dk:o.expected===dk});if(dl.length)h='<p class="sec">Deliveries</p>'+dl.map(function(o){return wdRow(k===0&&o.expected<dk?'Late':'Expected','Delivery · '+oLabel(o)+' — '+oItems(o),null,'')}).join('')+h;
   var prn=S.tasks.filter(function(t){return t.prn});if(prn.length)h+='<p class="sec">As needed</p><p class="note" style="margin:0">'+prn.map(function(t){return esc(t.name)}).join(', ')+'</p>';
   if(k===1){var pu=S.moves.filter(function(m){return m.to==='tomorrow'&&T(m.tid)});if(pu.length)h+='<p class="sec">Pushed from today</p><p class="note" style="margin:0">'+pu.map(function(m){return esc(tn(m.tid))}).join(', ')+'</p>'}
@@ -1112,7 +1141,7 @@ function missedList(skip,nk){var out=[];skip=skip||{};nk=nk||addDays(S.dayKey,1)
 function maybeReset(d){var k=bizDay(d);if(!S.dayKey){S.dayKey=k;return false}if(k<=S.dayKey)return false;
   var n=Math.max(1,Math.round((Date.parse(k)-Date.parse(S.dayKey))/864e5)),cm=carryMoves(k),miss=missedList(cm.skip,k),lbl=new Date(Date.parse(S.dayKey)).toLocaleDateString([],{weekday:'short',month:'short',day:'numeric',timeZone:'UTC'});S.prevDay={key:S.dayKey,periods:JSON.parse(JSON.stringify(curPeriods())),done:S.done,cdone:S.cdone,cnt:S.cnt,moves:S.moves,iv:S.tasks.filter(function(t){return(t.every>0||t.once)&&t.done}).map(function(t){return{id:t.id,name:t.name,f:t.once?'One time':fl(t),d:t.done}})};S.prevKey=S.dayKey;S.dayKey=k;
   miss.reverse().forEach(function(d){S.log.unshift({ts:new Date(),who:'System',a:'Missed',d:d+' · '+lbl})});
-  S.done={};S.cdone={};S.cnt={};S.moves=cm.moves;S.alerted={};if(cm.moves.length)S.log.unshift({ts:new Date(),who:'System',a:'Changed',d:cm.moves.length+' pushed task'+(cm.moves.length>1?'s':'')+' carried over to the new day: '+cm.moves.map(function(m){return tn(m.tid)+' at '+fmt(new Date(m.ts))}).join(', ')});S.tasks=S.tasks.filter(function(t){return !(t.once&&t.done)});
+  S.done={};S.cdone={};S.cnt={};S.moves=cm.moves;S.alerted={};if(cm.moves.length)S.log.unshift({ts:new Date(),who:'System',a:'Changed',d:cm.moves.length+' pushed task'+(cm.moves.length>1?'s':'')+' carried over to the new day: '+cm.moves.map(function(m){return tn(m.tid)+' at '+fmt(new Date(m.ts))}).join(', ')});S.tasks=S.tasks.filter(function(t){return !(t.once&&t.done)&&!(t.appt&&t.date<k)});
   S.tasks.forEach(function(t){if(t.every>0){var lf=t.every-t.last,dk=addDays(S.prevKey,lf);if(!t.done&&lf<=0&&t.missedFor!==dk){S.log.unshift({ts:new Date(),who:'System',a:'Missed',d:t.name+(dk===S.prevKey?'':' (due '+dlabel(dk)+')')+' · '+lbl,tid:t.id});t.missedFor=dk}t.last=t.done?n:t.last+n;t.done=null}});
   return true}
 function setResetAt(v){if(v===S.resetAt)return;var was=S.resetAt;S.resetAt=v;if(bizDay()>S.dayKey)maybeReset();lgc('New day now starts at '+fmtT(v)+' (was '+fmtT(was)+')')}
@@ -1208,6 +1237,7 @@ document.addEventListener('click',function(e){
   if(b.id==='pmx'){$('pm').classList.remove('show');return}
   if(b.dataset.ata){var tk=T(b.dataset.ata);openTP({title:'Add a time',sub:tk.name,taken:tk.at.slice(),ok:function(v){tk.at.push(v);tk.at.sort();lgc(tk.name+': added '+fmtT(v),tk.id);flashAt(tk.id,v)}});return}
   if(b.dataset.atp){var z2=b.dataset.atp.split('|'),tq=T(z2[0]),ix=+z2[1];openTP({title:'Change time',sub:tq.name,val:tq.at[ix],taken:tq.at.filter(function(_,j){return j!==ix}),ok:function(v){var ov=tq.at[ix];tq.at[ix]=v;tq.at.sort();if(ov!==v)lgc(tq.name+': '+fmtT(ov)+' changed to '+fmtT(v),tq.id);flashAt(tq.id,v)}});return}
+  if(b.dataset.appt){var at0=T(b.dataset.appt);if(!at0)return;if(canEditT())openTE(at0.id);else apptSheet(at0);return}
   if(b.dataset.otp){var to=T(b.dataset.otp);openTP({title:'Time for this task',sub:to.name,val:to.time||null,ok:function(v){to.time=v;flashAt(to.id,v)}});return}
   if(b.id==='tpok'){tpSave();return}
   if(b.id==='tpx'){tpClose(true);return}
@@ -1352,6 +1382,8 @@ document.addEventListener('change',function(e){
   if(d.at){var y=d.at.split('|'),ty=T(y[0]);ty.at[+y[1]]=e.target.value||'12:00';ty.at.sort();render();return}
   if(d.od!==undefined){var od=T(d.od);od.date=e.target.value||bizDay();od.missedLogged=false;lgc(od.name+': date set to '+dlabel(od.date),od.id);return}
   if(d.ot!==undefined){T(d.ot).time=e.target.value||'';return}
+  if(d.awh!==undefined){var aw=T(d.awh);if(!aw)return;aw.where=e.target.value.trim();if(aw!==DRAFT)lgc(aw.name+': where set to '+(aw.where||'nothing'),aw.id);return}
+  if(d.ago!==undefined){var ag=T(d.ago);if(!ag)return;ag.goer=e.target.value;if(ag!==DRAFT)lgc(ag.name+': '+(ag.goer?ag.goer+' is going':'who’s going not decided'),ag.id);return}
   if(d.ahint){var mp=me(),hv=e.target.value.trim();if(!mp||!isOwner())return;if(hintBad(hv,mp.pin)){e.target.value=mp.hint||'';if($('admmsg'))$('admmsg').textContent='The hint can’t include your code.';return}mp.hint=hv;if($('admmsg'))$('admmsg').textContent=hv?'Hint saved.':'Hint removed.';return}
   if(d.gap){var gt=T(d.gap);gt.gap=Math.max(0,+e.target.value||0);lgc(gt.name+': minimum gap '+gt.gap+'h',gt.id);return}
   if(d.gr){T(d.gr).grace=Math.max(5,+e.target.value||60);return}
