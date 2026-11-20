@@ -499,6 +499,8 @@ input[type=date]:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 @media (prefers-reduced-motion:no-preference){
   .task.pop .box{animation:boxpop .38s cubic-bezier(.3,1.6,.5,1)}
   .task.pop{animation:popglow .7s ease-out}
+.trow.leaving{opacity:0;transform:scale(.97);transition:opacity .25s ease,transform .25s ease;pointer-events:none}
+@media (prefers-reduced-motion:reduce){.trow.leaving{transition:none}}
 }
 @keyframes boxpop{0%{transform:scale(.55)}100%{transform:scale(1)}}
 @keyframes popglow{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--ok) 60%,transparent)}100%{box-shadow:0 0 0 12px color-mix(in srgb,var(--ok) 0%,transparent)}}
@@ -896,12 +898,12 @@ function dueSec(t){var td=bizDay(),due=ivDue(t),nw=S.teNew===t.id,h='<div class=
   h+='<div class="ndue">'+ops.map(function(o){return'<button data-ndq="'+t.id+'|'+o[0]+'" class="'+(df===o[0]?'on':'')+'">'+o[1]+'</button>'}).join('')+'<input type="date" min="'+td+'" value="'+(df<0?td:due)+'" data-nd="'+t.id+'" aria-label="Pick a date"></div>';
   return h+'<p class="ndl">'+(df<0?'Overdue since '+dlabel(due):df===0?'Due today':'Due '+dlabel(due))+'</p></div>'}
 function fl(t){var n=t.n||t.every,u=t.unit||'days';return n===1?'Every '+u.slice(0,-1):'Every '+n+' '+u}
-function fq(t){return t.once?'once':t.at&&t.at.length?'clock':t.times>0||t.needTimes?'times':t.prn?'prn':t.every>0?(t.unit||'days'):'period'}
+function fq(t){return t.once?'once':t.at&&t.at.length?'clock':t.times>0||t.needTimes?'times':t.prn?'prn':t.every>0||t.needN?(t.unit||'days'):'period'}
 function setFreq(id,k){var t=T(id);if(!t)return;
-  t.times=0;t.needTimes=false;t.once=false;t.prn=false;t.every=0;t.unit=null;t.periods=[];t.at=[];t.n=t.n||3;
+  t.times=0;t.needTimes=false;t.needN=false;t.once=false;t.prn=false;t.every=0;t.unit=null;t.periods=[];t.at=[];
   if(k==='clock')t.at=[];else if(k==='times')t.needTimes=true;else if(k==='prn')t.prn=true;else if(k==='once'){t.once=true;t.date=t.date||bizDay();t.time=t.time||''}
   else if(k==='period')t.periods=S.periods.map(function(p){return p.id});
-  else{t.unit=k;t.every=t.n*(k==='weeks'?7:k==='months'?30:1);t.last=t.last||0}}
+  else{t.unit=k;t.n=0;t.every=0;t.needN=true;t.last=t.last||0}}
 var FQ=[['period','Once per shift'],['clock','At set times'],['times','Times per day'],['days','Every X days'],['weeks','Every X weeks'],['months','Every X months'],['prn','As needed'],['once','One time']];
 function edit2(){
   var h='<div class="col"><div class="ch"><b>Tasks</b><small>'+S.tasks.length+' task'+(S.tasks.length===1?'':'s')+' · tap one to change it</small><button id="tadd" class="addbtn" style="margin-left:12px">+ Add task</button></div>';
@@ -920,11 +922,11 @@ function sumT0(t){var f=fq(t);
   if(f==='times')return t.needTimes?'Times per day not set':t.times+' times per day';
   if(f==='prn')return 'Whenever needed'+(t.gap?' · at least '+t.gap+'h apart':'');
   if(f==='once')return(t.date?dlabel(t.date):'No date')+(t.time?' at '+fmtT(t.time):'');
-  return fl(t)}
+  return t.needN?'Every ? '+(t.unit||'days')+' (not set)':fl(t)}
 function applyFind(){var q=$('tfind');if(!q)return;var v=q.value.trim().toLowerCase(),any=false;S.tfind=q.value;
   [].forEach.call(document.querySelectorAll('.egrp'),function(g){var vis=0;[].forEach.call(g.querySelectorAll('.erow'),function(r){var on=!v||r.dataset.tn.indexOf(v)>-1;r.hidden=!on;if(on)vis++});g.hidden=!vis;if(vis)any=true});
   $('tnone').hidden=any}
-function teBlocked(){if(DRAFT&&S.teId===DRAFT.id)return true;var t=T(S.teId);if(!t||!t.needTimes||fq(t)!=='times')return false;var i=document.querySelector('#te [data-tm]'),er=document.querySelector('#te .tmerr');if(er){er.textContent='Enter how many times a day before closing, or pick a different “How often.”';er.classList.add('shake');setTimeout(function(){er.classList.remove('shake')},400)}if(i)try{i.focus()}catch(x){}return true}
+function teBlocked(){if(DRAFT&&S.teId===DRAFT.id)return true;var t=T(S.teId);if(!t)return false;var f=fq(t),nt=t.needTimes&&f==='times',nn=t.needN&&/^(days|weeks|months)$/.test(f);if(!nt&&!nn)return false;var i=document.querySelector(nt?'#te [data-tm]':'#te [data-e]'),er=document.querySelector('#te .tmerr');if(er){er.textContent='Enter how many '+(nt?'times a day':f)+' before closing, or pick a different “How often.”';er.classList.add('shake');setTimeout(function(){er.classList.remove('shake')},400)}if(i)try{i.focus()}catch(x){}return true}
 function openTE(id){S.teNew=S.teNewPend===id?id:null;S.teNewPend=null;S.teId=id;drawTE();$('te').classList.add('show')}
 var TEM={};
 function drawTE(){var t=T(S.teId);if(!t){$('te').classList.remove('show');return}var f=fq(t),h='',dr=t===DRAFT,lim=dr&&!can('sched'),first=dr&&NTX&&NTX.ctx==='first';
@@ -935,8 +937,8 @@ function drawTE(){var t=T(S.teId);if(!t){$('te').classList.remove('show');return
   else if(f==='period')h+='<p class="note">Which shifts</p><div class="rs">'+S.periods.map(function(p){return'<label class="c chk"><input type="checkbox" data-p="'+t.id+'|'+p.id+'" '+(t.periods.indexOf(p.id)>-1?'checked':'')+'>'+esc(p.name)+'</label>'}).join('')+'</div>';
   if(f==='clock'||f==='period')h+=dwSec(t);
   else if(f==='times')h+='<p class="note">How many times a day</p><label class="c"><input type="number" min="1" max="48" inputmode="numeric" value="'+(t.needTimes?'':t.times)+'" placeholder="#" data-tm="'+t.id+'" aria-label="Times per day"'+(t.needTimes?' class="bad"':'')+'> times per day</label>'+(t.needTimes?'<p class="note tmerr" style="color:var(--bad);margin-top:4px">Enter how many times a day. It won’t show on the board until you do.</p>':'');
-  else if(f==='days'||f==='weeks'||f==='months')h+='<p class="note">Repeats</p><label class="c">Every <input type="number" min="1" value="'+(t.n||t.every)+'" data-e="'+t.id+'" aria-label="Every"> '+f+'</label>'+dueSec(t);
-  else if(f==='prn')h+='<p class="note">Minimum time between</p><label class="c"><input type="number" min="0" step="0.5" value="'+(t.gap||0)+'" data-gap="'+t.id+'" aria-label="Hours between" style="width:80px"> hours (0 = no limit)</label>';
+  else if(f==='days'||f==='weeks'||f==='months')h+='<p class="note">Repeats</p><label class="c">Every <input type="number" min="1" inputmode="numeric" value="'+(t.needN?'':(t.n||t.every))+'" placeholder="#" data-e="'+t.id+'" aria-label="Every"'+(t.needN?' class="bad"':'')+'> '+f+'</label>'+(t.needN?'<p class="note tmerr" style="color:var(--bad);margin-top:4px">Enter how many '+f+'. It won’t show on the board until you do.</p>':dueSec(t));
+  else if(f==='prn')h+='<p class="note">Minimum time between</p><label class="c"><input type="number" min="0" step="0.5" inputmode="decimal" value="'+(t.gap||'')+'" placeholder="#" data-gap="'+t.id+'" aria-label="Hours between" style="width:80px"> hours (leave blank for no limit)</label>';
   else if(f==='once')h+='<p class="note">When</p><div class="rs" style="align-items:center"><input type="date" value="'+t.date+'" data-od="'+t.id+'" aria-label="Date"><button class="tchip'+(S.flash===t.id+'@'+t.time?' new':'')+'" data-otp="'+t.id+'">'+(t.time?fmtT(t.time):'Pick a time')+'</button>'+(t.time?'<button data-otc="'+t.id+'">Any time</button>':'')+'</div>';
   if(dr&&!canEditT())h+='<p class="note" style="margin-top:8px">Owners and managers can add tasks that repeat.</p>';
   if(lim){h+='</div>';ntFoot(t);$('teb').innerHTML=h;return}
@@ -975,6 +977,7 @@ function saveNT(){var t=DRAFT;if(!t)return;var ni=document.querySelector('#te [d
   else if(f==='clock'&&!(t.at||[]).length)er='Add at least one time.';
   else if(f==='period'&&!t.periods.length)er='Pick at least one shift.';
   else if(f==='times'&&(t.needTimes||!t.times))er='Enter how many times a day.';
+  else if(/^(days|weeks|months)$/.test(f)&&(t.needN||!t.every))er='Enter how many '+f+'.';
   else if(f==='once'&&(!t.date||t.date<bizDay()))er='Pick today or a later date.';
   if(er){$('tem').textContent=er;if(!t.name&&ni)try{ni.focus()}catch(x){}return}
   var ctx=NTX?NTX.ctx:'today';t.by=S.who;S.tasks.push(t);DRAFT=null;NTX=null;S.teNew=null;$('tem').textContent='';$('te').classList.remove('show');
@@ -1128,6 +1131,7 @@ function render(keep){head();if(ED.store)storeHooks();if(keep)return;setTimeout(
 document.addEventListener('click',function(e){
   var b=e.target.closest('button');if(!b)return;
   if(!S.who&&(b.dataset.pr||b.dataset.pv||b.dataset.k||b.dataset.i||b.dataset.o||b.dataset.po||b.dataset.ct||b.dataset.c||b.dataset.mv||b.dataset.pi||b.dataset.undo||b.dataset.undomv)){needWho();return}
+  if(settling()&&b.closest('main')&&(b.dataset.k||b.dataset.i||b.dataset.o||b.dataset.ct||b.dataset.c||b.dataset.pr))return;
   if(b.dataset.sh){var cn=nowP().id;S.viewP=b.dataset.sh===cn?null:b.dataset.sh;S.viewPrev=false;S.viewFrom=cn;render();return}
   if(b.dataset.shv){if(b.getAttribute('aria-disabled')==='true'){showHint('Nothing saved from yesterday yet. The board saves each day when the next one starts, so it shows up here from your second day, as long as the app was opened the day before.');return}var cps=curPeriods(),cc=nowP(),ix=0;cps.forEach(function(q,i){if(q.id===cc.id)ix=i});S.viewFrom=cc.id;S.viewP=null;S.viewPrev=false;
     if(b.dataset.shv==='prev'){if(ix>0)S.viewP=cps[ix-1].id;else if(prevOK())S.viewPrev=true}
@@ -1270,7 +1274,7 @@ document.addEventListener('click',function(e){
   if(b.dataset.duem){S.dueMode=b.dataset.duem;fillSt();if(S.dueMode==='sound')chime();return}
   if(b.dataset.c){addC(b.dataset.c);return}
   if(b.dataset.pr){logPrn(b.dataset.pr,false);return}
-  if(b.id==='toastu'){var uf=UNDO.fn;hideUndo();if(uf)uf();return}
+  if(b.id==='toastu'){unsettle();var uf=UNDO.fn;hideUndo();if(uf)uf();return}
   if(b.id==='cfx'){$('cf').classList.remove('show');CF=null;return}
   if(b.id==='cfok'){var cfn=CF;$('cf').classList.remove('show');CF=null;if(cfn)cfn();return}
   if(b.id==='bkp2'){if(!isOwner())return;saveBackup();return}
@@ -1352,7 +1356,7 @@ document.addEventListener('change',function(e){
   if(d.ppn!==undefined){var i=+d.ppn,pr=S.people[i];if(!pr)return;var o=pr.name,v=e.target.value.trim();if(!can('owner')||!v||v===o){e.target.value=o;return}if(v==='System'||S.people.some(function(x,j){return j!==i&&x.name.toLowerCase()===v.toLowerCase()})){e.target.value=o;if($('ppe'))$('ppe').textContent='“'+v+'” is already on the board. Pick a different name.';return}pr.name=v;if(S.who===o)S.who=v;lg('Changed','Renamed '+o+' to '+v);if($('ppe'))$('ppe').textContent='';head();return}
   if(d.n){var tn0=T(d.n),nv=e.target.value.trim();if(tn0===DRAFT){tn0.name=nv;if(nv)$('tem').textContent='';return}if(!nv){e.target.value=tn0.name}else if(nv!==tn0.name){lgc('Renamed “'+tn0.name+'” to “'+nv+'”',tn0.id);tn0.name=nv}}
   if(d.nd){var tnd=T(+d.nd);if(tnd&&tnd.every>0&&e.target.value){setDue(tnd,e.target.value<bizDay()?bizDay():e.target.value);save();render()}return}
-  if(d.e){var tt=T(d.e);tt.n=Math.max(1,+e.target.value||1);tt.every=tt.n*(tt.unit==='weeks'?7:tt.unit==='months'?30:1);lgc(tt.name+': every '+tt.n+' '+(tt.unit||'days'),tt.id);render()}
+  if(d.e){var tt=T(d.e),ev=Math.round(+e.target.value);if(!tt)return;if(!(ev>=1)){if(tt.needN||!tt.every)tt.needN=true;else e.target.value=tt.n||tt.every;render();return}tt.n=ev;tt.needN=false;tt.every=tt.n*(tt.unit==='weeks'?7:tt.unit==='months'?30:1);lgc(tt.name+': every '+tt.n+' '+(tt.unit||'days'),tt.id);render()}
   if(d.p){var a=d.p.split('|'),t=T(a[0]),i=t.periods.indexOf(a[1]);if(e.target.checked&&i<0)t.periods.push(a[1]);if(!e.target.checked&&i>-1)t.periods.splice(i,1);lgc(t.name+': '+(e.target.checked?'added to ':'removed from ')+pn(a[1]),t.id)}
   var P=function(id){return S.periods.filter(function(p){return p.id===id})[0]};
   if(d.pn)P(d.pn).name=e.target.value||'Unnamed';
@@ -1883,16 +1887,29 @@ function showUndo(msg,fn){clearTimeout(UNDO.t);UNDO.fn=fn;$('toastu').hidden=fal
 function hideUndo(){clearTimeout(UNDO.t);UNDO.fn=null;$('toast').hidden=true}
 var DRAFT=null,NTX=null;
 function T(id){if(DRAFT&&DRAFT.id==id)return DRAFT;return S.tasks.filter(function(x){return x.id==id})[0]}
+/* check-off feedback: the tapped task turns done where it is for a moment, then fades and moves to Done (where it
+   glows). Meanwhile taps on other tasks are ignored, so a quick second tap can't check off the next one sliding in. */
+var SETTLE={until:0,t:0};
+function settle(sel,box){var el=document.querySelector('main .panel '+sel);if(!el){render();return}
+  clearTimeout(SETTLE.t);SETTLE.until=Date.now()+1200;
+  el.classList.remove('over','due');el.classList.add('done');el.removeAttribute('data-st8');
+  var bx=el.querySelector('.box');if(bx)bx.textContent=box||'✓';
+  [].forEach.call(el.querySelectorAll('.tag'),function(x){x.parentNode.removeChild(x)});
+  el.insertAdjacentHTML('beforeend','<span class="tag ok dn">'+esc(S.who)+' · '+fmt(new Date())+'</span>');
+  var r=el.closest('.trow')||el;
+  SETTLE.t=setTimeout(function(){r.classList.add('leaving');SETTLE.t=setTimeout(function(){SETTLE.until=0;render();popEl(sel)},280)},900)}
+function settling(){return Date.now()<SETTLE.until}
+function unsettle(){clearTimeout(SETTLE.t);SETTLE.until=0}
 function popEl(sel){setTimeout(function(){var el=document.querySelector(sel);if(el){el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop')}},0)}
 function perEnded(p){if(!p)return false;var d=new Date(),nm=offMin(d.getHours()*60+d.getMinutes()),e=offMin(mins(p.end))||1440;return nm>=e}
 function pidP(pid){return curPeriods().filter(function(q){return q.id===pid})[0]}
 function togK(k,ui){var tid=+k.split('|')[0],lbl=tn(tid)+' ('+pn(k.split('|')[1])+')';
-  if(S.done[k]){delete S.done[k];use(tid,-1);lg('Undid',lbl,{tid:tid});if(ui)hideUndo()}else{var lt=perEnded(pidP(k.split('|')[1]));S.done[k]={who:S.who,time:fmt(new Date())};if(lt)S.done[k].late=true;use(tid);lg('Completed',lbl+(lt?' · late':''),{tid:tid});popEl('[data-k="'+k+'"]');if(ui)showUndo('Checked off: '+tn(tid),function(){togK(k,false)})}render()}
-function togI(id,ui){var t=T(id);if(!t)return;t.done=t.done?null:{who:S.who,time:fmt(new Date()),pid:nowP().id};if(t.done)popEl('[data-i="'+t.id+'"]');use(t.id,t.done?1:-1);lg(t.done?'Completed':'Undid',t.name,{tid:t.id});if(ui){if(t.done)showUndo('Checked off: '+t.name,function(){togI(id,false)});else hideUndo()}render()}
-function togO(id,ui){var t=T(id);if(!t)return;t.done=t.done?null:{who:S.who,time:fmt(new Date()),pid:nowP().id};if(t.done)popEl('[data-o="'+t.id+'"]');use(t.id,t.done?1:-1);lg(t.done?'Completed':'Undid',t.name+' (one-time)',{tid:t.id});if(ui){if(t.done)showUndo('Checked off: '+t.name,function(){togO(id,false)});else hideUndo()}render()}
+  if(S.done[k]){delete S.done[k];use(tid,-1);lg('Undid',lbl,{tid:tid});if(ui)hideUndo()}else{var lt=perEnded(pidP(k.split('|')[1]));S.done[k]={who:S.who,time:fmt(new Date())};if(lt)S.done[k].late=true;use(tid);lg('Completed',lbl+(lt?' · late':''),{tid:tid});popEl('[data-k="'+k+'"]');if(ui)showUndo('Checked off: '+tn(tid),function(){togK(k,false)})}if(ui&&S.done[k])settle('[data-k="'+k+'"]');else render()}
+function togI(id,ui){var t=T(id);if(!t)return;t.done=t.done?null:{who:S.who,time:fmt(new Date()),pid:nowP().id};if(t.done)popEl('[data-i="'+t.id+'"]');use(t.id,t.done?1:-1);lg(t.done?'Completed':'Undid',t.name,{tid:t.id});if(ui){if(t.done)showUndo('Checked off: '+t.name,function(){togI(id,false)});else hideUndo()}if(ui&&t.done)settle('[data-i="'+t.id+'"]');else render()}
+function togO(id,ui){var t=T(id);if(!t)return;t.done=t.done?null:{who:S.who,time:fmt(new Date()),pid:nowP().id};if(t.done)popEl('[data-o="'+t.id+'"]');use(t.id,t.done?1:-1);lg(t.done?'Completed':'Undid',t.name+' (one-time)',{tid:t.id});if(ui){if(t.done)showUndo('Checked off: '+t.name,function(){togO(id,false)});else hideUndo()}if(ui&&t.done)settle('[data-o="'+t.id+'"]');else render()}
 function togCt(q,ui){var qi=+q.split('@')[0],lbl=tn(qi)+' at '+fmtT(q.split('@')[1]);
-  if(S.cdone[q]){delete S.cdone[q];use(qi,-1);lg('Undid',lbl,{tid:qi});if(ui)hideUndo()}else{var lt=perEnded(perAt(mins(q.split('@')[1])));S.cdone[q]={who:S.who,time:fmt(new Date())};if(lt)S.cdone[q].late=true;use(qi);lg('Completed',lbl+(lt?' · late':''),{tid:qi});popEl('[data-ct="'+q+'"]');if(ui)showUndo('Checked off: '+lbl,function(){togCt(q,false)})}render()}
-function addC(id){var c=S.cnt[id]||(S.cnt[id]={n:0});c.n++;popEl('[data-c="'+id+'"]');c.last=fmt(new Date());c.who=S.who;use(+id);lg('Logged',tn(id),{tid:id});showUndo('Logged: '+tn(id)+' ('+c.n+')',function(){decC(id)});render()}
+  if(S.cdone[q]){delete S.cdone[q];use(qi,-1);lg('Undid',lbl,{tid:qi});if(ui)hideUndo()}else{var lt=perEnded(perAt(mins(q.split('@')[1])));S.cdone[q]={who:S.who,time:fmt(new Date())};if(lt)S.cdone[q].late=true;use(qi);lg('Completed',lbl+(lt?' · late':''),{tid:qi});popEl('[data-ct="'+q+'"]');if(ui)showUndo('Checked off: '+lbl,function(){togCt(q,false)})}if(ui&&S.cdone[q])settle('[data-ct="'+q+'"]');else render()}
+function addC(id){var c=S.cnt[id]||(S.cnt[id]={n:0});c.n++;popEl('[data-c="'+id+'"]');c.last=fmt(new Date());c.who=S.who;use(+id);lg('Logged',tn(id),{tid:id});showUndo('Logged: '+tn(id)+' ('+c.n+')',function(){decC(id)});var ct=T(id);if(ct&&c.n===ct.times)settle('[data-c="'+id+'"]',c.n+'/'+ct.times);else render()}
 function decC(id){var c2=S.cnt[id];if(c2&&c2.n>0){c2.n--;use(+id,-1);lg('Undid',tn(id),{tid:id});if(!c2.n)c2.last=''}render()}
 /* ---- as needed ---- */
 function dayStart(){var q=S.dayKey.split('-'),m=mins(S.resetAt);return new Date(+q[0],+q[1]-1,+q[2],Math.floor(m/60),m%60).getTime()}
@@ -1901,7 +1918,7 @@ function dur(ms){var m=Math.ceil(ms/60000);return m<60?m+' min':Math.floor(m/60)
 function prnTile(t){var hs=t.hist||[],last=hs[hs.length-1],ds=dayStart(),n=hs.filter(function(x){return x.ts>=ds}).length,now=Date.now(),wait=last&&t.gap?last.ts+t.gap*36e5-now:0;
   var tg=wait>0?'<span class="tag">Wait '+dur(wait)+'</span>':'<span class="tag ok">'+(n?n+' today':'Ready')+'</span>';
   var meta=last?'Last: '+esc(last.who)+' at '+fmt(new Date(last.ts))+' ('+ago(now-last.ts)+')':'Tap each time it’s done'+(t.gap?' · at least '+t.gap+'h apart':'');
-  return'<div class="trow"><button class="task" data-pr="'+t.id+'"'+(last?' data-lpr="'+t.id+'"':'')+'><span class="box" style="font-size:22px">+</span><span class="nm">'+esc(t.name)+'<span class="meta">'+meta+'</span></span>'+tg+'</button></div>'}
+  return'<div class="trow"><button class="task" data-pr="'+t.id+'"'+(last?' data-lpr="'+t.id+'"':'')+'><span class="box"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span><span class="nm">'+esc(t.name)+'<span class="meta">'+meta+'</span></span>'+tg+'</button></div>'}
 function logPrn(id,force){var t=T(id);if(!t)return;var hs=t.hist||(t.hist=[]),last=hs[hs.length-1],wait=last&&t.gap?last.ts+t.gap*36e5-Date.now():0;
   if(wait>0&&!force){askConfirm('Too soon?','“'+t.name+'” was last logged '+ago(Date.now()-last.ts)+' by '+last.who+'. The minimum gap is '+t.gap+' hours ('+dur(wait)+' to go). Log it anyway?','Log anyway',function(){logPrn(id,true)},true);return}
   hs.push({ts:Date.now(),who:S.who});if(hs.length>60)hs.splice(0,hs.length-60);use(t.id);lg('Logged',t.name+' (as needed)'+(wait>0?', early':''),{tid:t.id});showUndo('Logged: '+t.name,function(){undoPrn(id)});render()}
