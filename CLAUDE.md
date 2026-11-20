@@ -94,6 +94,7 @@ It does the whole checklist and stops at the first problem: bump `VER` (index.ht
 - New tasks being added live in `DRAFT` (not `S.tasks`) until **Add task**; `T(id)` finds both. Use `T(id)` for task lookups, not `S.tasks.filter(...)`.
 - Anything in `S` is saved unless its key is in `TRANSIENT` (`snap()`).
 - CSS `text-transform:uppercase` text comes back uppercase from Playwright `inner_text`; compare case-insensitively.
+- **Cares** (groups of tasks done together at set times): `S.cares=[{id,t}]`, `S.dayMode` = `shifts` / `cares` / `both` (unset means shifts). A task "At cares" has `t.cares` and `t.cw` (the cares ids it belongs to; `[]` = every cares), and `careSync()` keeps its `t.at` equal to those times, so check-off, late, missed, supplies and the Log reuse the set-time code. The board groups those slots into one card per time (`careSplit`/`careCard`); call `careSync()` after changing cares times. Cares-only setups use one all-day shift (start = end = `S.resetAt`). The cares colour is `--cr` (stripe only).
 
 ## Product notes
 
