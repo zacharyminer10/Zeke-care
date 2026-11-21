@@ -843,6 +843,34 @@ def main():
         check('CM12 moves are cleared for the new day', pv2.evaluate("!Object.keys(S.cmv).length&&!Object.keys(S.cshift).length"))
         check('CM13 no script errors (moving cares)', not ev2, '; '.join(ev2[:3]))
 
+        # CW. This week and Yesterday show cares as cares (one entry per cares, not item by item)
+        pw, ew = page(viewport={'width': 1080, 'height': 810})
+        pw.clock.set_fixed_time(_dt.datetime(2026, 11, 20, 11, 5))
+        setup(pw, U + 'index.html', 'Ida', '6161')
+        pw.evaluate("""S.people.forEach(p=>p.toured=true);S.setup=false;S.dueMode='off';S.notifAsked=true;S.periods=[{id:'day',name:'All day',start:'06:00',end:'06:00'}];S.resetAt='06:00';S.dayKey=bizDay();S.dayMode='cares';
+          careApply(['08:00','11:00','14:00','17:00','20:00','00:00','04:00']);var c20=careList().filter(x=>x.t==='20:00')[0].id;
+          S.tasks.push({id:8901,name:'Suction CW',periods:[],every:0,cares:true,cw:[],at:[],needs:[]},{id:8902,name:'Temp CW',periods:[],every:0,cares:true,cw:[],at:[],needs:[]},{id:8903,name:'Ties CW',periods:[],every:0,cares:true,cw:[c20],at:[],needs:[]},{id:8904,name:'Meds CW',periods:[],every:0,at:['09:00'],needs:[]},{id:8905,name:'Wipe CW',periods:['day'],every:0,needs:[]});
+          careSync();S.cdone['8901@08:00']={who:'Ida',time:'8:01 AM'};S.cdone['8902@08:00']={who:'Ida',time:'8:02 AM'};S.cdone['8901@11:00']={who:'Ida',time:'11:02 AM'};S.cxo={};S.tab='week';render()""")
+        wk = pw.inner_text('.wkgrid')
+        check('CW1 This week counts each cares once: “7 cares · 2 tasks” ahead, and today 1 of 9 done (was 9 of 17)', '7 cares · 2 tasks' in wk and '1 of 9 done' in pw.inner_text('[data-wday="0"]'), wk[:200])
+        pw.click('[data-wday="1"]'); pw.wait_for_timeout(150)
+        rows = pw.evaluate("[...document.querySelectorAll('#tib .wdc')].map(e=>e.innerText.replace(/\\s+/g,' '))")
+        check('CW2 a future day lists one row per cares with its items (8 PM has the ties), plain tasks as before', len(rows) == 7 and 'Ties CW' in rows[4] and 'Ties CW' not in rows[0] and pw.locator('#tib .wdi:not(.wdc)').count() == 2 and 'Suction CW' not in pw.evaluate("[...document.querySelectorAll('#tib .wdi:not(.wdc)')].map(e=>e.innerText).join()"), str(rows))
+        pw.evaluate("$('ti').classList.remove('show')"); pw.click('[data-wday="0"]'); pw.wait_for_timeout(150)
+        r8 = pw.inner_text('#tib .wdc >> nth=0'); r11 = pw.inner_text('#tib .wdc >> nth=1')
+        check('CW3 today’s rows show progress: 8 AM Done, 11 AM 1 of 2 done; the heading says 1 of 9 done', 'Done' in r8 and '1 of 2 done' in r11 and '1 of 9 done' in pw.inner_text('#tib'), r8 + ' / ' + r11)
+        pw.evaluate("$('ti').classList.remove('show');S.cmv={'8902@14:00':{to:'17:00'}};S.cshift={'04:00':{to:'04:40'}};S.cdone['8903@20:00']={who:'Ida',time:'8:10 PM'};S.cdone['8901@20:00']={who:'Ida',time:'8:12 PM'};S.cdone['8902@20:00']={who:'Ida',time:'8:14 PM'};save()")
+        pw.clock.set_fixed_time(_dt.datetime(2026, 11, 21, 7, 0)); pw.evaluate("maybeReset();S.tab='today';render()"); pw.click('[data-shv="prev"]'); pw.wait_for_timeout(150)
+        mc = pw.evaluate("[...document.querySelectorAll('main [data-pvcc]')].map(e=>[e.dataset.pvcc,e.className.includes('over'),!!e.querySelector('.cci')])")
+        check('CY1 Yesterday: one card per cares; ones with a miss are open (red) under Missed, finished ones closed under Done', [c[0] for c in mc] == ['11:00', '14:00', '17:00', '00:00', '04:00', '08:00', '20:00'] and all(c[1] and c[2] for c in mc[:5]) and not any(c[1] or c[2] for c in mc[5:]), str(mc))
+        c11 = pw.inner_text('[data-pvcc="11:00"]'); c14 = pw.inner_text('[data-pvcc="14:00"]'); c17 = pw.inner_text('[data-pvcc="17:00"]')
+        check('CY2 the cards say what was missed, what moved, and the moved cares time', '1 of 2 done · missed: Temp CW' in c11 and '1 moved to a later cares' in c14 and 'Also moved here from the 2 PM cares' in c17 and 'Moved to 4:40 AM' in pw.inner_text('[data-pvcc="04:00"]') and 'Meds CW' in pw.inner_text('main .panel .tiles'), c11 + ' / ' + c14)
+        pw.click('[data-pvcc="11:00"] [data-pv="c|8902@11:00"]'); pw.wait_for_timeout(150)
+        check('CY3 checking off the last missed item late moves that cares to Done (closed)', pw.evaluate("!!S.prevDay.cdone['8902@11:00'].late") and 'done' in pw.get_attribute('[data-pvcc="11:00"]', 'class') and pw.locator('[data-pvcc="11:00"] .cci').count() == 0)
+        pw.click('[data-pvc="20:00"]'); pw.wait_for_timeout(150)
+        check('CY4 tapping a finished cares opens it to show who did each item', pw.locator('[data-pvcc="20:00"] .cci .task').count() == 3 and 'Ida · 8:10 PM' in pw.inner_text('[data-pvcc="20:00"]'))
+        check('CY5 no script errors (week and yesterday with cares)', not ew, '; '.join(ew[:3]))
+
         # J. phone layout
         pg3, e3 = page(**p.devices['iPhone 13'])
         setup(pg3, U + 'index.html', 'Pat', '4444')
