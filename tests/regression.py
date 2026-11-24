@@ -924,6 +924,22 @@ def main():
         check('GP5 the quiet-hours start follows the shift (9 AM start: 5 AM), and a 24-hour Day+Night board is left alone', pg5.evaluate("rsPick('09:00')==='05:00'&&(S.periods=[{id:'day',name:'Day',start:'07:00',end:'21:00'},{id:'night',name:'Night',start:'21:00',end:'07:00'}],rsPick('07:00')==='07:00')"))
         check('GP6 no script errors (one shift with a gap)', not eg5, '; '.join(eg5[:3]))
 
+        # MA. several appointments in a day: one banner (the next one) and "+N more today", so the board isn't pushed down
+        pm2, em2 = page(viewport={'width': 1080, 'height': 810})
+        pm2.clock.set_fixed_time(_dt.datetime(2026, 11, 24, 10, 15))
+        setup(pm2, U + 'index.html', 'Ida', '9494')
+        pm2.evaluate("""S.people.forEach(p=>p.toured=true);S.setup=false;S.dueMode='off';S.notifAsked=true;var d=bizDay();
+          [[9301,'Blood MA','08:30'],[9302,'Check-up MA','11:00'],[9303,'Therapy MA','14:00'],[9304,'Eyes MA','16:30']].forEach(a=>S.tasks.push({id:a[0],name:a[1],periods:[],every:0,appt:true,date:d,time:a[2],where:'',goer:'',needs:[]}));S.tab='today';render()""")
+        check('MA1 four appointments: one banner (the next one, 11 AM) and “+3 more today” with their times', pm2.locator('.apptb').count() == 1 and pm2.locator('.apptb[data-appt="9302"]').count() == 1 and '+3 more today' in pm2.inner_text('#apmore') and '8:30 AM · 2 PM · 4:30 PM' in pm2.inner_text('#apmore'))
+        check('MA2 the banner row is one banner high (board starts in the top third of the iPad)', pm2.evaluate("document.querySelector('.apptrow').getBoundingClientRect().height<130&&document.querySelector('main .panel').getBoundingClientRect().top<300"))
+        pm2.click('#apmore'); pm2.wait_for_timeout(150)
+        check('MA3 “more” lists all of today’s appointments; each opens its details', pm2.locator('#ti [data-appt]').count() == 4 and 'in 3 hr 45 min' in pm2.inner_text('#ti [data-appt="9303"]').lower())
+        pm2.click('#ti [data-appt="9301"]'); pm2.wait_for_timeout(150); pm2.click('#ti [data-apdone="9301"]'); pm2.wait_for_timeout(150)
+        check('MA4 marking one done from the list moves it under Done; still +2 more', pm2.locator('main .panel .task.done[data-appt="9301"]').count() == 1 and '+2 more today' in pm2.inner_text('#apmore'))
+        pm2.clock.set_fixed_time(_dt.datetime(2026, 11, 24, 17, 0)); pm2.evaluate("render()")
+        check('MA5 late in the day the last one stays at the top (no “more”) until it moves under Done', pm2.locator('.apptb[data-appt="9304"]').count() == 1 and pm2.locator('#apmore').count() == 0)
+        check('MA6 no script errors (several appointments)', not em2, '; '.join(em2[:3]))
+
         # J. phone layout
         pg3, e3 = page(**p.devices['iPhone 13'])
         setup(pg3, U + 'index.html', 'Pat', '4444')

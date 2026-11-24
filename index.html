@@ -548,6 +548,12 @@ input[type=date]:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 .apptb.past{background:var(--panel2);border-color:var(--line)}
 .apptb.past .apic{background:var(--panel);color:var(--mut)}
 .apptb.past small{color:var(--mut)}
+.apptrow{display:flex;gap:10px;margin:0 0 12px;align-items:stretch}
+.apptrow .apptb{margin:0;flex:1;min-width:0}
+.apmore{flex:none;display:flex;flex-direction:column;justify-content:center;gap:2px;text-align:left;padding:10px 16px;border-radius:16px;background:var(--panel2);border:1px solid var(--line);color:var(--tx);max-width:34%}
+.apmore b{font-size:16px;font-weight:600;color:var(--acc)}
+.apmore small{color:var(--mut);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:520px){.apptrow{flex-direction:column;gap:6px}.apmore{max-width:none;flex-direction:row;align-items:baseline;gap:10px;padding:8px 14px;border-radius:12px}}
 .wki.wkap{flex-direction:column;gap:0}
 .wki.wkap>span{display:flex;align-items:center;gap:5px;color:var(--acc);font-weight:600;white-space:normal}
 .wki.wkap>small{padding-left:19px}
@@ -813,8 +819,10 @@ function apptAgo(t){var nw=new Date();return offMin(nw.getHours()*60+nw.getMinut
 function apptGone(t){return !!t.done||apptAgo(t)>=120}
 function apptWhen(t){var d=-apptAgo(t);return d>0?soonTxt(d):d>-60?'now':'earlier today'}
 function apptBanner(){var a=appts(bizDay()).filter(function(t){return !apptGone(t)});if(!a.length)return'';
-  return a.map(function(t){var past=apptWhen(t)==='earlier today';return'<button class="apptb'+(past?' past':'')+'" data-appt="'+t.id+'"><span class="apic">'+ICO.week+'</span><span class="apm"><small>Appointment today · '+fmtT(t.time)+' · '+apptWhen(t)+'</small><b>'+esc(t.name)+'</b>'+(t.where||t.goer?'<span>'+[t.where?esc(t.where):'',t.goer?esc(t.goer)+' is going':''].filter(Boolean).join(' · ')+'</span>':'')+'</span></button>'}).join('')}
-function apptTile(t){var d=t.done;return'<div class="trow"><button class="task'+(d?' done':'')+'" data-appt="'+t.id+'"><span class="box">'+(d?'✓':'')+'</span><span class="nm"><span class="tn">'+esc(t.name)+'</span><span class="meta">Appointment · '+fmtT(t.time)+(d?'':' · tap to mark done')+'</span></span>'+(d?'<span class="tag ok dn">'+esc(d.who)+' · '+d.time+'</span>':'')+'</button></div>'}
+  var sh=a.filter(function(t){return apptAgo(t)<60})[0]||a[a.length-1],rest=a.filter(function(t){return t!==sh});
+  return'<div class="apptrow">'+[sh].map(function(t){var past=apptWhen(t)==='earlier today';return'<button class="apptb'+(past?' past':'')+'" data-appt="'+t.id+'"><span class="apic">'+ICO.week+'</span><span class="apm"><small>Appointment today · '+fmtT(t.time)+' · '+apptWhen(t)+'</small><b>'+esc(t.name)+'</b>'+(t.where||t.goer?'<span>'+[t.where?esc(t.where):'',t.goer?esc(t.goer)+' is going':''].filter(Boolean).join(' · ')+'</span>':'')+'</span></button>'}).join('')+(rest.length?'<button class="apmore" id="apmore"><b>+'+rest.length+' more today</b><small>'+rest.map(function(t){return fmtT(t.time)}).join(' · ')+'</small></button>':'')+'</div>'}
+function apptList(){var a=appts(bizDay());showSheet('Appointments today','<div class="tiles" style="grid-template-columns:1fr">'+a.map(apptTile).join('')+'</div>')}
+function apptTile(t){var d=t.done;return'<div class="trow"><button class="task'+(d?' done':'')+'" data-appt="'+t.id+'"><span class="box">'+(d?'✓':'')+'</span><span class="nm"><span class="tn">'+esc(t.name)+'</span><span class="meta">Appointment · '+fmtT(t.time)+(d?'':apptGone(t)?' · tap to mark done':' · '+apptWhen(t))+'</span></span>'+(d?'<span class="tag ok dn">'+esc(d.who)+' · '+d.time+'</span>':'')+'</button></div>'}
 function apptDoneTiles(){return appts(bizDay()).filter(apptGone).map(apptTile).join('')}
 function apptSheet(t){var d=t.done,today=t.date===bizDay();showSheet(t.name,'<p style="margin:0 0 6px;font-size:18px">'+dlabel(t.date)+' at '+fmtT(t.time)+'</p>'+(t.where?'<p style="margin:0 0 6px">'+esc(t.where)+'</p>':'')+'<p class="note">'+(t.goer?esc(t.goer)+' is going.':'Who’s going isn’t decided yet.')+'</p>'+(d?'<p style="margin:10px 0 0;font-size:17px">✓ Marked done by <b>'+esc(d.who)+'</b> at '+esc(d.time)+'</p>':''),
   (today?(d?'<button data-apundo="'+t.id+'">Not done after all</button>':'<button data-apdone="'+t.id+'" class="tpok">Mark done</button>'):'')+(canEditT()?'<button data-apedit="'+t.id+'">Edit</button>':''))}
@@ -1413,6 +1421,7 @@ document.addEventListener('click',function(e){
   if(b.id==='pmx'){$('pm').classList.remove('show');return}
   if(b.dataset.ata){var tk=T(b.dataset.ata);openTP({title:'Add a time',sub:tk.name,taken:tk.at.slice(),ok:function(v){tk.at.push(v);tk.at.sort();lgc(tk.name+': added '+fmtT(v),tk.id);flashAt(tk.id,v)}});return}
   if(b.dataset.atp){var z2=b.dataset.atp.split('|'),tq=T(z2[0]),ix=+z2[1];openTP({title:'Change time',sub:tq.name,val:tq.at[ix],taken:tq.at.filter(function(_,j){return j!==ix}),ok:function(v){var ov=tq.at[ix];tq.at[ix]=v;tq.at.sort();if(ov!==v)lgc(tq.name+': '+fmtT(ov)+' changed to '+fmtT(v),tq.id);flashAt(tq.id,v)}});return}
+  if(b.id==='apmore'){apptList();return}
   if(b.dataset.appt){var at0=T(b.dataset.appt);if(!at0)return;apptSheet(at0);return}
   if(b.dataset.apedit){var ae=T(b.dataset.apedit);$('ti').classList.remove('show');if(ae&&canEditT())openTE(ae.id);return}
   if(b.dataset.apdone){var ad=T(b.dataset.apdone);if(!ad||ad.done)return;if(needWho())return;ad.done={who:S.who,time:fmt(new Date())};$('ti').classList.remove('show');lg('Completed',ad.name+' (appointment at '+fmtT(ad.time)+')',{tid:ad.id});
