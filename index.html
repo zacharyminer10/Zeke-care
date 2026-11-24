@@ -806,12 +806,18 @@ function futRow(t,key,iv){var dd=dayDiff(bizDay(),key),d=t.done;
   var meta=iv?(d?'Done early':fl(t)+' · tap if done early'):'One-time'+(t.time?' at '+fmtT(t.time):'');
   var tag=d?'<span class="tag ok dn">'+esc(d.who)+' · '+d.time+'</span>':'<span class="tag fin">'+(dd===1?'Tomorrow':'In '+dd+' days')+'</span>';
   return'<div class="trow">'+(iv?'<button class="task fut'+(d?' done':'')+'" data-i="'+t.id+'">':'<div class="task fut" style="cursor:default">')+chip+'<span class="nm">'+(iv?esc(t.name):'<span class="tn">'+esc(t.name)+'</span>')+'<span class="meta">'+meta+'</span></span>'+tag+(iv?'</button>':'</div>')+'</div>'}
-/* appointments: a banner at the top of Today on the day (no check-off) and a mark on This week */
+/* appointments: a banner at the top of Today on the day and a mark on This week. Tap → details with Mark done.
+   Once marked done, or 2 h after its time, it leaves the top and shows as a line under Done; never "missed". */
 function appts(key){return S.tasks.filter(function(t){return t.appt&&t.date===key}).sort(function(a,b){return(a.time||'').localeCompare(b.time||'')})}
-function apptWhen(t){var nw=new Date(),d=mins(t.time)-(nw.getHours()*60+nw.getMinutes());return d>0?soonTxt(d):d>-60?'now':'earlier today'}
-function apptBanner(){var a=appts(bizDay());if(!a.length)return'';
+function apptAgo(t){var nw=new Date();return offMin(nw.getHours()*60+nw.getMinutes())-offMin(mins(t.time))}
+function apptGone(t){return !!t.done||apptAgo(t)>=120}
+function apptWhen(t){var d=-apptAgo(t);return d>0?soonTxt(d):d>-60?'now':'earlier today'}
+function apptBanner(){var a=appts(bizDay()).filter(function(t){return !apptGone(t)});if(!a.length)return'';
   return a.map(function(t){var past=apptWhen(t)==='earlier today';return'<button class="apptb'+(past?' past':'')+'" data-appt="'+t.id+'"><span class="apic">'+ICO.week+'</span><span class="apm"><small>Appointment today · '+fmtT(t.time)+' · '+apptWhen(t)+'</small><b>'+esc(t.name)+'</b>'+(t.where||t.goer?'<span>'+[t.where?esc(t.where):'',t.goer?esc(t.goer)+' is going':''].filter(Boolean).join(' · ')+'</span>':'')+'</span></button>'}).join('')}
-function apptSheet(t){showSheet(t.name,'<p style="margin:0 0 6px;font-size:18px">'+dlabel(t.date)+' at '+fmtT(t.time)+'</p>'+(t.where?'<p style="margin:0 0 6px">'+esc(t.where)+'</p>':'')+'<p class="note">'+(t.goer?esc(t.goer)+' is going.':'Who’s going isn’t decided yet.')+'</p>')}
+function apptTile(t){var d=t.done;return'<div class="trow"><button class="task'+(d?' done':'')+'" data-appt="'+t.id+'"><span class="box">'+(d?'✓':'')+'</span><span class="nm"><span class="tn">'+esc(t.name)+'</span><span class="meta">Appointment · '+fmtT(t.time)+(d?'':' · tap to mark done')+'</span></span>'+(d?'<span class="tag ok dn">'+esc(d.who)+' · '+d.time+'</span>':'')+'</button></div>'}
+function apptDoneTiles(){return appts(bizDay()).filter(apptGone).map(apptTile).join('')}
+function apptSheet(t){var d=t.done,today=t.date===bizDay();showSheet(t.name,'<p style="margin:0 0 6px;font-size:18px">'+dlabel(t.date)+' at '+fmtT(t.time)+'</p>'+(t.where?'<p style="margin:0 0 6px">'+esc(t.where)+'</p>':'')+'<p class="note">'+(t.goer?esc(t.goer)+' is going.':'Who’s going isn’t decided yet.')+'</p>'+(d?'<p style="margin:10px 0 0;font-size:17px">✓ Marked done by <b>'+esc(d.who)+'</b> at '+esc(d.time)+'</p>':''),
+  (today?(d?'<button data-apundo="'+t.id+'">Not done after all</button>':'<button data-apdone="'+t.id+'" class="tpok">Mark done</button>'):'')+(canEditT()?'<button data-apedit="'+t.id+'">Edit</button>':''))}
 /* ---- cares: groups of tasks done together at set times ("cares"), e.g. every 3 hours by day and 4 overnight.
    S.cares=[{id,t}], S.dayMode='shifts'|'cares'|'both' (unset = shifts). A task "At cares" (t.cares; t.cw = the cares ids it
    belongs to, [] = every cares) keeps t.at in step with the cares times, so check-offs, late, missed, supplies and the Log work
@@ -933,7 +939,7 @@ function today(){
   var dOpen=view.dueIv.filter(function(t){return !t.done}).map(ivTile).join('')+view.onceU.filter(function(t){return !t.done}).map(onceTile).join(''),dDone=view.dueIv.filter(function(t){return t.done}).map(ivTile).join('')+view.onceU.filter(function(t){return t.done}).map(onceTile).join('');
   var lOpen=view.list.filter(function(t){return !S.done[t.id+'|'+p.id]}).map(function(t){return rtTile(t,p)}).join(''),lDone=view.list.filter(function(t){return S.done[t.id+'|'+p.id]}).map(function(t){return rtTile(t,p)}).join('');
   var cOk=function(t){return(S.cnt[t.id]||{n:0}).n>=t.times},cnt=view.cnts.filter(function(t){return !cOk(t)}).map(cntTile).join(''),cDone=view.cnts.filter(cOk).map(cntTile).join('');
-  var done=sDone.map(function(x){return slotTile(x,p)}).join('')+dDone+lDone+cDone;
+  var done=sDone.map(function(x){return slotTile(x,p)}).join('')+dDone+lDone+cDone+(view.isNow?apptDoneTiles():'');
   var prn=view.isNow?S.tasks.filter(function(t){return t.prn}).map(prnTile).join(''):'',pprn=past?prnIn(S.dayKey,p).map(prnPvTile).join(''):'';
   var dlv=view.isNow&&supOn()?openOrders().filter(function(o){return o.expected<=bizDay()}).map(dlvTile).join(''):'';
   h+='<div class="col panel'+(view.isNow?' now':'')+'" aria-label="'+esc(p.name)+' tasks">';
@@ -1240,7 +1246,7 @@ function weekTasks(){var h='<div class="wkgrid">';
     ms.forEach(function(m){m.sls.forEach(function(x){var o=x.t.order;if(o&&o.kind==='feed')feeds++;else if(o&&o.kind==='med')meds++;if(x.o)spec.push([x.t.name,'One-time · '+fmtT(x.x)])});
       m.dueIv.forEach(function(t){spec.push([t.name,k===0&&t.done?'Done':k===0&&t.every-t.last<0?'Overdue':fl(t)])});m.onceU.forEach(function(t){spec.push([t.name,k===0&&t.date<bizDay()?'Overdue':'One-time'])})});
     if(k===1)S.moves.forEach(function(m){if(m.to==='tomorrow'&&T(m.tid))spec.push([tn(m.tid),'Pushed from today'])});
-    appts(addDays(bizDay(),k)).forEach(function(t){spec.unshift([t.name,'Appointment · '+fmtT(t.time),1])});
+    appts(addDays(bizDay(),k)).forEach(function(t){spec.unshift([t.name,'Appointment · '+fmtT(t.time)+(k===0&&t.done?' · done':''),1])});
     var wk0=addDays(bizDay(),k);if(supOn())openOrders().forEach(function(o){if(k===0?o.expected<=wk0:o.expected===wk0)spec.unshift(['Delivery · '+oLabel(o),o.items.length+' item'+(o.items.length===1?'':'s')+(k===0&&o.expected<wk0?' · late':'')])});
     var key=addDays(bizDay(),k),nm=k===0?'Today':k===1?'Tomorrow':WDN[keyWd(key)];
     h+='<button class="wkc'+(k===0?' now':'')+'" data-wday="'+k+'"><span class="wkh"><b>'+nm+'</b><small>'+new Date(Date.parse(key)).toLocaleDateString([],{month:'short',day:'numeric',timeZone:'UTC'})+'</small></span>';
@@ -1265,7 +1271,7 @@ function openDay(k){var ms=dayModels(k),td=k===0,h='',ok='<span class="tag ok">D
     m.onceU.forEach(function(t){var dn=td&&!!t.done;h+=wdRow('Any time',t.name+' (one-time)',t,dn?ok:td&&t.date<bizDay()?ov:'',dn)});
     m.cnts.forEach(function(t){var c=td?(S.cnt[t.id]||{n:0}).n:0;h+=wdRow('Any time',t.name,t,'<span class="tag'+(td&&c>=t.times?' ok':'')+'">'+(td?c+' of '+t.times:t.times+' times')+'</span>',td&&c>=t.times)});
     m.list.forEach(function(t){var dn=td&&!!S.done[t.id+'|'+m.p.id];h+=wdRow('This shift',t.name,t,dn?ok:'',dn)})});
-  var ap=appts(addDays(bizDay(),k));if(ap.length)h='<p class="sec">Appointments</p>'+ap.map(function(t){return wdRow(fmtT(t.time),t.name+(t.where?' · '+t.where:'')+(t.goer?' · '+t.goer+' going':''),null,'')}).join('')+h;
+  var ap=appts(addDays(bizDay(),k));if(ap.length)h='<p class="sec">Appointments</p>'+ap.map(function(t){return wdRow(fmtT(t.time),t.name+(t.where?' · '+t.where:'')+(t.goer?' · '+t.goer+' going':''),null,k===0&&t.done?ok:'',k===0&&!!t.done)}).join('')+h;
   var dk=addDays(bizDay(),k),dl=(supOn()?openOrders():[]).filter(function(o){return k===0?o.expected<=dk:o.expected===dk});if(dl.length)h='<p class="sec">Deliveries</p>'+dl.map(function(o){return wdRow(k===0&&o.expected<dk?'Late':'Expected','Delivery · '+oLabel(o)+' — '+oItems(o),null,'')}).join('')+h;
   var prn=S.tasks.filter(function(t){return t.prn});if(prn.length)h+='<p class="sec">As needed</p><p class="note" style="margin:0">'+prn.map(function(t){return esc(t.name)}).join(', ')+'</p>';
   if(k===1){var pu=S.moves.filter(function(m){return m.to==='tomorrow'&&T(m.tid)});if(pu.length)h+='<p class="sec">Pushed from today</p><p class="note" style="margin:0">'+pu.map(function(m){return esc(tn(m.tid))}).join(', ')+'</p>'}
@@ -1407,7 +1413,11 @@ document.addEventListener('click',function(e){
   if(b.id==='pmx'){$('pm').classList.remove('show');return}
   if(b.dataset.ata){var tk=T(b.dataset.ata);openTP({title:'Add a time',sub:tk.name,taken:tk.at.slice(),ok:function(v){tk.at.push(v);tk.at.sort();lgc(tk.name+': added '+fmtT(v),tk.id);flashAt(tk.id,v)}});return}
   if(b.dataset.atp){var z2=b.dataset.atp.split('|'),tq=T(z2[0]),ix=+z2[1];openTP({title:'Change time',sub:tq.name,val:tq.at[ix],taken:tq.at.filter(function(_,j){return j!==ix}),ok:function(v){var ov=tq.at[ix];tq.at[ix]=v;tq.at.sort();if(ov!==v)lgc(tq.name+': '+fmtT(ov)+' changed to '+fmtT(v),tq.id);flashAt(tq.id,v)}});return}
-  if(b.dataset.appt){var at0=T(b.dataset.appt);if(!at0)return;if(canEditT())openTE(at0.id);else apptSheet(at0);return}
+  if(b.dataset.appt){var at0=T(b.dataset.appt);if(!at0)return;apptSheet(at0);return}
+  if(b.dataset.apedit){var ae=T(b.dataset.apedit);$('ti').classList.remove('show');if(ae&&canEditT())openTE(ae.id);return}
+  if(b.dataset.apdone){var ad=T(b.dataset.apdone);if(!ad||ad.done)return;if(needWho())return;ad.done={who:S.who,time:fmt(new Date())};$('ti').classList.remove('show');lg('Completed',ad.name+' (appointment at '+fmtT(ad.time)+')',{tid:ad.id});
+    showUndo('Marked done: '+ad.name,function(){if(!ad.done)return;ad.done=null;lg('Undid',ad.name+' (appointment)',{tid:ad.id});hideUndo();render()});render();return}
+  if(b.dataset.apundo){var au=T(b.dataset.apundo);if(!au||!au.done)return;if(needWho())return;au.done=null;$('ti').classList.remove('show');lg('Undid',au.name+' (appointment)',{tid:au.id});render();return}
   if(b.dataset.otp){var to=T(b.dataset.otp);openTP({title:'Time for this task',sub:to.name,val:to.time||null,ok:function(v){to.time=v;flashAt(to.id,v)}});return}
   if(b.id==='tpok'){tpSave();return}
   if(b.id==='tpx'){tpClose(true);return}
