@@ -920,7 +920,7 @@ function today(){
   var sw='<div class="shsw" role="group" aria-label="Shift"><button data-shv="prev" class="'+(onPv?'on':!pv&&!yp?'dim':'')+'" aria-pressed="'+!!onPv+'"'+(!pv&&!yp?' aria-disabled="true"':'')+'>'+chl+pvL+'</button><button data-shv="cur" class="'+(onCur?'on':'')+'" aria-pressed="'+onCur+'">'+esc(cur.name)+(inP(cur,mn)?'<span class="nowdot" title="Now" aria-label="now"></span>':'')+'</button><button data-shv="next" class="'+(onNx?'on':'')+'" aria-pressed="'+!!onNx+'">'+nxL+chr+'</button></div>';
   var info='';
   if(S.viewPrev){var pm=prevModel(),pst=pm.missed.length;info='<span>'+dlabel(S.prevDay.key)+' · '+fmtT(yp.start)+' to '+fmtT(yp.end)+'</span>'+(pst?'<span class="tag bad">'+pst+' missed</span>':'<span class="tag ok">All done</span>')}
-  else{var st=stats(view);info='<span>'+(view.p.start===view.p.end?'All day':fmtT(view.p.start)+' to '+fmtT(view.p.end))+(caresOn()&&view.isNow&&careNext()?' · next cares '+fmtT(careNext()):'')+(view.p.early?' · started by '+esc(view.p.early.who):'')+'</span>'+(st.open===0?'<span class="tag ok">All done</span>':'<span class="tag">'+st.open+' left</span>'+(st.over?'<span class="tag bad">'+st.over+' overdue</span>':''))+(view.isNow&&!inP(cur,mn)?'<span class="tag up">After hours</span>':'')}
+  else{var st=stats(view);info='<span>'+(view.p.start===view.p.end?'All day':fmtT(view.p.start)+' to '+fmtT(view.p.end))+(caresOn()&&view.isNow&&careNext()?' · next cares '+fmtT(careNext()):'')+(view.p.early?' · started by '+esc(view.p.early.who):'')+'</span>'+(st.open===0?'<span class="tag ok">All done</span>':'<span class="tag">'+st.open+' left</span>'+(st.over?'<span class="tag bad">'+st.over+' overdue</span>':''))+(view.isNow&&!inP(cur,mn)?'<span class="tag up">'+(offMin(mn)<offMin(mins(cur.start))?'Starts at '+fmtT(cur.start):'After hours · new day at '+fmtT(S.resetAt))+'</span>':'')}
   h+='<div class="shbar"><div class="shl">'+sw+'<span class="shinfo">'+info+'</span></div><div class="shr">'+lowb+'<button id="otadd" class="addbtn">+ Add task</button></div></div>';
   if(!S.viewPrev&&view.isNow)h+=typLine();
   var back=function(){return'<button data-shv="cur">Back to '+esc(cur.name)+'</button>'};
@@ -1293,6 +1293,14 @@ function missedList(skip,nk){var out=[];skip=skip||{};nk=nk||addDays(S.dayKey,1)
   return out}
 function rsNote(d){try{S.log.unshift({ts:new Date(),who:'System',a:'Changed',d:d})}catch(x){}}
 function rsErr(w,e){rsNote('New day: '+w+' could not be worked out ('+String(e&&e.message||e).slice(0,120)+'). The board was still reset for the new day.')}
+/* the new day for shifts that start at st: if no shift runs into st (a gap overnight, e.g. one shift 8 AM to 11 PM),
+   start it in the gap, half-way back but at most 4 h before st, so the morning shows the new day, not yesterday's check-offs */
+function rsPick(st){var s0=mins(st),back=1440;(S.periods||[]).forEach(function(q){var d=q.start===q.end?0:(s0-mins(q.end)+1440)%1440;if(d<back)back=d});
+  if(back<60||back>=1440)return st;var r=s0-Math.min(Math.floor(back/2),240);return hmM(Math.ceil(r/30)*30)}
+function rsFirst(){var ps=S.periods||[],r=mins(S.resetAt),best=null,bd=1e9;ps.forEach(function(q){var d=(mins(q.start)-r+1440)%1440;if(d<bd){bd=d;best=q}});return best}
+/* once: boards whose day started exactly at a shift that has a gap before it move to the quiet-hours start */
+function rsMig(){if(S.rsMig)return;S.rsMig=1;if(S.dayMode==='cares'||!S.periods||!S.periods.some(function(q){return q.start===S.resetAt}))return;var r=rsPick(S.resetAt),was=S.resetAt;if(r===was)return;
+  S.resetAt=r;rsNote('New day now starts at '+fmtT(r)+' (was '+fmtT(was)+'), before the first shift, so the morning shows the new day and not yesterday’s check-offs. Change it in Manage if you like.')}
 function maybeReset(d){var k=bizDay(d);if(!S.dayKey){S.dayKey=k;return false}
   /* saved as a later day than the clock says (the date was set wrong once): otherwise the board would wait, unchanged, until that date came round */
   if(k<S.dayKey&&Date.parse(S.dayKey)-Date.parse(k)>=2*864e5){rsNote('The board was on '+dlabel(S.dayKey)+', later than this device’s date ('+dlabel(k)+'). It now starts today afresh.');S.dayKey=k;S.prevDay=null;S.done={};S.cdone={};S.cnt={};S.cxo={};S.cmv={};S.cshift={};S.moves=[];S.alerted={};return true}
@@ -1436,7 +1444,7 @@ document.addEventListener('click',function(e){
   if(b.dataset.shide){S.setup=false;render();return}
   if(b.id==='setupre'){S.setup=true;S.tab='menu';render();return}
   if(b.dataset.ti){openInfo(b.dataset.ti);return}
-  if(b.dataset.pst){var ps=b.dataset.pst.split('|'),pq=S.periods.filter(function(x){return x.id===ps[0]})[0];if(!pq)return;openTP({title:(ps[1]==='start'?'Starts at':'Ends at'),sub:pq.name,val:pq[ps[1]],ok:function(v){var ov=pq[ps[1]];pq[ps[1]]=v;S.setupHours=true;if(ov!==v){lgc(pq.name+' '+(ps[1]==='start'?'starts':'ends')+' at '+fmtT(v)+' (was '+fmtT(ov)+')');var other=ps[1]==='start'?'end':'start';S.periods.forEach(function(q){if(q!==pq&&q[other]===ov){q[other]=v;lgc(q.name+' '+(other==='start'?'starts':'ends')+' at '+fmtT(v)+' to match')}});if(ov===S.resetAt&&(ps[1]==='start'||S.periods.some(function(q){return q.start===v})))setResetAt(v)}render()}});return}
+  if(b.dataset.pst){var ps=b.dataset.pst.split('|'),pq=S.periods.filter(function(x){return x.id===ps[0]})[0];if(!pq)return;openTP({title:(ps[1]==='start'?'Starts at':'Ends at'),sub:pq.name,val:pq[ps[1]],ok:function(v){var ov=pq[ps[1]],f0=rsFirst(),auto=f0&&(S.resetAt===f0.start||S.resetAt===rsPick(f0.start));pq[ps[1]]=v;S.setupHours=true;if(ov!==v){lgc(pq.name+' '+(ps[1]==='start'?'starts':'ends')+' at '+fmtT(v)+' (was '+fmtT(ov)+')');var other=ps[1]==='start'?'end':'start';S.periods.forEach(function(q){if(q!==pq&&q[other]===ov){q[other]=v;lgc(q.name+' '+(other==='start'?'starts':'ends')+' at '+fmtT(v)+' to match')}});if(auto&&f0&&S.periods.indexOf(f0)>-1){if(rsPick(f0.start)!==S.resetAt)setResetAt(rsPick(f0.start))}else if(ov===S.resetAt&&(ps[1]==='start'||S.periods.some(function(q){return q.start===v})))setResetAt(v)}render()}});return}
   if(b.id==='strt'){if(!isOwner())return;openTP({title:'New day starts at',sub:'Check-offs and counters reset then',val:S.resetAt,ok:function(v){setResetAt(v);fillSt();render()}});return}
   if(b.id==='otadd'){if(needWho())return;openNT('today');return}
   if(b.id==='tadd'){if(!canEditT())return;openNT('edit');return}
@@ -1681,7 +1689,7 @@ function drawShifts(){var h;
   $('shb').innerHTML=h}
 function saveShifts(){if(SH.a===SH.b){$('she').textContent=SH.n===2?'Day and Night can’t start at the same time.':'The start and end can’t be the same time.';return}
   S.periods=SH.n===2?[{id:'day',name:'Day',start:SH.a,end:SH.b},{id:'night',name:'Night',start:SH.b,end:SH.a}]:[{id:'day',name:'Day',start:SH.a,end:SH.b}];
-  S.resetAt=SH.a;S.dayKey=bizDay();S.setupHours=true;S.tasks.forEach(function(t){t.periods=(t.periods||[]).filter(function(p){return S.periods.some(function(q){return q.id===p})})});
+  S.resetAt=rsPick(SH.a);S.rsMig=1;S.dayKey=bizDay();S.setupHours=true;S.tasks.forEach(function(t){t.periods=(t.periods||[]).filter(function(p){return S.periods.some(function(q){return q.id===p})})});
   lg('Changed',SH.n===2?'Shifts set: Day '+fmtT(SH.a)+' to '+fmtT(SH.b)+', Night '+fmtT(SH.b)+' to '+fmtT(SH.a):'Shift set: Day '+fmtT(SH.a)+' to '+fmtT(SH.b));
   if(SH.mode==='both'){SH.stage='cares';crNew('setup');save();drawShifts();return}
   $('sh').classList.remove('show');save();render();var f=SH.next;SH.next=null;if(f)f()}
@@ -2220,7 +2228,7 @@ function save(){ldbFlush();try{localStorage.setItem(KEY,JSON.stringify(snap()));
 function load(){try{var r=localStorage.getItem(KEY);if(!r)return false;return applySnap(JSON.parse(r))}catch(e){return false}}
 var loaded=load();if(!S.since)S.since=Date.now();
 if(!loaded){blankState()}
-else{S.who='';S.last=Date.now();maybeReset()}
+else{S.who='';S.last=Date.now();rsMig();maybeReset()}
 migrate15();if(!S.orders)S.orders=[];if(S.keepDays==null)S.keepDays=182;if(!S.dueMode)S.dueMode='sound';if(!S.idleV){S.idleV=2;if(S.idle)S.idle=60}S.alerted=S.alerted||{};logInit();
 if(ED.store&&S.people.length&&!S.disc)setTimeout(function(){openDC()},400);
 ['click','change','pointerup','keyup'].forEach(function(n){document.addEventListener(n,function(){setTimeout(save,0)})});

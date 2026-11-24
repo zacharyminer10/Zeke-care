@@ -81,7 +81,7 @@ def main():
         po.click('#sh [data-shm="shifts"]')
         check('O1 Shifts goes to the shifts question', po.is_visible('#sh') and 'overnight' in po.inner_text('#sh'))
         po.click('#sh [data-shn="1"]'); po.click('#shok')
-        check('O2 "No" makes a single Day shift and sets the daily reset to its start', po.evaluate("S.periods.length===1&&S.periods[0].name==='Day'&&S.resetAt===S.periods[0].start"))
+        check('O2 "No" makes a single Day shift; the new day starts in the quiet hours before it (up to 4 h), not at its start', po.evaluate("S.periods.length===1&&S.periods[0].name==='Day'&&S.resetAt!==S.periods[0].start&&!inP(S.periods[0],mins(S.resetAt))&&(mins(S.periods[0].start)-mins(S.resetAt)+1440)%1440<=240"), po.evaluate("S.resetAt+' / '+S.periods[0].start+'-'+S.periods[0].end"))
         po2, eo2 = page(viewport={'width': 820, 'height': 1180})
         po2.goto(U + 'index.html'); po2.wait_for_timeout(250); po2.fill('#frn', 'Duo'); po2.fill('#frp', '6666'); po2.click('#frok')
         po2.click('#sh [data-shm="shifts"]'); po2.click('#sh [data-shn="2"]'); po2.click('#shok')
@@ -887,6 +887,24 @@ def main():
         check('RS3 back on screen the next day, the board resets at once (and is saved), even if listing missed tasks fails', pr2.evaluate("S.dayKey===bizDay()&&JSON.parse(localStorage.getItem(KEY)).state.dayKey===bizDay()&&S.log.some(r=>r.d.indexOf('missed tasks could not be worked out')>-1)"))
         pr2.evaluate("missedList=window.__ml")
         check('RS4 no script errors (new-day safety)', not er2, '; '.join(er2[:3]))
+
+        # GP. one shift with a gap overnight (e.g. 8 AM to 11 PM): the morning shows the new day, not yesterday's check-offs
+        pg5, eg5 = page(viewport={'width': 1080, 'height': 810})
+        pg5.clock.set_fixed_time(_dt.datetime(2026, 11, 23, 9, 0))
+        setup(pg5, U + 'index.html', 'Gus', '8383')
+        pg5.evaluate("""S.people.forEach(p=>p.toured=true);S.dueMode='off';S.notifAsked=true;S.periods=[{id:'day',name:'Day',start:'08:00',end:'23:00'}];S.resetAt='08:00';delete S.rsMig;S.dayKey=bizDay();
+          S.tasks=[{id:9201,name:'Pills GP',periods:[],every:0,at:['08:00'],needs:[]},{id:9202,name:'Wipe GP',periods:['day'],every:0,needs:[]}];S.cdone['9201@08:00']={who:'Gus',time:'8:04 AM'};S.done['9202|day']={who:'Gus',time:'9:00 AM'};save()""")
+        pg5.clock.set_fixed_time(_dt.datetime(2026, 11, 24, 7, 45)); pg5.reload(); pg5.wait_for_timeout(300)
+        check('GP1 a board whose day started at 8 AM (after a gap) now starts it at 4 AM, once, with a note in the Log', pg5.evaluate("S.resetAt==='04:00'&&S.rsMig===1&&S.log.some(r=>r.d.indexOf('New day now starts at 4 AM (was 8 AM)')>-1)"))
+        check('GP2 at 7:45 AM the board is on the new day: yesterday’s 8 AM pills aren’t shown as done', pg5.evaluate("S.dayKey===bizDay()&&bizDay()==='2026-11-24'&&!S.cdone['9201@08:00']&&!Object.keys(S.done).length"))
+        clear(pg5); pg5.evaluate("S.tab='today';render()")
+        check('GP3 before the shift the tag says “Starts at 8 AM” (not “All done”)', 'Starts at 8 AM' in pg5.inner_text('.shinfo') and 'All done' not in pg5.inner_text('.shinfo'), pg5.inner_text('.shinfo'))
+        pg5.clock.set_fixed_time(_dt.datetime(2026, 11, 24, 23, 30)); pg5.evaluate("dayCheck(true)")
+        check('GP4 late at night it is still today, and the tag says when the new day starts', pg5.evaluate("bizDay()==='2026-11-24'") and 'new day at 4 AM' in pg5.inner_text('.shinfo'), pg5.inner_text('.shinfo'))
+        pg5.evaluate("S.adminOk=true;S.tab='periods';render()"); pg5.wait_for_timeout(100)
+        pg5.evaluate("var q=S.periods[0];q.start='09:00';")
+        check('GP5 the quiet-hours start follows the shift (9 AM start: 5 AM), and a 24-hour Day+Night board is left alone', pg5.evaluate("rsPick('09:00')==='05:00'&&(S.periods=[{id:'day',name:'Day',start:'07:00',end:'21:00'},{id:'night',name:'Night',start:'21:00',end:'07:00'}],rsPick('07:00')==='07:00')"))
+        check('GP6 no script errors (one shift with a gap)', not eg5, '; '.join(eg5[:3]))
 
         # J. phone layout
         pg3, e3 = page(**p.devices['iPhone 13'])
