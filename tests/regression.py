@@ -871,6 +871,23 @@ def main():
         check('CY4 tapping a finished cares opens it to show who did each item', pw.locator('[data-pvcc="20:00"] .cci .task').count() == 3 and 'Ida · 8:10 PM' in pw.inner_text('[data-pvcc="20:00"]'))
         check('CY5 no script errors (week and yesterday with cares)', not ew, '; '.join(ew[:3]))
 
+        # RS. the new day always comes: a board saved ahead of the clock, a failing side step, and the check on wake
+        pr2, er2 = page(viewport={'width': 1080, 'height': 810})
+        pr2.clock.set_fixed_time(_dt.datetime(2026, 11, 20, 10, 0))
+        setup(pr2, U + 'index.html', 'Ray', '7272')
+        pr2.evaluate("S.people.forEach(p=>p.toured=true);S.dueMode='off';S.notifAsked=true;S.tasks.push({id:9101,name:'Wipe RS',periods:S.periods.map(p=>p.id),every:0,needs:[]});S.done['9101|'+S.periods[0].id]={who:'Ray',time:'9:00 AM'};S.dayKey='2026-11-25';save();render()")
+        pr2.evaluate("dayCheck(true)")
+        check('RS1 a board saved as a later day than the clock (date set wrong once) starts today afresh, with a note', pr2.evaluate("S.dayKey===bizDay()&&!Object.keys(S.done).length&&S.log[0].d.indexOf('later than this device')>-1"))
+        pr2.evaluate("S.done['9101|'+S.periods[0].id]={who:'Ray',time:'9:00 AM'};window.__ra=S.resetAt;setResetAt('11:00');dayCheck(true)")
+        check('RS2 a later new-day time (board one day ahead until 11 AM) keeps today’s check-offs', pr2.evaluate("bizDay()<S.dayKey&&Object.keys(S.done).length===1"))
+        pr2.evaluate("setResetAt(window.__ra)")
+        pr2.evaluate("window.__ml=missedList;missedList=function(){throw new Error('boom')};S.done={}")
+        pr2.clock.set_fixed_time(_dt.datetime(2026, 11, 22, 12, 0))
+        pr2.evaluate("document.dispatchEvent(new Event('visibilitychange'))"); pr2.wait_for_timeout(100)
+        check('RS3 back on screen the next day, the board resets at once (and is saved), even if listing missed tasks fails', pr2.evaluate("S.dayKey===bizDay()&&JSON.parse(localStorage.getItem(KEY)).state.dayKey===bizDay()&&S.log.some(r=>r.d.indexOf('missed tasks could not be worked out')>-1)"))
+        pr2.evaluate("missedList=window.__ml")
+        check('RS4 no script errors (new-day safety)', not er2, '; '.join(er2[:3]))
+
         # J. phone layout
         pg3, e3 = page(**p.devices['iPhone 13'])
         setup(pg3, U + 'index.html', 'Pat', '4444')
