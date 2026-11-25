@@ -716,7 +716,8 @@ button.tyb{cursor:pointer}
 var ED={id:'family',store:false,
   key:'zeke-care-board.v1',app:'zeke-care-board',apps:['zeke-care-board'],backup:'zeke-care-backup',
   alert:'Call 911 first if he is in distress.',sleep:'He’s sleeping',care:'with his care',
-  ex:{done:'Clean G-tube site',hold:'Humidification check',howto:'Change trach ties',guide:'Trach tie change'}};
+  ex:{done:'Clean G-tube site',hold:'Humidification check',howto:'Change trach ties',guide:'Trach tie change'},
+  ideaNote:'Things to do with him when there’s time. Ask his therapists which ones are right for him.',ideas:[]};
 /* ==== END EDITION ==== */
 if(ED.store)storeDom();
 var VER='1.24';
@@ -956,7 +957,7 @@ function today(){
     var nxp=up.length?slotDiff(up[0].x,mn):-1e9,nxd=Math.max(nxp,nxc?nxc.diff:-1e9),nxx=up.length&&nxp===nxd?up[0].x:null;if(nxc&&nxc.diff!==nxd)nxc=null;
     openX=cu.length?cu[cu.length-1].x:nxc?nxc.x:null;
     var upn=urg.map(function(x){return slotTile(x,p)}).join('')+up.filter(function(x){return x.x===nxx}).map(function(x){return slotTile(x,p,true)}).join(''),later=up.filter(function(x){return x.x!==nxx}).map(function(x){return slotTile(x,p)}).join('');
-    h+=grp('Deliveries',dlv)+grpC('Up next',cardsH(cu.concat(nxc?[nxc]:[])),upn)+grp('Anytime '+wd,dOpen+cnt+lOpen)+grpC('Later '+wd,cardsH(cl.filter(function(c){return c!==nxc})),later)+grp('As needed',prn)+grpC('Done',cardsH(cDn),done)}
+    h+=grp('Deliveries',dlv)+grpC('Up next',cardsH(cu.concat(nxc?[nxc]:[])),upn)+grp('Anytime '+wd,dOpen+cnt+lOpen)+grpC('Later '+wd,cardsH(cl.filter(function(c){return c!==nxc})),later)+grp('As needed',prn)+((S.ideas||[]).length?'<button class="crlink" id="ideasgo">Ideas for something to do ›</button>':'')+grpC('Done',cardsH(cDn),done)}
   else if(past)h+=grpC('Not done',cardsH(cOpen),sOpen.map(function(x){return slotTile(x,p)}).join('')+dOpen+lOpen)+grpC('Done',cardsH(cDn),done)+grp('As needed',pprn);
   else h+=grp('Anytime',dOpen+cnt+lOpen)+grpC('Scheduled',cardsH(cOpen),sOpen.map(function(x){return slotTile(x,p)}).join(''))+grpC('Done',cardsH(cDn),done);
   h+='</div>';
@@ -1473,6 +1474,14 @@ document.addEventListener('click',function(e){
   if(b.dataset.cl){if(b.dataset.cl==='te'&&teBlocked())return;$(b.dataset.cl).classList.remove('show');return}
   if(b.dataset.ge){if(!can('guides'))return;openGE(b.dataset.ge);return}
   if(b.id==='gnew'){if(!can('guides'))return;openGE(null);return}
+  if(b.id==='ideasgo'){S.tab='library';render();setTimeout(function(){var el=$('ideas');if(el)el.scrollIntoView({block:'start'})},0);return}
+  if(b.dataset.iv){var iv0=ideaOf(b.dataset.iv);if(iv0)ideaSheet(iv0);return}
+  if(b.id==='inew'){if(!can('guides'))return;ideaEdit(null);return}
+  if(b.dataset.ied){if(!can('guides'))return;ideaEdit(b.dataset.ied);return}
+  if(b.id==='isave'){if(!can('guides'))return;ideaSave(b.dataset.x);return}
+  if(b.id==='idel'){var idx=ideaOf(b.dataset.x);if(!idx||!can('guides'))return;askConfirm('Delete this idea?','“'+idx.t+'” will be removed from the activity ideas.','Delete idea',function(){S.ideas=S.ideas.filter(function(i){return i!==idx});lgc('Activity idea deleted: '+idx.t);$('ti').classList.remove('show');render()});return}
+  if(b.dataset.idid){var idd=ideaOf(b.dataset.idid);if(!idd)return;if(needWho())return;var was=idd.last;idd.last={who:S.who,time:fmt(new Date()),date:bizDay()};$('ti').classList.remove('show');lg('Logged','Activity: '+idd.t+' ('+(IKN[idd.k]||'')+')');
+    showUndo('Logged: '+idd.t,function(){idd.last=was;lg('Undid','Activity: '+idd.t);hideUndo();render()});render();return}
   if(b.id==='gsave'){saveGE();return}
   if(b.id==='gdel'){var gid=GE.id;askConfirm('Delete this guide?','“'+(GE.title||'This guide')+'” will be removed from the library and from its tasks.','Delete guide',function(){S.guides=S.guides.filter(function(g){return g.id!==gid});S.tasks.forEach(function(t){if(t.guide===gid)delete t.guide});$('ge').classList.remove('show');render()});return}
   if(b.dataset.unlock){unlock(b.dataset.unlock);return}
@@ -2027,7 +2036,7 @@ function doneKey(){$('rk').classList.remove('show');lg('Changed','New admin reco
 function openFT(){openNT('first')}
 function showHint(msg){clearTimeout(UNDO.t);UNDO.fn=null;$('toastt').textContent=msg;$('toastu').hidden=true;$('toast').hidden=false;UNDO.t=setTimeout(function(){hideUndo();$('toastu').hidden=false},7000)}
 /* ---- 1.7.1: empty first run ---- */
-function blankState(){S.orders=[];S.tasks=[];S.stock=[];S.guides=[];S.people=[];S.log=[];LREPL=true;S.keepDays=182;S.moves=[];S.done={};S.cdone={};S.cnt={};
+function blankState(){S.orders=[];S.tasks=[];S.stock=[];S.guides=[];S.ideas=ideaSeed();S.people=[];S.log=[];LREPL=true;S.keepDays=182;S.moves=[];S.done={};S.cdone={};S.cnt={};
   S.emer={alert:ED.alert,contacts:[{n:'Emergency',p:'911'}],tell:'',plan:''};
   S.who='';S.adminOk=false;S.adminPin='1234';S.adminSet=false;S.rkey='';S.ahint='';S.firstRun=false;S.setup=true;S.setupHours=false;S.lastBackup=0;S.bkSnooze=0;S.since=Date.now();S.nid=20;S.dayKey=bizDay();S.tab='today';S.viewP=null}
 function openFR(){var sn=$('frsf');if(sn)sn.innerHTML=safariNote('fr');['frn','frp','frh'].forEach(function(id){$(id).value=''});$('fre').textContent='';$('fr').classList.add('show');setTimeout(function(){try{$('frn').focus()}catch(x){}},80)}
@@ -2119,7 +2128,29 @@ function library(){var gs=S.guides.slice().sort(function(a,b){return a.title.loc
   if(!gs.length)h+='<p class="note">No guides yet. '+(can('guides')?'Tap New guide to write the first one.':'An owner or manager can add guides.')+'</p>';
   else h+='<div class="tiles">'+gs.map(function(g){var ts=S.tasks.filter(function(t){return t.guide===g.id}),n=stepsOf(g).length;return'<div class="trow"><button class="task" data-gv="'+g.id+'"><span class="nm">'+esc(g.title)+'<span class="meta">'+n+' step'+(n===1?'':'s')+(ts.length?' · For: '+ts.map(function(t){return esc(t.name)}).join(', '):' · Not linked to a task')+'</span></span></button></div>'}).join('')+'</div>';
   h+=can('guides')?'<div class="row" style="border:0;padding-bottom:0"><button id="gnew">+ New guide</button></div>':'<div class="row" style="border:0;padding-bottom:0"><span class="note" style="margin:0;flex:1;min-width:200px">Anyone can read guides. Adding or changing them needs the “Write guides” permission.</span><button data-unlock="library">Unlock to edit</button></div>';
-  return h+'</div>'}
+  return h+'</div>'+ideasCol()}
+/* ---- activity ideas (How-to tab): PT / OT / speech / play things to do when there's time. "Did this" logs it; never missed ---- */
+var IK=[['pt','PT · movement'],['ot','OT · hands and senses'],['speech','Speech and language'],['play','Play']],IKN={pt:'PT',ot:'OT',speech:'Speech',play:'Play'};
+function ideaSeed(){return(ED.ideas||[]).map(function(x,i){return{id:'i'+(i+1),k:x.k,t:x.t,m:x.m||0,s:x.s||'',last:null}})}
+function ideaOf(id){return(S.ideas||[]).filter(function(i){return i.id===id})[0]}
+function ideaWhen(l){return l.date===bizDay()?'today at '+l.time:dlabel(l.date)}
+function ideaTile(i){return'<div class="trow"><button class="task" data-iv="'+i.id+'"><span class="nm">'+esc(i.t)+'<span class="meta">'+[IKN[i.k]||'',i.m?i.m+' min':'',i.last?'last done '+ideaWhen(i.last)+' by '+esc(i.last.who):''].filter(Boolean).join(' · ')+'</span></span></button></div>'}
+function ideasCol(){var ed=can('guides'),a=S.ideas||[],h='<div class="col" id="ideas" style="margin-top:14px"><div class="ch"><b>Activity ideas</b><small>'+esc(ED.ideaNote)+'</small></div>';
+  if(!a.length)h+='<p class="note">No ideas yet. '+(ed?'Tap New idea to add one, for example something from the PT’s or speech therapist’s home program.':'An owner or manager can add them.')+'</p>';
+  IK.forEach(function(k){var b=a.filter(function(i){return i.k===k[0]});if(b.length)h+='<p class="sec">'+k[1]+'<span class="sc">'+b.length+'</span></p><div class="tiles">'+b.map(ideaTile).join('')+'</div>'});
+  if(ed)h+='<div class="row" style="border:0;padding-bottom:0"><button id="inew">+ New idea</button></div>';return h+'</div>'}
+function ideaSheet(i){var st=(i.s||'').split('\n').map(function(x){return x.trim()}).filter(Boolean);
+  showSheet(i.t,'<p class="note" style="margin-top:0">'+(IKN[i.k]||'')+(i.m?' · about '+i.m+' min':'')+'</p>'+(st.length?'<ol style="margin:0 0 8px;padding-left:22px;font-size:17px;line-height:1.5">'+st.map(function(x){return'<li>'+esc(x)+'</li>'}).join('')+'</ol>':'')+(i.last?'<p class="note">Last done '+ideaWhen(i.last)+' by '+esc(i.last.who)+'.</p>':''),
+    '<button data-idid="'+i.id+'" class="tpok">Did this</button>'+(can('guides')?'<button data-ied="'+i.id+'">Edit</button>':''))}
+function ideaEdit(id){var i=id?ideaOf(id):null;
+  showSheet(i?'Edit idea':'New idea','<p class="note" style="margin-top:0">Idea</p><input type="text" id="iet" maxlength="80" value="'+esc(i?i.t:'')+'" placeholder="e.g. Read a picture book" style="width:100%;margin-bottom:10px">'+
+    '<div style="display:flex;gap:10px;flex-wrap:wrap"><label style="flex:1;min-width:180px"><span class="note">Kind</span><select id="iek" style="width:100%">'+IK.map(function(k){return'<option value="'+k[0]+'"'+(i&&i.k===k[0]?' selected':'')+'>'+k[1]+'</option>'}).join('')+'</select></label>'+
+    '<label style="width:140px"><span class="note">Minutes (optional)</span><input type="number" id="iem" min="1" max="240" inputmode="numeric" value="'+(i&&i.m?i.m:'')+'" style="width:100%"></label></div>'+
+    '<p class="note">Steps (one per line)</p><textarea id="ies" style="min-height:150px" placeholder="What to do, step by step">'+esc(i?i.s:'')+'</textarea><p class="note" id="iee" style="color:var(--bad)" aria-live="polite"></p>',
+    (i?'<button id="idel" data-x="'+i.id+'" style="color:var(--bad)">Delete</button>':'')+'<button id="isave" data-x="'+(i?i.id:'')+'" class="tpok">Save</button>')}
+function ideaSave(id){var t=$('iet').value.trim();if(!t){$('iee').textContent='Give the idea a name.';$('iet').focus();return}
+  var i=id?ideaOf(id):null,nw=!i;if(!i){i={id:'i'+S.nid++,last:null};S.ideas.push(i)}i.t=t;i.k=$('iek').value;i.m=Math.max(0,Math.min(240,parseInt($('iem').value,10)||0));i.s=$('ies').value;
+  lgc((nw?'Activity idea added: ':'Activity idea changed: ')+t);$('ti').classList.remove('show');render()}
 var GE=null;
 function openGE(gid,pre){var g=gid?S.guides.filter(function(x){return x.id===gid})[0]:null;$('ti').classList.remove('show');
   GE={id:g?g.id:null,title:g?g.title:'',steps:g?g.steps:'',tasks:S.tasks.filter(function(t){return g&&t.guide===g.id}).map(function(t){return t.id})};if(pre&&GE.tasks.indexOf(pre)<0)GE.tasks.push(pre);
@@ -2248,7 +2279,7 @@ function load(){try{var r=localStorage.getItem(KEY);if(!r)return false;return ap
 var loaded=load();if(!S.since)S.since=Date.now();
 if(!loaded){blankState()}
 else{S.who='';S.last=Date.now();rsMig();maybeReset()}
-migrate15();if(!S.orders)S.orders=[];if(S.keepDays==null)S.keepDays=182;if(!S.dueMode)S.dueMode='sound';if(!S.idleV){S.idleV=2;if(S.idle)S.idle=60}S.alerted=S.alerted||{};logInit();
+migrate15();if(!S.orders)S.orders=[];if(!S.ideas)S.ideas=ideaSeed();if(S.keepDays==null)S.keepDays=182;if(!S.dueMode)S.dueMode='sound';if(!S.idleV){S.idleV=2;if(S.idle)S.idle=60}S.alerted=S.alerted||{};logInit();
 if(ED.store&&S.people.length&&!S.disc)setTimeout(function(){openDC()},400);
 ['click','change','pointerup','keyup'].forEach(function(n){document.addEventListener(n,function(){setTimeout(save,0)})});
 setInterval(save,5000);document.addEventListener('visibilitychange',function(){if(document.hidden)save()});window.addEventListener('pagehide',save);
