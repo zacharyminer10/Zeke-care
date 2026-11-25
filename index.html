@@ -548,6 +548,15 @@ input[type=date]:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 .apptb.past{background:var(--panel2);border-color:var(--line)}
 .apptb.past .apic{background:var(--panel);color:var(--mut)}
 .apptb.past small{color:var(--mut)}
+.pics{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 10px}
+.pic{position:relative;width:96px;height:96px;padding:0;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:var(--panel2);flex:none}
+.pics.big .pic{width:150px;height:150px}
+.pic img{width:100%;height:100%;object-fit:cover;display:block}
+.pic .pdel{position:absolute;top:4px;right:4px;min-width:30px;min-height:30px;padding:0;border-radius:999px;background:var(--scrim);color:#fff;font-size:18px;line-height:1}
+.picadd{position:relative;display:grid;place-items:center;width:96px;height:96px;border:1px dashed var(--line);border-radius:12px;color:var(--acc);font-weight:600;font-size:14px;text-align:center;cursor:pointer}
+.picv{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.92);display:grid;place-items:center;padding:16px}
+.picv img{max-width:100%;max-height:100%;object-fit:contain;border-radius:8px}
+.picx{position:absolute;top:calc(12px + env(safe-area-inset-top,0px));right:12px;min-width:44px;min-height:44px;border-radius:999px;background:rgba(255,255,255,.15);border:0;color:#fff;font-size:26px}
 .apptrow{display:flex;gap:10px;margin:0 0 12px;align-items:stretch}
 .apptrow .apptb{margin:0;flex:1;min-width:0}
 .apmore{flex:none;display:flex;flex-direction:column;justify-content:center;gap:2px;text-align:left;padding:10px 16px;border-radius:16px;background:var(--panel2);border:1px solid var(--line);color:var(--tx);max-width:34%}
@@ -1474,16 +1483,19 @@ document.addEventListener('click',function(e){
   if(b.dataset.cl){if(b.dataset.cl==='te'&&teBlocked())return;$(b.dataset.cl).classList.remove('show');return}
   if(b.dataset.ge){if(!can('guides'))return;openGE(b.dataset.ge);return}
   if(b.id==='gnew'){if(!can('guides'))return;openGE(null);return}
+  if(b.dataset.mpx){if(!ME)return;var mx=b.dataset.mpx;ME.pics=ME.pics.filter(function(p){return p!==mx});delete ME.nw[mx];medRedraw();return}
+  if(b.dataset.pic){picOpen(b.dataset.pic);return}
+  if(b.dataset.vid){var vu=b.dataset.vid;if(vidOk(vu)){try{window.open(vu,'_blank','noopener')}catch(e){}}return}
   if(b.id==='ideasgo'){S.tab='library';render();setTimeout(function(){var el=$('ideas');if(el)el.scrollIntoView({block:'start'})},0);return}
   if(b.dataset.iv){var iv0=ideaOf(b.dataset.iv);if(iv0)ideaSheet(iv0);return}
   if(b.id==='inew'){if(!can('guides'))return;ideaEdit(null);return}
   if(b.dataset.ied){if(!can('guides'))return;ideaEdit(b.dataset.ied);return}
   if(b.id==='isave'){if(!can('guides'))return;ideaSave(b.dataset.x);return}
-  if(b.id==='idel'){var idx=ideaOf(b.dataset.x);if(!idx||!can('guides'))return;askConfirm('Delete this idea?','“'+idx.t+'” will be removed from the activity ideas.','Delete idea',function(){S.ideas=S.ideas.filter(function(i){return i!==idx});lgc('Activity idea deleted: '+idx.t);$('ti').classList.remove('show');render()});return}
+  if(b.id==='idel'){var idx=ideaOf(b.dataset.x);if(!idx||!can('guides'))return;askConfirm('Delete this idea?','“'+idx.t+'” will be removed from the activity ideas.','Delete idea',function(){(idx.pics||[]).forEach(mediaDel);S.ideas=S.ideas.filter(function(i){return i!==idx});lgc('Activity idea deleted: '+idx.t);$('ti').classList.remove('show');render()});return}
   if(b.dataset.idid){var idd=ideaOf(b.dataset.idid);if(!idd)return;if(needWho())return;var was=idd.last;idd.last={who:S.who,time:fmt(new Date()),date:bizDay()};$('ti').classList.remove('show');lg('Logged','Activity: '+idd.t+' ('+(IKN[idd.k]||'')+')');
     showUndo('Logged: '+idd.t,function(){idd.last=was;lg('Undid','Activity: '+idd.t);hideUndo();render()});render();return}
   if(b.id==='gsave'){saveGE();return}
-  if(b.id==='gdel'){var gid=GE.id;askConfirm('Delete this guide?','“'+(GE.title||'This guide')+'” will be removed from the library and from its tasks.','Delete guide',function(){S.guides=S.guides.filter(function(g){return g.id!==gid});S.tasks.forEach(function(t){if(t.guide===gid)delete t.guide});$('ge').classList.remove('show');render()});return}
+  if(b.id==='gdel'){var gid=GE.id;askConfirm('Delete this guide?','“'+(GE.title||'This guide')+'” will be removed from the library and from its tasks.','Delete guide',function(){S.guides.forEach(function(g){if(g.id===gid)(g.pics||[]).forEach(mediaDel)});S.guides=S.guides.filter(function(g){return g.id!==gid});S.tasks.forEach(function(t){if(t.guide===gid)delete t.guide});$('ge').classList.remove('show');render()});return}
   if(b.dataset.unlock){unlock(b.dataset.unlock);return}
   if(b.dataset.tset){openTS(+b.dataset.tset);return}
   if(b.id==='tsok'){saveTS();return}
@@ -1674,6 +1686,8 @@ var DCNEXT=null;
 function openDC(next){DCNEXT=next||null;$('dcck').checked=false;$('dcok').disabled=true;$('dc').classList.add('show')}
 function acceptDC(){if(!$('dcck').checked)return;S.disc={by:S.who||'',at:Date.now()};lg('Changed','Disclaimer accepted'+(S.who?' by '+S.who:''));$('dc').classList.remove('show');save();var f=DCNEXT;DCNEXT=null;if(f)f();else render()}
 if(ED.store)document.addEventListener('change',function(e){if(e.target&&e.target.id==='dcck')$('dcok').disabled=!e.target.checked});
+document.addEventListener('change',function(e){var f=e.target;if(!f||f.id!=='mefile'||!ME||!f.files||!f.files[0])return;var file=f.files[0];f.value='';
+  picShrink(file,function(d){if(!ME)return;if(!d){showHint('That photo couldn’t be opened. Try another one.');return}if(ME.pics.length>=4)return;var id='p'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);ME.nw[id]=d;ME.pics.push(id);medRedraw()})});
 function firstRunNext(){var p=S.people.filter(function(x){return x.name===S.who})[0];if(p)p.toured=true;save();if(!S.tasks.length)openFT();else render()}
 function openAbout(){var P=['EZAide is a general-purpose organizational tool for families and caregivers to record and track routine care tasks. It is not a medical device and is not intended to diagnose, treat, cure, monitor, or prevent any disease or condition.',
   'Task names, times, doses, and instructions are entered by the people using the app. EZAide does not check them for accuracy. You are responsible for confirming that all information matches the instructions from your care team and the labels on medications and supplies.',
@@ -2121,12 +2135,12 @@ function openGuide(gid){var g=S.guides.filter(function(x){return x.id===gid})[0]
   var nd=Object.keys(all).map(function(k){return all[k]}),h='';
   if(ts.length)h+='<p class="note" style="margin-top:0">Used for: '+ts.map(function(t){return esc(t.name)}).join(', ')+'</p>';
   if(nd.length)h+='<p class="sec">What you’ll need</p>'+needsHtml(nd);var ex=[];ts.forEach(function(t){(t.extras||[]).forEach(function(x){if(ex.indexOf(x)<0)ex.push(x)})});h+=extrasHtml(ex);
-  h+='<p class="sec">Steps</p>'+stepsHtml(g);
+  h+='<p class="sec">Steps</p>'+stepsHtml(g)+medView(g);
   showSheet(g.title,h,can('guides')?'<button data-ge="'+g.id+'">Edit guide</button>':'')}
 function library(){var gs=S.guides.slice().sort(function(a,b){return a.title.localeCompare(b.title)});
   var h='<div class="col"><div class="ch"><b>How-to library</b><small>Instructions anyone on shift can open</small></div>';
   if(!gs.length)h+='<p class="note">No guides yet. '+(can('guides')?'Tap New guide to write the first one.':'An owner or manager can add guides.')+'</p>';
-  else h+='<div class="tiles">'+gs.map(function(g){var ts=S.tasks.filter(function(t){return t.guide===g.id}),n=stepsOf(g).length;return'<div class="trow"><button class="task" data-gv="'+g.id+'"><span class="nm">'+esc(g.title)+'<span class="meta">'+n+' step'+(n===1?'':'s')+(ts.length?' · For: '+ts.map(function(t){return esc(t.name)}).join(', '):' · Not linked to a task')+'</span></span></button></div>'}).join('')+'</div>';
+  else h+='<div class="tiles">'+gs.map(function(g){var ts=S.tasks.filter(function(t){return t.guide===g.id}),n=stepsOf(g).length;return'<div class="trow"><button class="task" data-gv="'+g.id+'"><span class="nm">'+esc(g.title)+'<span class="meta">'+n+' step'+(n===1?'':'s')+(ts.length?' · For: '+ts.map(function(t){return esc(t.name)}).join(', '):' · Not linked to a task')+(medMeta(g)?' · '+medMeta(g):'')+'</span></span></button></div>'}).join('')+'</div>';
   h+=can('guides')?'<div class="row" style="border:0;padding-bottom:0"><button id="gnew">+ New guide</button></div>':'<div class="row" style="border:0;padding-bottom:0"><span class="note" style="margin:0;flex:1;min-width:200px">Anyone can read guides. Adding or changing them needs the “Write guides” permission.</span><button data-unlock="library">Unlock to edit</button></div>';
   return h+'</div>'+ideasCol()}
 /* ---- activity ideas (How-to tab): PT / OT / speech / play things to do when there's time. "Did this" logs it; never missed ---- */
@@ -2134,33 +2148,60 @@ var IK=[['pt','PT · movement'],['ot','OT · hands and senses'],['speech','Speec
 function ideaSeed(){return(ED.ideas||[]).map(function(x,i){return{id:'i'+(i+1),k:x.k,t:x.t,m:x.m||0,s:x.s||'',last:null}})}
 function ideaOf(id){return(S.ideas||[]).filter(function(i){return i.id===id})[0]}
 function ideaWhen(l){return l.date===bizDay()?'today at '+l.time:dlabel(l.date)}
-function ideaTile(i){return'<div class="trow"><button class="task" data-iv="'+i.id+'"><span class="nm">'+esc(i.t)+'<span class="meta">'+[IKN[i.k]||'',i.m?i.m+' min':'',i.last?'last done '+ideaWhen(i.last)+' by '+esc(i.last.who):''].filter(Boolean).join(' · ')+'</span></span></button></div>'}
+function ideaTile(i){return'<div class="trow"><button class="task" data-iv="'+i.id+'"><span class="nm">'+esc(i.t)+'<span class="meta">'+[IKN[i.k]||'',i.m?i.m+' min':'',medMeta(i),i.last?'last done '+ideaWhen(i.last)+' by '+esc(i.last.who):''].filter(Boolean).join(' · ')+'</span></span></button></div>'}
 function ideasCol(){var ed=can('guides'),a=S.ideas||[],h='<div class="col" id="ideas" style="margin-top:14px"><div class="ch"><b>Activity ideas</b><small>'+esc(ED.ideaNote)+'</small></div>';
   if(!a.length)h+='<p class="note">No ideas yet. '+(ed?'Tap New idea to add one, for example something from the PT’s or speech therapist’s home program.':'An owner or manager can add them.')+'</p>';
   IK.forEach(function(k){var b=a.filter(function(i){return i.k===k[0]});if(b.length)h+='<p class="sec">'+k[1]+'<span class="sc">'+b.length+'</span></p><div class="tiles">'+b.map(ideaTile).join('')+'</div>'});
   if(ed)h+='<div class="row" style="border:0;padding-bottom:0"><button id="inew">+ New idea</button></div>';return h+'</div>'}
 function ideaSheet(i){var st=(i.s||'').split('\n').map(function(x){return x.trim()}).filter(Boolean);
-  showSheet(i.t,'<p class="note" style="margin-top:0">'+(IKN[i.k]||'')+(i.m?' · about '+i.m+' min':'')+'</p>'+(st.length?'<ol style="margin:0 0 8px;padding-left:22px;font-size:17px;line-height:1.5">'+st.map(function(x){return'<li>'+esc(x)+'</li>'}).join('')+'</ol>':'')+(i.last?'<p class="note">Last done '+ideaWhen(i.last)+' by '+esc(i.last.who)+'.</p>':''),
+  showSheet(i.t,'<p class="note" style="margin-top:0">'+(IKN[i.k]||'')+(i.m?' · about '+i.m+' min':'')+'</p>'+(st.length?'<ol style="margin:0 0 8px;padding-left:22px;font-size:17px;line-height:1.5">'+st.map(function(x){return'<li>'+esc(x)+'</li>'}).join('')+'</ol>':'')+medView(i)+(i.last?'<p class="note">Last done '+ideaWhen(i.last)+' by '+esc(i.last.who)+'.</p>':''),
     '<button data-idid="'+i.id+'" class="tpok">Did this</button>'+(can('guides')?'<button data-ied="'+i.id+'">Edit</button>':''))}
 function ideaEdit(id){var i=id?ideaOf(id):null;
   showSheet(i?'Edit idea':'New idea','<p class="note" style="margin-top:0">Idea</p><input type="text" id="iet" maxlength="80" value="'+esc(i?i.t:'')+'" placeholder="e.g. Read a picture book" style="width:100%;margin-bottom:10px">'+
     '<div style="display:flex;gap:10px;flex-wrap:wrap"><label style="flex:1;min-width:180px"><span class="note">Kind</span><select id="iek" style="width:100%">'+IK.map(function(k){return'<option value="'+k[0]+'"'+(i&&i.k===k[0]?' selected':'')+'>'+k[1]+'</option>'}).join('')+'</select></label>'+
     '<label style="width:140px"><span class="note">Minutes (optional)</span><input type="number" id="iem" min="1" max="240" inputmode="numeric" value="'+(i&&i.m?i.m:'')+'" style="width:100%"></label></div>'+
-    '<p class="note">Steps (one per line)</p><textarea id="ies" style="min-height:150px" placeholder="What to do, step by step">'+esc(i?i.s:'')+'</textarea><p class="note" id="iee" style="color:var(--bad)" aria-live="polite"></p>',
+    '<p class="note">Steps (one per line)</p><textarea id="ies" style="min-height:150px" placeholder="What to do, step by step">'+esc(i?i.s:'')+'</textarea><div id="medw">'+(medStart(i),medHtml())+'</div><p class="note" id="iee" style="color:var(--bad)" aria-live="polite"></p>',
     (i?'<button id="idel" data-x="'+i.id+'" style="color:var(--bad)">Delete</button>':'')+'<button id="isave" data-x="'+(i?i.id:'')+'" class="tpok">Save</button>')}
 function ideaSave(id){var t=$('iet').value.trim();if(!t){$('iee').textContent='Give the idea a name.';$('iet').focus();return}
-  var i=id?ideaOf(id):null,nw=!i;if(!i){i={id:'i'+S.nid++,last:null};S.ideas.push(i)}i.t=t;i.k=$('iek').value;i.m=Math.max(0,Math.min(240,parseInt($('iem').value,10)||0));i.s=$('ies').value;
+  if(!vidOk($('mevid').value.trim())){$('iee').textContent='The video link should start with https://';$('mevid').focus();return}
+  var i=id?ideaOf(id):null,nw=!i;if(!i){i={id:'i'+S.nid++,last:null};S.ideas.push(i)}i.t=t;i.k=$('iek').value;i.m=Math.max(0,Math.min(240,parseInt($('iem').value,10)||0));i.s=$('ies').value;medCommit(i);
   lgc((nw?'Activity idea added: ':'Activity idea changed: ')+t);$('ti').classList.remove('show');render()}
+/* ---- photos and a video link on guides and ideas (both optional). Photos are shrunk to ~1280 px JPEG and kept on this
+   device in IndexedDB (KEY+'-media'), cached in MEDIA; backups carry the ones in use. Videos are links (too big to keep here). ---- */
+var MDB=null,MEDIA={},MQ=[],ME=null;
+function mdbOpen(){try{if(!window.indexedDB)return;var rq=indexedDB.open(KEY+'-media',1);rq.onupgradeneeded=function(){var db=rq.result;if(!db.objectStoreNames.contains('img'))db.createObjectStore('img')};
+  rq.onsuccess=function(){MDB=rq.result;try{var cur=MDB.transaction('img','readonly').objectStore('img').openCursor();cur.onsuccess=function(e){var c=e.target.result;if(c){if(!MEDIA[c.key])MEDIA[c.key]=c.value;c.continue()}else{MQ.splice(0).forEach(function(q){mediaPut(q[0],q[1])});mediaGC();if(S.tab==='library')render()}}}catch(e){}}}catch(e){}}
+function mediaPut(id,v){MEDIA[id]=v;if(!MDB){MQ.push([id,v]);return}try{MDB.transaction('img','readwrite').objectStore('img').put(v,id)}catch(e){}}
+function mediaDel(id){delete MEDIA[id];try{if(MDB)MDB.transaction('img','readwrite').objectStore('img').delete(id)}catch(e){}}
+function mediaRefs(){var r={};(S.guides||[]).concat(S.ideas||[]).forEach(function(x){(x.pics||[]).forEach(function(p){r[p]=1})});return r}
+function mediaGC(){var r=mediaRefs();Object.keys(MEDIA).forEach(function(k){if(!r[k])mediaDel(k)})}
+function mediaUsed(){var r=mediaRefs(),o={},n=0;Object.keys(r).forEach(function(k){if(MEDIA[k]){o[k]=MEDIA[k];n++}});return n?o:undefined}
+function mediaImport(m){if(!m||typeof m!=='object')return;Object.keys(m).forEach(function(k){if(typeof m[k]==='string'&&m[k].indexOf('data:image/')===0)mediaPut(k,m[k])})}
+function picShrink(file,cb){try{var fr=new FileReader();fr.onload=function(){var im=new Image();im.onload=function(){var w=im.naturalWidth,h=im.naturalHeight,k=Math.min(1,1280/Math.max(w,h,1)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(w*k));c.height=Math.max(1,Math.round(h*k));c.getContext('2d').drawImage(im,0,0,c.width,c.height);cb(c.toDataURL('image/jpeg',0.8))};im.onerror=function(){cb(null)};im.src=fr.result};fr.onerror=function(){cb(null)};fr.readAsDataURL(file)}catch(e){cb(null)}}
+function vidOk(v){return !v||/^https?:\/\/[^\s<>"]+$/i.test(v)}
+/* editor part (guide and idea editors): ME={pics:[ids],nw:{id:dataURL not yet saved},vid} */
+function medStart(x){ME={pics:((x&&x.pics)||[]).slice(),nw:{},vid:(x&&x.vid)||''}}
+function medHtml(){var src=function(id){return ME.nw[id]||MEDIA[id]||''};return'<p class="note">Photos (optional, up to 4)</p><div class="pics">'+ME.pics.map(function(id){return'<span class="pic"><img src="'+src(id)+'" alt=""><button class="tx pdel" data-mpx="'+id+'" aria-label="Remove photo">×</button></span>'}).join('')+
+  (ME.pics.length<4?'<label class="picadd">+ Add photo<input type="file" accept="image/*" id="mefile" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none"></label>':'')+'</div>'+
+  '<p class="note">Video link (optional)</p><input type="text" inputmode="url" id="mevid" value="'+esc(ME.vid)+'" placeholder="https://… a link to the video (iCloud, Google Drive, YouTube)" autocapitalize="off" autocorrect="off" style="width:100%;margin-bottom:6px">'}
+function medRedraw(){var v=$('mevid');if(v)ME.vid=v.value;var w=$('medw');if(w)w.innerHTML=medHtml()}
+function medCommit(x){var old=x.pics||[];ME.pics.forEach(function(id){if(ME.nw[id])mediaPut(id,ME.nw[id])});old.forEach(function(id){if(ME.pics.indexOf(id)<0)mediaDel(id)});x.pics=ME.pics.slice();x.vid=($('mevid')?$('mevid').value.trim():ME.vid)||'';ME=null}
+/* viewing: thumbnails (tap for full screen) and Watch video */
+function medView(x){var p=(x.pics||[]).filter(function(id){return MEDIA[id]}),h='';if(p.length)h+='<div class="pics big">'+p.map(function(id){return'<button class="pic" data-pic="'+id+'" aria-label="Open photo"><img src="'+MEDIA[id]+'" alt=""></button>'}).join('')+'</div>';
+  if(x.vid&&vidOk(x.vid))h+='<p style="margin:4px 0 8px"><button data-vid="'+esc(x.vid)+'">▶ Watch video</button></p>';return h}
+function medMeta(x){var n=(x.pics||[]).length;return[n?n+' photo'+(n===1?'':'s'):'',x.vid?'video':''].filter(Boolean).join(' · ')}
+function picOpen(id){if(!MEDIA[id])return;var d=document.createElement('div');d.className='picv';d.setAttribute('role','dialog');d.setAttribute('aria-label','Photo');d.innerHTML='<img src="'+MEDIA[id]+'" alt=""><button class="picx" aria-label="Close">×</button>';d.addEventListener('click',function(){d.remove()});document.body.appendChild(d)}
 var GE=null;
 function openGE(gid,pre){var g=gid?S.guides.filter(function(x){return x.id===gid})[0]:null;$('ti').classList.remove('show');
   GE={id:g?g.id:null,title:g?g.title:'',steps:g?g.steps:'',tasks:S.tasks.filter(function(t){return g&&t.guide===g.id}).map(function(t){return t.id})};if(pre&&GE.tasks.indexOf(pre)<0)GE.tasks.push(pre);
   var h='<p class="note" style="margin-top:0">Title</p><input type="text" id="gtt" value="'+esc(GE.title)+'" placeholder="e.g. '+ED.ex.guide+'" style="width:100%;margin-bottom:10px">';
-  h+='<p class="note">Steps (one per line)</p><textarea id="gst" style="min-height:180px" placeholder="Wash hands&#10;Gather supplies&#10;…">'+esc(GE.steps)+'</textarea>';
+  h+='<p class="note">Steps (one per line)</p><textarea id="gst" style="min-height:180px" placeholder="Wash hands&#10;Gather supplies&#10;…">'+esc(GE.steps)+'</textarea>';medStart(g);h+='<div id="medw">'+medHtml()+'</div>';
   h+='<p class="note">Show this guide on these tasks</p><div style="display:flex;flex-wrap:wrap;gap:6px 14px;margin-bottom:10px">'+S.tasks.map(function(t){var og=guideOf(t);return'<label class="c"><input type="checkbox" data-gtk="'+t.id+'"'+(GE.tasks.indexOf(t.id)>-1?' checked':'')+'>'+esc(t.name)+(og&&og.id!==GE.id?' <span style="font-size:13px">(now: '+esc(og.title)+')</span>':'')+'</label>'}).join('')+'</div>';
   $('get').textContent=g?'Edit guide':'New guide';$('geb').innerHTML=h;$('gee').textContent='';
   $('gef').innerHTML='<button data-cl="ge">Cancel</button>'+(g?'<button id="gdel" style="color:var(--bad)">Delete</button>':'')+'<button id="gsave" class="tpok" style="font-size:18px">Save</button>';$('ge').classList.add('show')}
 function saveGE(){var title=$('gtt').value.trim();if(!title){$('gee').textContent='Give the guide a title.';$('gtt').focus();return}
-  var g=GE.id?S.guides.filter(function(x){return x.id===GE.id})[0]:null;if(!g){g={id:'g'+S.nid++};S.guides.push(g)}g.title=title;g.steps=$('gst').value;
+  if(!vidOk($('mevid').value.trim())){$('gee').textContent='The video link should start with https://';$('mevid').focus();return}
+  var g=GE.id?S.guides.filter(function(x){return x.id===GE.id})[0]:null;if(!g){g={id:'g'+S.nid++};S.guides.push(g)}g.title=title;g.steps=$('gst').value;medCommit(g);
   var on=[].map.call($('geb').querySelectorAll('[data-gtk]:checked'),function(x){return+x.dataset.gtk});
   S.tasks.forEach(function(t){if(on.indexOf(t.id)>-1)t.guide=g.id;else if(t.guide===g.id)delete t.guide});
   $('ge').classList.remove('show');render()}
@@ -2267,10 +2308,10 @@ function drawEmEd(){var h='<p class="note" style="margin-top:0">Top message (sho
 function emRead(){EM.alert=$('ema').value.trim();EM.tell=$('emt').value;EM.plan=$('empl').value;EM.contacts=EM.contacts.map(function(c,i){var a=$('emf').querySelector('[data-emn="'+i+'"]'),b=$('emf').querySelector('[data-emp="'+i+'"]');return{n:a?a.value.trim():c.n,p:b?b.value.trim():c.p}})}
 /* ---- local persistence (this device only) ---- */
 var KEY=ED.key,TRANSIENT=['viewPrev','tyd','tyv','wkv','teNew','teNewPend','prevKey','tab','who','pend','pin','reason','adminOk','viewP','viewFrom','logf','logt','logi','logq','logd','logd1','logd2','logSpan','logCap','_lqf','flash','cxo'],saved=false,lastSave=null;
-function snap(full){var o={};Object.keys(S).forEach(function(k){if(TRANSIENT.indexOf(k)>-1)return;if(k==='log'){if(full||!LDBOK)o.log=cleanLog(S.log);return}o[k]=S[k]});return{app:ED.app,v:1,at:new Date().toISOString(),theme:document.documentElement.dataset.theme||'dark',state:o}}
+function snap(full){var o={};Object.keys(S).forEach(function(k){if(TRANSIENT.indexOf(k)>-1)return;if(k==='log'){if(full||!LDBOK)o.log=cleanLog(S.log);return}o[k]=S[k]});return{app:ED.app,v:1,at:new Date().toISOString(),theme:document.documentElement.dataset.theme||'dark',state:o,media:full?mediaUsed():undefined}}
 function okSnap(d){return !!(d&&ED.apps.indexOf(d.app)>-1&&d.state&&Array.isArray(d.state.tasks)&&Array.isArray(d.state.periods)&&d.state.periods.length&&Array.isArray(d.state.people)&&d.state.people.length)}
 function applySnap(d){if(!okSnap(d))return false;
-  Object.keys(d.state).forEach(function(k){S[k]=d.state[k]});
+  Object.keys(d.state).forEach(function(k){S[k]=d.state[k]});mediaImport(d.media);
   (S.log||[]).forEach(function(r){r.ts=new Date(r.ts)});
   if(d.theme)document.documentElement.dataset.theme=d.theme;
   S.who='';S.adminOk=false;S.viewP=null;S.pend=null;return true}
@@ -2279,7 +2320,7 @@ function load(){try{var r=localStorage.getItem(KEY);if(!r)return false;return ap
 var loaded=load();if(!S.since)S.since=Date.now();
 if(!loaded){blankState()}
 else{S.who='';S.last=Date.now();rsMig();maybeReset()}
-migrate15();if(!S.orders)S.orders=[];if(!S.ideas)S.ideas=ideaSeed();if(S.keepDays==null)S.keepDays=182;if(!S.dueMode)S.dueMode='sound';if(!S.idleV){S.idleV=2;if(S.idle)S.idle=60}S.alerted=S.alerted||{};logInit();
+migrate15();if(!S.orders)S.orders=[];if(!S.ideas)S.ideas=ideaSeed();if(S.keepDays==null)S.keepDays=182;if(!S.dueMode)S.dueMode='sound';if(!S.idleV){S.idleV=2;if(S.idle)S.idle=60}S.alerted=S.alerted||{};logInit();mdbOpen();
 if(ED.store&&S.people.length&&!S.disc)setTimeout(function(){openDC()},400);
 ['click','change','pointerup','keyup'].forEach(function(n){document.addEventListener(n,function(){setTimeout(save,0)})});
 setInterval(save,5000);document.addEventListener('visibilitychange',function(){if(document.hidden)save()});window.addEventListener('pagehide',save);

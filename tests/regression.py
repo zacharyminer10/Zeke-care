@@ -972,6 +972,52 @@ def main():
         check('ID9 ideas are saved (still there after reopening)', pi2.evaluate("!!ideaOf('i77')"))
         check('ID10 no script errors (activity ideas)', not ei2, '; '.join(ei2[:3]))
 
+        # PH. photos and a video link on guides and ideas (both optional); photos kept on the device, carried in backups
+        import zlib, struct
+        def png(w, h, rgb=(200, 80, 60)):
+            raw = b''.join(b'\x00' + bytes(rgb) * w for _ in range(h))
+            ck = lambda t, d: struct.pack('>I', len(d)) + t + d + struct.pack('>I', zlib.crc32(t + d) & 0xffffffff)
+            return b'\x89PNG\r\n\x1a\n' + ck(b'IHDR', struct.pack('>IIBBBBB', w, h, 8, 2, 0, 0, 0)) + ck(b'IDAT', zlib.compress(raw, 9)) + ck(b'IEND', b'')
+        big = {'name': 'big.png', 'mimeType': 'image/png', 'buffer': png(2000, 1500)}
+        ph, eph = page(viewport={'width': 1080, 'height': 810})
+        ph.clock.set_fixed_time(_dt.datetime(2026, 11, 25, 14, 0))
+        setup(ph, U + 'index.html', 'Pia', '4141')
+        ph.evaluate("S.people.forEach(p=>p.toured=true);S.setup=false;S.dueMode='off';S.notifAsked=true;S.adminOk=true;S.tab='library';render()")
+        ph.click('#gnew'); ph.wait_for_timeout(150); ph.fill('#gtt', 'Tie change PH'); ph.fill('#gst', 'Step one\nStep two')
+        ph.set_input_files('#mefile', big); ph.wait_for_timeout(600)
+        dims = ph.evaluate("new Promise(r=>{var id=ME.pics[0],im=new Image();im.onload=()=>r([im.naturalWidth,im.naturalHeight,ME.nw[id].slice(0,15)]);im.src=ME.nw[id]})")
+        check('PH1 adding a photo shows it in the editor, shrunk to 1280 px JPEG', ph.locator('#ge .pic img').count() == 1 and dims[0] == 1280 and dims[1] == 960 and dims[2] == 'data:image/jpeg', str(dims))
+        ph.fill('#mevid', 'javascript:alert(1)'); ph.click('#gsave'); ph.wait_for_timeout(100)
+        check('PH2 a video link must start with https://', ph.is_visible('#ge') and 'should start with https' in ph.inner_text('#gee'))
+        ph.fill('#mevid', 'https://example.com/video-ph'); ph.click('#gsave'); ph.wait_for_timeout(200)
+        gid = ph.evaluate("S.guides.filter(g=>g.title==='Tie change PH')[0].id")
+        pid = ph.evaluate(f"S.guides.filter(g=>g.id==='{gid}')[0].pics[0]")
+        stored = ph.evaluate(f"new Promise(r=>{{var rq=indexedDB.open(KEY+'-media',1);rq.onsuccess=()=>{{var g=rq.result.transaction('img').objectStore('img').get('{pid}');g.onsuccess=()=>r(!!g.result)}}}})")
+        check('PH3 saving keeps the photo on the device and the link on the guide; the library says “1 photo · video”', stored and ph.evaluate(f"S.guides.filter(g=>g.id==='{gid}')[0].vid==='https://example.com/video-ph'") and '1 photo · video' in ph.inner_text(f'[data-gv="{gid}"]'))
+        ph.click(f'[data-gv="{gid}"]'); ph.wait_for_timeout(150)
+        ok4 = ph.locator('#ti .pics.big .pic').count() == 1 and ph.locator('#ti [data-vid]').count() == 1
+        ph.click(f'#ti [data-pic="{pid}"]'); ph.wait_for_timeout(100); ok4b = ph.locator('.picv img').count() == 1
+        ph.click('.picv'); ph.wait_for_timeout(100)
+        check('PH4 the guide shows the photo (tap: full screen, tap again: closes) and Watch video', ok4 and ok4b and ph.locator('.picv').count() == 0)
+        ph.evaluate("$('ti').classList.remove('show')")
+        bk = ph.evaluate("JSON.stringify(snap(true))")
+        check('PH5 a backup carries the photo; the board’s own save doesn’t (it stays small)', f'"{pid}":"data:image/jpeg' in bk and ph.evaluate(f"localStorage.getItem(KEY).indexOf('data:image')<0"))
+        ph.reload(); ph.wait_for_timeout(500)
+        check('PH6 after reopening the app the photo is still there', ph.evaluate(f"!!MEDIA['{pid}']"))
+        ph2, eph2 = page(viewport={'width': 1080, 'height': 810})
+        setup(ph2, U + 'index.html', 'Rex', '5151')
+        ph2.evaluate(f"applySnap(JSON.parse({json.dumps(bk)}))"); ph2.wait_for_timeout(300)
+        check('PH7 restoring the backup on another device brings the photo back', ph2.evaluate(f"!!MEDIA['{pid}']&&S.guides.some(g=>(g.pics||[]).indexOf('{pid}')>-1)"))
+        ph.evaluate("S.adminOk=true;S.who='Pia';S.tab='library';render()"); ph.click('#inew'); ph.wait_for_timeout(100); ph.fill('#iet', 'Photo idea PH')
+        ph.set_input_files('#mefile', {'name': 'a.png', 'mimeType': 'image/png', 'buffer': png(300, 200)}); ph.wait_for_timeout(400)
+        ph.click('#ti [data-mpx]'); ph.wait_for_timeout(100); ok8 = ph.locator('#ti .pic').count() == 0
+        ph.set_input_files('#mefile', {'name': 'b.png', 'mimeType': 'image/png', 'buffer': png(300, 200, (40, 90, 200))}); ph.wait_for_timeout(400); ph.click('#isave'); ph.wait_for_timeout(150)
+        iid = ph.evaluate("S.ideas.filter(i=>i.t==='Photo idea PH')[0].id"); ipid = ph.evaluate(f"ideaOf('{iid}').pics[0]")
+        check('PH8 ideas take photos too; × removes one before saving; saved with no video is fine', ok8 and ph.evaluate(f"ideaOf('{iid}').pics.length===1&&!ideaOf('{iid}').vid&&!!MEDIA['{ipid}']") and '1 photo' in ph.inner_text(f'[data-iv="{iid}"]'))
+        ph.click(f'[data-gv="{gid}"]'); ph.wait_for_timeout(100); ph.click(f'#ti [data-ge="{gid}"]'); ph.wait_for_timeout(150); ph.click('#gdel'); ph.wait_for_timeout(100); ph.click('#cfok'); ph.wait_for_timeout(150)
+        check('PH9 deleting a guide deletes its photo from the device', ph.evaluate(f"!MEDIA['{pid}']&&!!MEDIA['{ipid}']"))
+        check('PH10 no script errors (photos)', not (eph or eph2), '; '.join((eph + eph2)[:3]))
+
         # J. phone layout
         pg3, e3 = page(**p.devices['iPhone 13'])
         setup(pg3, U + 'index.html', 'Pat', '4444')
